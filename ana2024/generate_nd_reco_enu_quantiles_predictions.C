@@ -107,13 +107,21 @@ using namespace ana;
 
 // =====================================================================================================
 void generate_nd_reco_enu_quantiles_predictions(const std::string& beam = "fhc", // or "rhc"
-                                                const std::string& systString="",
-                                                const std::string& outDir="", 				// local --> $ana/preds+spectra/<outDir> , grid --> mkdir outDir, fill arg with "none"
-                                                const bool gridSubmission=false, 			// outdir for grid is "."
+                                                const std::string& systString = "",
+                                                const bool test = true,
+                                                const bool gridSubmission = false, 			// outdir for grid is "."
                                                 const bool fillSysts = true            // generate preds w/o systs
 )
 // =====================================================================================================
 {
+
+  std::string outDir;
+  if (test)
+  outDir = "/nova/ana/users/mdolce/preds+spectra/ana2024/generate_nd_reco_enu_quantiles_predictions_ana2024/test/";
+  else {
+    outDir = "/nova/ana/users/mdolce/preds+spectra/ana2024/generate_nd_reco_enu_quantiles_predictions_ana2024/";
+  }
+  std::cout << "Predictions will be made and placed into..." << outDir << std::endl;
 
   ana::BeamType2020 beamType;
   beam == "fhc" ? beamType = BeamType2020::kFHC : beamType = BeamType2020::kRHC;
@@ -180,19 +188,20 @@ void generate_nd_reco_enu_quantiles_predictions(const std::string& beam = "fhc",
   std::map<std::string, const PredictionInterp*> predInterps;
 
 
-  // TODO: I think the kNumuCCOptimisedAxis2020 is sufficient for this Ana2024...
-  // TODO: and same for kNumuND2020
+  // NOTE: we need the LSTM energy estimator for these systematics. 
+  HistAxis histaxisRecoEnu("Reconstructed Neutrino Energy (GeV)", kNumuCCEOptimisedBinning, nullptr);
+  // NOTE: kNumuND2020 should be a fine cut for now. The binning may also be changed too...
 
 // for consistency in LoadNDTopologicalPreds and its file structure
   for (unsigned int quantileIdx = 0; quantileIdx < cutQuantiles.size(); quantileIdx++) {
     predGens.try_emplace(Form("pred_interp_Q%d", quantileIdx+1),
-                         NoOscPredictionGenerator(loaders.GetLoader(caf::kNEARDET, Loaders::kMC), kNumuCCOptimisedAxis2020, kNumu2020ND && cutQuantiles[quantileIdx], kPPFXFluxCVWgt*kXSecCVWgt2020GSFwFSIProd51)); // kNumuE -- reco Enu
+                         NoOscPredictionGenerator(loaders.GetLoader(caf::kNEARDET, Loaders::kMC), histaxisRecoEnu, kNumu2020ND && cutQuantiles[quantileIdx], kPPFXFluxCVWgt*kXSecCVWgt2020GSFwFSIProd51)); // kNumuE -- reco Enu
   }
 
   // Create the FD "AllNumu" predinterp as well. It is Q5.
   // jeremy says this is typically quantile 4.... (and 1 is 0), but this is my way.
   predGens.try_emplace(Form("pred_interp_Q%d", (int) cutQuantiles.size()+1),
-                       NoOscPredictionGenerator(loaders.GetLoader(caf::kNEARDET, Loaders::kMC), kNumuCCOptimisedAxis2020, kNumu2020ND, kPPFXFluxCVWgt*kXSecCVWgt2020GSFwFSIProd51));
+                       NoOscPredictionGenerator(loaders.GetLoader(caf::kNEARDET, Loaders::kMC), histaxisRecoEnu, kNumu2020ND, kPPFXFluxCVWgt*kXSecCVWgt2020GSFwFSIProd51));
 
   for (const auto &predGen : predGens) {
     predInterps.try_emplace(predGen.first,
