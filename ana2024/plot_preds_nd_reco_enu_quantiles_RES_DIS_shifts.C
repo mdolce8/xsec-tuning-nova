@@ -6,6 +6,8 @@
  * of the "new" RES and DIS systematics,
  * in the inclusive and quantile distributions.
  *
+ * Large chunk taken from: plot_fd_systematic_shifts_from_numu_quantile_predictions.C
+ *
  *
  * Oct. 2023.
  * M. Dolce
@@ -131,24 +133,12 @@ void plot_preds_nd_reco_enu_quantiles_RES_DIS_shifts(const std::string& systStri
     std::cout << "Added to preds: " << hc << "_nd_pred_interp_" << predId.topology << std::endl;
   } // load preds from LoadFDNumuPreds()
 
-  // Systematics from the Predictions
-  auto systsPreds = dynamic_cast<const ana::PredictionInterp *>(preds[0].pred)->GetAllSysts();
-  std::sort(systsPreds.begin(),
-            systsPreds.end(),
-            [](const auto syst1, const auto syst2) {
-                return syst1->ShortName() < syst2->ShortName();
-            });
-  std::cout << "There are this many systematics in this vector: " << systsPreds.size() << std::endl;
-
-
-// NOTE: the only difference between systematics is: Light_Level_FD.
-// -- the merged preds do, but the ND Fit samples do NOT.
-// dated March 24, 2023.
 
 
 
-  // Load the ND Reco Enu Quantile data to get the POT.
-  std::cout << "Loading the ND Reco Enu Quantile data for the POT...." << std::endl;
+
+  // Load the ND Reco Enu Quantile data to get the pot.
+  std::cout << "Loading the ND Reco Enu Quantile data for the pot...." << std::endl;
   std::map<std::string, ana::Spectrum> dataSpectra;
   const std::string& dataPath = "/nova/ana/users/mdolce/mcmc/data/nd_reco_enu_quantiles/";
   for (std::string beam : {"fhc","rhc"}){
@@ -167,145 +157,188 @@ void plot_preds_nd_reco_enu_quantiles_RES_DIS_shifts(const std::string& systStri
   std::map<std::string, TH1*> mapHistsRepSample_NoMuEScaleSyst;
   std::map<std::string, TH1*> mapHistsNominal;
 
+  TCanvas c("c","c", 600,650); // this will be a square plot...
+  c.cd();
+  c.Clear();
+
   // Loop through the ND Numu Quantile predictions
-  // and apply the Rep. Sample pulls from the ND Topological Fit.
-  // and then save to a ROOT file.
-  TFile ofile(Form("%s/NDFit_RepSamplePulls_AppliedNDRecoENuQuantilePreds.root", outDirROOT.c_str()), "recreate");
   for (const ana::FitPredictions &predBundle : preds){
     std::cout << "Looping through " << predBundle.name << std::endl;
 
     auto hc = ndfit::visuals::GetHornCurrent(predBundle.name);
-    const double pot = dataSpectra.at(predBundle.name).POT();
-    std::cout << "horn: " << hc  << ", data POT: " << pot << std::endl;
+    const double POT = dataSpectra.at(predBundle.name).POT();
+    std::cout << "horn: " << hc  << ", data pot: " << pot << std::endl;
+    std::cout << "MC pot is from predBundle.pot = " << predBundle.pot << std::endl;
 
-    // NOTE: these histograms NOT normalized!!!
-    TH1 * hQuantileRepSample = predBundle.pred->PredictSyst(static_cast<osc::IOscCalc*>(nullptr), *shiftsRepSample).ToTH1(pot, EExposureType::kPOT, kBinContent);
-    TH1 * hQuantileRepSample_noCorrMuEScaleSyst = predBundle.pred->PredictSyst(static_cast<osc::IOscCalc*>(nullptr), *shiftsRepSample_NoCorrMuEScaleSyst).ToTH1(pot, EExposureType::kPOT, kBinContent);
-    TH1 * hNom = predBundle.pred->Predict(static_cast<osc::IOscCalc*>(nullptr)).ToTH1(pot, EExposureType::kPOT, kBinContent);
+    // Systematics from the Prediction
+    auto systs = dynamic_cast<const ana::PredictionInterp *>(preds[0].pred)->GetAllSysts();
+    std::sort(systs.begin(),
+              systs.end(),
+              [](const auto syst1, const auto syst2) {
+                  return syst1->ShortName() < syst2->ShortName();
+              });
 
-    mapHistsRepSample.try_emplace(predBundle.name, hQuantileRepSample);
-    mapHistsRepSample_NoMuEScaleSyst.try_emplace(predBundle.name, hQuantileRepSample_noCorrMuEScaleSyst);
-    mapHistsNominal.try_emplace(predBundle.name, hNom);
 
-    hQuantileRepSample->Write(Form("%s_RepSample", predBundle.name.c_str()));
-    hQuantileRepSample_noCorrMuEScaleSyst->Write(Form("%s_RepSample_NoCorrMuEScaleSyst", predBundle.name.c_str()));
+    TH1 * hnom = predBundle.pred->PredictSyst(calc2020BF.get(), SystShifts::Nominal()).ToTH1(POT);
+
+
+
+
+    std::string predBundleName = predBundle.name;
+    std::vector<std::string> result;
+    boost::split(result, predBundleName, boost::is_any_of("_"));
+    const ndfit::Quantiles topologyEnum = ndfit::visuals::GetQuantileEnum(predBundleName);
+    const std::string& topologyName = ndfit::visuals::GetQuantileString(topologyEnum);
+    const std::string beamType = ndfit::visuals::GetHornCurrent(predBundle.name);
+
+
+    /// this is crucial to getting the systs and shifting them
+    auto pred = dynamic_cast<const ana::PredictionInterp *>(predBundle.pred);
+
+    /// for recording the up and down error bands for all systs (in Ev)
+    std::vector<TH1*> histsUp1, histsDn1;
+
+    int systsCount = 0;
+    std::cout << "Now looping over systematics......" << systs.size() << std::endl;
+    for (const ISyst* syst : systs) {
+
+      /// Save the information for the 1sigma shifts for error bands
+      SystShifts pm1SigmaShift;
+      // -------------------
+
+      /// Create the hists
+      SystShifts shifts;
+      shifts.SetShift(syst, +1.0);
+      TH1 * up1 = pred->PredictSyst(calc2020BF.get(), shifts).ToTH1(POT);
+      up1->SetLineColor(kBlue+1);
+      histsUp1.push_back(up1);
+
+      shifts.SetShift(syst, +2);
+      TH1 * up2 = pred->PredictSyst(calc2020BF.get(), shifts).ToTH1(POT);
+      up2->SetLineColor(kBlue); up2->SetLineStyle(kDashed);
+
+      shifts.SetShift(syst, +3);
+      TH1 * up3 = pred->PredictSyst(calc2020BF.get(), shifts).ToTH1(POT);
+      up3->SetLineColor(kBlue-4); up3->SetLineStyle(kDotted);
+
+
+      shifts.SetShift(syst, -1);
+      TH1 * down1 = pred->PredictSyst(calc2020BF.get(), shifts).ToTH1(POT);
+      down1->SetLineColor(kRed+1);
+      histsDn1.push_back(down1);
+
+      shifts.SetShift(syst, -2);
+      TH1 * down2 = pred->PredictSyst(calc2020BF.get(), shifts).ToTH1(POT);
+      down2->SetLineColor(kRed); down2->SetLineStyle(kDashed);
+
+      shifts.SetShift(syst, -3);
+      TH1 * down3 = pred->PredictSyst(calc2020BF.get(), shifts).ToTH1(POT);
+      down3->SetLineColor(kRed-4); down3->SetLineStyle(kDotted);
+      // -------------------
+
+
+
+      double maxContent= 1.6 * std::max(up3->GetMaximum(), down3->GetMaximum());
+      hnom->SetMaximum(maxContent);
+
+      double legx1, legx2, legy1, legy2;
+      legx1=.6;legx2=0.9; legy1=0.55; legy2=0.85;
+      auto *leg = new TLegend(legx1,legy1,legx2,legy2);
+      leg->SetFillStyle(0);
+      leg->SetLineColor(0);
+      leg->AddEntry(hnom, "NOvA N18_10j_00_000 tune","l");
+      leg->AddEntry(up3,"+3 #sigma shift","l");
+      leg->AddEntry(up2,"+2 #sigma shift","l");
+      leg->AddEntry(up1,"+1 #sigma shift","l");
+      leg->AddEntry(down1,"-1 #sigma shift","l");
+      leg->AddEntry(down2,"-2 #sigma shift","l");
+      leg->AddEntry(down3,"-3 #sigma shift","l");
+
+      TH1* ratio_up1 = (TH1*)up1->Clone("ratio_up1");       ratio_up1->Divide(hnom);
+      TH1* ratio_up2 = (TH1*)up2->Clone("ratio_up2");       ratio_up2->Divide(hnom);
+      TH1* ratio_up3 = (TH1*)up3->Clone("ratio_up3");       ratio_up3->Divide(hnom);
+      TH1* ratio_down1 = (TH1*)down1->Clone("ratio_down1"); ratio_down1->Divide(hnom);
+      TH1* ratio_down2 = (TH1*)down2->Clone("ratio_down2"); ratio_down2->Divide(hnom);
+      TH1* ratio_down3 = (TH1*)down3->Clone("ratio_down3"); ratio_down3->Divide(hnom);
+
+      ratio_up1->SetMinimum(0.5);
+      ratio_up1->SetMaximum(1.5);
+      ratio_up1->GetYaxis()->SetTitle("Shifted / CV");
+      ratio_up1->GetYaxis()->SetTitleFont(43);
+      ratio_up1->GetYaxis()->SetTitleOffset(1.4);
+      ratio_up1->GetYaxis()->SetLabelFont(43); // Absolute font size in pixel (precision 3)
+      ratio_up1->GetYaxis()->SetLabelSize(15);
+      ratio_up1->GetYaxis()->SetTitleSize(15);
+      ratio_up1->GetXaxis()->SetTitle("Reco. E_{#nu} (GeV)");
+      ratio_up1->GetXaxis()->CenterTitle();
+      ratio_up1->GetXaxis()->SetTitleFont(43);
+      ratio_up1->GetXaxis()->SetTitleOffset(3.4);
+      ratio_up1->GetXaxis()->SetNdivisions(510, "X");
+      ratio_up1->GetXaxis()->SetTitleOffset(3.5);
+      ratio_up1->GetXaxis()->SetLabelFont(43); // Absolute font size in pixel (precision 3)
+      ratio_up1->GetXaxis()->SetLabelSize(15);
+      ratio_up1->GetXaxis()->SetTitleSize(21);
+
+      TLatex latex;
+      latex.SetTextSize(0.04);
+      latex.SetTextAlign(13);  //align at top
+
+
+      // gPad->SetBottomMargin(0.15);
+      c.Draw();
+      // Upper plot will be in pad1
+      TPad *pad1 = new TPad("pad1", "pad1", 0, 0.3, 1, 1.0);
+      pad1->SetBottomMargin(0); // Upper and lower plot are joined
+      pad1->Draw();             // Draw the upper pad: pad1
+      c.cd();          // Go back to the main canvas before defining pad2
+      TPad *pad2 = new TPad("pad2", "pad2", 0, 0.05, 1, 0.3);
+      pad2->SetTopMargin(0);
+      pad2->SetBottomMargin(0.3);
+      pad2->Draw();
+      pad1->cd();
+
+      hnom->GetYaxis()->SetTitle("Events");
+      hnom->GetYaxis()->SetTitleOffset(.8);
+      hnom->GetYaxis()->CenterTitle();
+      hnom->Draw("hist");
+      up1->Draw("hist same");
+      up2->Draw("hist same");
+      up3->Draw("hist same");
+      down1->Draw("hist same");
+      down2->Draw("hist same");
+      down3->Draw("hist same");
+      c.Update();
+      leg->Draw();
+      latex.DrawLatexNDC(.15,.85,("#color[1]{"+ndfit::visuals::GetHornCurrent(predBundle.name)+"}").c_str());
+      latex.DrawLatexNDC(.15,.8,("#color[1]{"+topologyName+"}").c_str());
+      latex.DrawLatexNDC(.15,.75,("#color[1]{"+syst->LatexName()+"}").c_str());
+      ndfit::visuals::NeutrinoLabel(ndfit::NeutrinoType::kNumu);
+      Simulation();
+      ndfit::visuals::DetectorLabel(caf::kFARDET);
+      pad1->Update();
+      c.Update();
+      c.cd();
+      pad2->cd();
+      pad2->SetGridy();
+
+      ratio_up1->Draw("hist");
+      ratio_up2->Draw("hist same");
+      ratio_up3->Draw("hist same");
+      ratio_down1->Draw("hist same");
+      ratio_down2->Draw("hist same");
+      ratio_down3->Draw("hist same");
+
+      pad2->Update();
+      pad2->Update();
+      for (const auto &ext: {"pdf", "png"})
+        c.SaveAs(ndfit::FullFilename(outDirPlot, "plot_" + predBundleName + "_" + syst->ShortName() + "_reco_enu_shifts_ratio." + ext).c_str());
+      c.Clear();
+
+      systsCount++;
+    } // systs
+
 
   } // predBundle
-
-  // Crucially, save the Rep. Sample pulls to the ROOT file for easy access.
-  ana::SaveTo(static_cast<SystShifts>(*shiftsRepSample), &ofile, "NDFit_systRepSample");
-  ana::SaveTo(static_cast<SystShifts>(*shiftsRepSample_NoCorrMuEScaleSyst), &ofile, "NDFit_systRepSample_NoCorrMuEScaleSyst");
-  ofile.Close();
-  std::cout << "ROOT file created: " << ofile.GetName() << std::endl;
-
-
-
-
-
-
-
-
-  // Next is to create simple plots of the Nominal and Rep. Sample
-  // ND Reco Enu Quantile predictions...
-  auto * xAxisENu = new TGaxis(0.001, 0.5, 5.0, 0.501, 0., 5.0, 10, "");
-  xAxisENu->SetLabelOffset(-0.015);
-  xAxisENu->SetLabelFont(42);
-  for (const auto &pairHistRepSample : mapHistsRepSample){
-    TH1* hRepSample = pairHistRepSample.second;
-    TH1* hRepSample_noCorrMuEScaleSyst = mapHistsRepSample_NoMuEScaleSyst.at(pairHistRepSample.first);
-    TH1* hNominal = mapHistsNominal.at(pairHistRepSample.first);
-
-    // Normalize all the histograms here -- for drawing ONLY.
-    for (const auto &h : {hNominal, hRepSample, hRepSample_noCorrMuEScaleSyst}) histogram::NormalizeBinContent(h);
-
-    const std::string& predName = pairHistRepSample.first;
-    
-    const ndfit::Quantiles q = ndfit::visuals::GetQuantileEnum(predName);
-    const std::string quantileString = ndfit::visuals::GetQuantileString(q);
-    const std::string beamType = ndfit::visuals::GetHornCurrent(predName);
-
-    //pavetext to print out the events for each topology
-    TPaveText ptEnuEvents(0.7, 0.60, 0.85, 0.67, "ARC NDC");
-
-    TCanvas c("c", "c", 600, 600); // 900, 600
-    TPad *p1, *p2; //p1 upper, p2 lower
-
-    // Plot comparison and ratio on save canvas
-    SplitCanvas(0.25, p1, p2);
-
-    ndfit::visuals::PredPreDrawAesthetics(hRepSample, 1e-4, true);
-    ndfit::visuals::PredPreDrawAesthetics(hRepSample_noCorrMuEScaleSyst, 1e-4, true);
-    hRepSample_noCorrMuEScaleSyst->SetLineColor(kGreen - 2);
-    ndfit::visuals::PredPreDrawAesthetics(hNominal, 1e-4, false);
-
-    p1->cd();
-    hRepSample->Draw("same hist e");
-    hRepSample_noCorrMuEScaleSyst->Draw("same hist e");
-    hNominal->Draw("same hist e");
-
-    hRepSample->GetYaxis()->SetTitle("10^{4} Events / GeV");
-    hRepSample->GetYaxis()->SetTitleSize(0.036);
-    hRepSample->GetYaxis()->CenterTitle();
-    hRepSample->GetYaxis()->SetTitleOffset(1.1);
-    hRepSample->SetMaximum(hRepSample->GetMaximum() * 1.7);
-    hRepSample->GetXaxis()->SetLabelSize(0.0);
-    hRepSample->GetXaxis()->SetTitleSize(0.0);
-
-    TLegend leg(0.45, 0.7, 0.9, 0.9);
-    leg.SetFillColor(0);
-    leg.SetFillStyle(0);
-    const std::string strRepSample = "ND Fit MCMC 'Rep. Sample' pulls applied";
-    const std::string strNominal = "Prod5.1 Nominal Prediction";
-    leg.AddEntry(hNominal, Form("%s", strNominal.c_str()), "l");
-    leg.AddEntry(hRepSample, Form("%s", strRepSample.c_str()), "l");
-    leg.AddEntry(hRepSample_noCorrMuEScaleSyst, "Rep. Sample (kCorrMuEScaleSyst2020 = 0#sigma", "l");
-    leg.Draw("same");
-    TLatex latex;
-    latex.SetTextSize(0.04);
-    latex.SetTextAlign(13);
-    latex.DrawLatexNDC(.15, .85, (Form("%s", beamType.c_str())));
-    latex.DrawLatexNDC(.15, .8, Form("%s", quantileString.c_str()));
-    latex.Draw("same");
-    Simulation();
-    ndfit::visuals::DetectorLabel(caf::kNEARDET);
-
-
-    /// Enu-Reco ratio
-    p2->cd();
-    p2->SetGridy(1);
-    TH1 *hEnuUnity = (TH1F *) hRepSample->Clone("hEnuUnity");
-    hEnuUnity->Divide(hRepSample);
-
-    TH1 *hRatioRepByNom = (TH1F *) hRepSample->Clone("hRatioRepByNom");
-    hRatioRepByNom->Divide(hNominal);
-
-    TH1 *hRatioRepByNom_NoMuEScaleSyst = (TH1F *) hRepSample_noCorrMuEScaleSyst->Clone("hRatioRepByNom_NoMuEScaleSyst");
-    hRatioRepByNom_NoMuEScaleSyst->Divide(hNominal);
-
-    hEnuUnity->SetLineColor(kBlack);
-    hEnuUnity->SetLineWidth(1);
-    hEnuUnity->Draw("same hist");
-    hRatioRepByNom->Draw("same hist e");
-    hRatioRepByNom_NoMuEScaleSyst->Draw("same hist e");
-
-    hEnuUnity->GetXaxis()->CenterTitle();
-    hEnuUnity->GetXaxis()->SetTitleOffset(1.);
-    hEnuUnity->GetXaxis()->SetTitleSize(0.045);
-    hEnuUnity->SetXTitle("Reco. E_{#nu} (GeV)");
-    hEnuUnity->SetYTitle("#frac{Rep. Sample}{Nominal}");
-    hEnuUnity->GetYaxis()->CenterTitle();
-    hEnuUnity->GetYaxis()->SetRangeUser(0.5, 1.5);
-    hEnuUnity->GetYaxis()->SetTitleSize(0.02);
-    hEnuUnity->GetYaxis()->SetLabelSize(0.02);
-    hEnuUnity->GetYaxis()->SetTitleOffset(1.5);
-    hEnuUnity->GetYaxis()->CenterTitle();
-    xAxisENu->Draw("same");
-    
-    for (const auto &ext: {"pdf", "png"})
-      c.SaveAs(ndfit::FullFilename(outDirPlot, "plot_" + predName + "_RepSample_Nominal_CorrMuEScaleSyst_comparison_ratio." + ext).c_str());
-
-  } // TH1 pairs, plotting
-
 
 
 }
