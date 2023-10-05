@@ -4,8 +4,10 @@
  *	Generate ND Reco. Ev quantiles predictions.
  *	These predictions will be used to produce some
  *	validation plots for the NOvA 2024 analysis.
- *	Specifically, the "new" RES/DIS systs and
- *	MEC systs (shape and Double Gaussian).
+ *	Specifically:
+ *	  -- the "new" RES/DIS systs and
+ *	  -- MEC systs
+ *	    (shape and Double Gaussian).
  *
  *  Saves each Quantile prediction into its own ROOT file.
  *
@@ -17,11 +19,9 @@
 
 #include "3FlavorAna/Cuts/NumuCuts2020.h"
 #include "3FlavorAna/Cuts/QuantileCuts2020.h"
-#include "3FlavorAna/Systs/DummyRockScaleSyst.h"
 #include "3FlavorAna/Systs/EnergySysts2020.h"
 #include "3FlavorAna/Systs/3FlavorAna2020Systs.h"
 #include "3FlavorAna/Systs/3FlavorSystHelper.h"
-#include "3FlavorAna/Systs/GeniePCASyst.h"
 #include "3FlavorAna/Vars/Binnings.h"
 #include "3FlavorAna/Vars/HistAxes.h"
 
@@ -33,11 +33,7 @@
 #include "CAFAna/Cuts/SpillCuts.h"
 #include "CAFAna/Cuts/TruthCuts.h"
 #include "CAFAna/Prediction/PredictionNoOsc.h"
-#include "CAFAna/Systs/DISSysts.h"
-#include "CAFAna/Systs/FSISysts.h"
 #include "CAFAna/Systs/RESSysts.h"
-#include "CAFAna/Systs/RPASysts.h"
-#include "CAFAna/Systs/Systs.h"
 #include "CAFAna/Weights/PPFXWeights.h"
 
 #include "OscLib/OscCalcPMNSOpt.h"
@@ -59,88 +55,43 @@ namespace save
 }
 
 namespace ndfit {
-    std::vector<const ana::ISyst *> GetNDProd51MCMCDolceSysts() {
+    // systString takes either: "resdis", "mecdg", or "mecshape", or "all"
+    std::vector<const ana::ISyst *> GetSystematics(const std::string& systString, const bool reducedDG = false) {
       std::vector<const ana::ISyst *> systs_ptrs;
+      std::cout << "'systString' is == " << systString << std::endl;
 
-      auto mecTuneReduced = ana::getMECtuneSystsCorrected_GSFProd5p1();
-      for (
-        auto &syst: mecTuneReduced) {
-        for (
-                unsigned int i = 0; i < mecTuneReduced.size(); i++) {
-          if (mecTuneReduced[i]->ShortName() == "MECDoubleGaussEnhSystNorm_2_GSFProd5p1")
-            mecTuneReduced.erase(mecTuneReduced.begin() + i); //rm this element
-        }
-        for (
-                unsigned int i = 0; i < mecTuneReduced.size(); i++) {
-          if (mecTuneReduced[i]->ShortName() == "MECDoubleGaussEnhSystMeanQ0_2_GSFProd5p1")
-            mecTuneReduced.erase(mecTuneReduced.begin() + i);
-        }
-        for (
-                unsigned int i = 0; i < mecTuneReduced.size(); i++) {
-          if (mecTuneReduced[i]->ShortName() == "MECDoubleGaussEnhSystCorr_2_GSFProd5p1")
-            mecTuneReduced.erase(mecTuneReduced.begin() + i); //rm this element
-        }
-      }
-      for (auto &syst: mecTuneReduced) systs_ptrs.push_back(syst);
+      if (systString == "mecdg"){
+        auto mecDGSysts = ana::getMECtuneSystsCorrected_GSFProd5p1();
+
+        if (reducedDG) {
+          std::cout << "Removing the MEC DG systs that were omitted from the ND fitting..." << std::endl;
+          for (auto &syst: mecDGSysts) {
+            for (unsigned int i = 0; i < mecDGSysts.size(); i++) {
+              if (mecDGSysts[i]->ShortName() == "MECDoubleGaussEnhSystNorm_2_GSFProd5p1")
+                mecDGSysts.erase(mecDGSysts.begin() + i); //rm this element
+            }
+            for (unsigned int i = 0; i < mecDGSysts.size(); i++) {
+              if (mecDGSysts[i]->ShortName() == "MECDoubleGaussEnhSystMeanQ0_2_GSFProd5p1")
+                mecDGSysts.erase(mecDGSysts.begin() + i);
+            }
+            for (unsigned int i = 0; i < mecDGSysts.size(); i++) {
+              if (mecDGSysts[i]->ShortName() == "MECDoubleGaussEnhSystCorr_2_GSFProd5p1")
+                mecDGSysts.erase(mecDGSysts.begin() + i); //rm this element
+            }
+          } // Double Gaussian systs
+        } // reduced DG
+
+        for (auto &syst: mecDGSysts) systs_ptrs.push_back(syst);
+      } // systString == mecdg
 
       // the MEC Enu Shape, and MEC NP frac (for nu and nubar)
-      for (auto &syst: ana::MECsysts()) systs_ptrs.push_back(syst);
-
-      // QE
-      systs_ptrs.push_back(ana::GetGenieKnobSyst(rwgt::fReweightZNormCCQE));
-      systs_ptrs.push_back(&ana::kZExpEV1Syst2020);
-      systs_ptrs.push_back(&ana::kZExpEV2Syst2020);
-      systs_ptrs.push_back(&ana::kZExpEV3Syst2020);
-      systs_ptrs.push_back(&ana::kRPACCQEEnhSyst2020);
-      systs_ptrs.push_back(&ana::kRPACCQESuppSyst2020);
-
-      // RES
-      systs_ptrs.push_back(&ana::kRESLowQ2SuppressionSyst2020);
-      systs_ptrs.push_back(ana::GetGenieKnobSyst(rwgt::fReweightMaCCRES));
-      systs_ptrs.push_back(ana::GetGenieKnobSyst(rwgt::fReweightMvCCRES));
-      systs_ptrs.push_back(ana::GetGenieKnobSyst(rwgt::fReweightTheta_Delta2Npi));
+      else if (systString == "mecshape") for (auto &syst: ana::MECsysts()) systs_ptrs.push_back(syst);
 
 
-      // DIS
-      systs_ptrs.push_back(&ana::kFormZone_2020);
-      systs_ptrs.push_back(&ana::kDISvbarnCC3pi_2020);
-      systs_ptrs.push_back(&ana::kDISvbarpCC1pi_2020);
-      systs_ptrs.push_back(&ana::kDISvbarpCC3pi_2020);
-      systs_ptrs.push_back(&ana::kDISvnCC1pi_2020);
-      systs_ptrs.push_back(&ana::kDISvnCC2pi_2020);
-      systs_ptrs.push_back(&ana::kDISvnCC3pi_2020);
-      systs_ptrs.push_back(&ana::kDISvpCC0pi_2020);
-      systs_ptrs.push_back(&ana::kDISvpCC2pi_2020);
-      systs_ptrs.push_back(&ana::kDISvpCC3pi_2020);
+      // RES/FSI custom systs (ResScale{Delta,Other}, DISHadro{nu,nubar}, RESvpvn{nu,nubar}ratio)
+      else if (systString == "resdis") for (auto &syst: ana::NewRESDISSysts()) systs_ptrs.push_back(syst);
 
-
-
-      // RES/FSI custom systs (ResScale{Delta,Other}, DISHadro{nu,nubar}, RESvpvn{nu,nubar}ratio
-      for (auto &syst: ana::NewRESDISSysts()) systs_ptrs.push_back(syst);
-
-      // ND + FD PCA Flux 2023 systs
-      for (int i = 0; i <= 4; ++i) systs_ptrs.push_back(ana::GetFluxPrincipalsNDFD2023(i));
-
-
-      //  neutronVisEPrimaries2018.
-      for (auto &syst: ana::getNeutronSyst_2020()) systs_ptrs.push_back(syst);
-
-      // FSI
-      systs_ptrs.push_back(&ana::khNFSISyst2020_EV1);
-      systs_ptrs.push_back(&ana::khNFSISyst2020_MFP);
-
-      // radiative corrections, for nue.
-      systs_ptrs.push_back(&ana::kRadCorrNue);
-      systs_ptrs.push_back(&ana::kRadCorrNuebar);
-      systs_ptrs.push_back(&ana::k2ndClassCurrs);
-
-      // correlated Muon energy scale syst
-      systs_ptrs.push_back(&ana::kCorrMuEScaleSyst2020);
-
-//      systs_ptrs.push_back(&ana::kAnaCalibShapeSyst);
-//      systs_ptrs.push_back(&ana::kAnaCalibrationSyst);
-//      systs_ptrs.push_back(&ana::kAnaCherenkovSyst);
-//      systs_ptrs.push_back(&ana::kAnaLightlevelNDSyst);
+      else {std::cerr << "ERROR. Unknown 'systString' = " << systString << std::endl; exit(1);}
 
       return systs_ptrs;
     }
@@ -156,9 +107,10 @@ using namespace ana;
 
 // =====================================================================================================
 void generate_nd_reco_enu_quantiles_predictions(const std::string& beam = "fhc", // or "rhc"
-                                               const std::string& outDir="", 				// local --> $ana/preds+spectra/<outDir> , grid --> mkdir outDir, fill arg with "none"
-                                               const bool gridSubmission=false, 			// outdir for grid is "."
-                                               const bool fillSysts = true            // generate preds w/o systs
+                                                const std::string& systString="",
+                                                const std::string& outDir="", 				// local --> $ana/preds+spectra/<outDir> , grid --> mkdir outDir, fill arg with "none"
+                                                const bool gridSubmission=false, 			// outdir for grid is "."
+                                                const bool fillSysts = true            // generate preds w/o systs
 )
 // =====================================================================================================
 {
@@ -175,7 +127,7 @@ void generate_nd_reco_enu_quantiles_predictions(const std::string& beam = "fhc",
     std::cout << "Filling preds with systs..." << std::endl;
 
     // these are the reweightable systematics only! (no detector systs)
-    systs_ptrs = ndfit::GetNDProd51MCMCDolceSysts();
+    systs_ptrs = ndfit::GetSystematics(systString);
 
     std::cout << "******* We are filling predictions for  " << systs_ptrs.size() << " systematic parameters *******" << std::endl;
     for (auto &syst: systs_ptrs) std::cout << syst->ShortName() << std::endl;
@@ -191,12 +143,12 @@ void generate_nd_reco_enu_quantiles_predictions(const std::string& beam = "fhc",
 // 		Definitions:
   // only use nonswap for ND
   std::string defNonSwap;
-  if (beam == "fhc") {
+  if (beamType == ana::BeamType2020::kFHC) {
     std::cout << "Using FHC definitions...." << std::endl;
     defNonSwap = "prod_sumdecaf_R20-11-25-prod5.1reco.a_nd_genie_N1810j0211a_nonswap_fhc_nova_v08_full_v1_numu2020";
 
   }
-  if (beam == "rhc") {
+  if (beamType == ana::BeamType2020::kRHC) {
     std::cout << "Using RHC Definitions...." << std::endl;
     defNonSwap = "prod_sumdecaf_development_nd_genie_N1810j0211a_nonswap_rhc_nova_v08_full_v1_numu2020prod5.1";
   }
@@ -213,7 +165,8 @@ void generate_nd_reco_enu_quantiles_predictions(const std::string& beam = "fhc",
 
   // Cuts.
   // quantiles (different for FHC or RHC).
-  std::vector<Cut> cutQuantiles = GetNumuEhadFracQuantCuts2020(!(beam == "fhc"));
+  // NOTE: this Ana2024 Cut is in QuantileCuts2020.{cxx,h}. No wonder no one can find anything...
+  std::vector<Cut> cutQuantiles = GetNumuEhadFracQuantCuts2024(!(beam == "fhc"));
 
 
   // calc values don't really matter for a ND prediction that has no oscillations in it...
@@ -226,16 +179,20 @@ void generate_nd_reco_enu_quantiles_predictions(const std::string& beam = "fhc",
   std::map<std::string, NoOscPredictionGenerator> predGens;
   std::map<std::string, const PredictionInterp*> predInterps;
 
+
+  // TODO: I think the kNumuCCOptimisedAxis2020 is sufficient for this Ana2024...
+  // TODO: and same for kNumuND2020
+
 // for consistency in LoadNDTopologicalPreds and its file structure
   for (unsigned int quantileIdx = 0; quantileIdx < cutQuantiles.size(); quantileIdx++) {
     predGens.try_emplace(Form("pred_interp_Q%d", quantileIdx+1),
-                         NoOscPredictionGenerator(loaders.GetLoader(caf::kNEARDET, Loaders::kMC), kNumuCCOptimisedAxis2020, kNumu2020ND && cutQuantiles[quantileIdx], kPPFXFluxCVWgt*kXSecCVWgt2020GSFProd51)); // kNumuE -- reco Enu
+                         NoOscPredictionGenerator(loaders.GetLoader(caf::kNEARDET, Loaders::kMC), kNumuCCOptimisedAxis2020, kNumu2020ND && cutQuantiles[quantileIdx], kPPFXFluxCVWgt*kXSecCVWgt2020GSFwFSIProd51)); // kNumuE -- reco Enu
   }
 
   // Create the FD "AllNumu" predinterp as well. It is Q5.
   // jeremy says this is typically quantile 4.... (and 1 is 0), but this is my way.
   predGens.try_emplace(Form("pred_interp_Q%d", (int) cutQuantiles.size()+1),
-                       NoOscPredictionGenerator(loaders.GetLoader(caf::kNEARDET, Loaders::kMC), kNumuCCOptimisedAxis2020, kNumu2020ND, kPPFXFluxCVWgt*kXSecCVWgt2020GSFProd51));
+                       NoOscPredictionGenerator(loaders.GetLoader(caf::kNEARDET, Loaders::kMC), kNumuCCOptimisedAxis2020, kNumu2020ND, kPPFXFluxCVWgt*kXSecCVWgt2020GSFwFSIProd51));
 
   for (const auto &predGen : predGens) {
     predInterps.try_emplace(predGen.first,
@@ -258,10 +215,10 @@ void generate_nd_reco_enu_quantiles_predictions(const std::string& beam = "fhc",
 
   // save the PredInterps to each Quantile ROOT file
   int quantileCount = 1;
-  for (const auto &predPair : predInterps){
+  for (const std::pair<std::string, const PredictionInterp*> predPair : predInterps){
 
     // create ROOT file.
-    std::string fileName = Form("pred_interp_nxp_nd_%s_numu_Q%i.root",  beam.c_str(), quantileCount);
+    std::string fileName = Form("pred_interp_nxp_%s_nd_%s_numu_Q%i.root",  systString.c_str(), beam.c_str(), quantileCount);
     const std::string& finalOutDir = out_dir + "/" + fileName;
     TFile ofile(Form("%s", finalOutDir.c_str()), "recreate");
 
