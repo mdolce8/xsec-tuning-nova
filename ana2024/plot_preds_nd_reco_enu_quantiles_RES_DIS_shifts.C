@@ -1,4 +1,4 @@
-/* .C
+/* plot_preds_nd_reco_enu_quantiles_RES_DIS_shifts.C
  *
  * preparation for Ana2024.
  *
@@ -11,6 +11,7 @@
  * M. Dolce
 */
 
+#include <iostream>
 
 #include "3FlavorAna/MCMC/MCMC3FShared.h"
 #include "3FlavorAna/NDFit/LoadTopoPreds.h"
@@ -70,7 +71,9 @@ namespace files
     const std::unordered_map<std::string, std::string> FILE_PATTERNS
             {
                     // Prod5.1 ND Reco Enu Quantile Cut pred Files
-                    {"nd-quantiles", "pred_interp_nxp_nd_%s_numu_%s.root"}
+                    {"resdis", "pred_interp_nxp_%s_nd_%s_numu_%s.root"},
+                    {"mecdg", "pred_interp_nxp_%s_nd_%s_numu_%s.root"},
+                    {"mecshape", "pred_interp_nxp_%s_nd_%s_numu_%s.root"}
             };
 }
 
@@ -88,40 +91,26 @@ namespace histogram
 using namespace ana;
 
 // =====================================================================================================
-void apply_ndfit_rep_sample_to_nd_reco_enu_quantile_predictions()
+void plot_preds_nd_reco_enu_quantiles_RES_DIS_shifts(const std::string& systString)          // "resdis", "mecdg", "mecshape"
 // =====================================================================================================
 {
 
   const std::string& outDirROOT = "/nova/ana/users/mdolce/mcmc/residual-difference-fit";
-  const std::string& outDirPlot = "/nova/ana/users/mdolce/mcmc/plot/residual-difference-fit/apply_ndfit_rep_sample_to_nd_reco_enu_quantile_predictions/";
+  const std::string& outDirPlot = "/nova/ana/users/mdolce/xsec-tuning-nova/plots/ana2024/plot_preds_nd_reco_enu_quantiles_RES_DIS_shifts";
 
   //load all systs that exist in the preds ROOT file
-  getNDXsecSysts();
-  getNeutronSyst_2020();
-  getMECtuneSysts();
-  NDFDpca();
-  DetectorSystsProd5p1(caf::kFARDET);
-  getLightSystsND_2020();
-  getMECtuneSystsCorrected_GSFProd5p1();
   NewRESDISSysts();
 
   auto calc2020BF = std::make_unique<osc::OscCalcAnalytic>();
   ndfit::Calculator2020BestFit(*calc2020BF);
 
 
-  // Systematics from the MCMC Samples
-  std::vector<const ana::ISyst*> systsSamples = shiftsRepSample->ActiveSysts();
-  std::sort(systsSamples.begin(),
-            systsSamples.end(),
-            [](const auto syst1, const auto syst2) {
-                return syst1->ShortName() < syst2->ShortName();
-            });
 
 
 
 
   // Load the ND Reco Enu Quantile predictions.
-  const std::string& inputDir = "/nova/ana/users/mdolce/preds+spectra/Merged/";
+  const std::string& inputDir = "/nova/ana/users/mdolce/preds+spectra/ana2024/generate_nd_reco_enu_quantiles_predictions_ana2024/";
   // code from LoadFDNumuPreds(), but adapted to read in any input directory.
   auto it_topo = files::ND_QUANTILE_PREDS.find("nd-quantiles");
   std::vector<ana::FitPredictions> preds;
@@ -131,12 +120,12 @@ void apply_ndfit_rep_sample_to_nd_reco_enu_quantile_predictions()
 
     std::string hc = predId.horn == ana::Loaders::kFHC ? "fhc" : "rhc";
     sampleFilenamePairs.emplace_back(hc + "_nd",
-                                     inputDir + "/" + Form(files::FILE_PATTERNS.at("nd-quantiles").c_str(),
+                                     inputDir + "/" + Form(files::FILE_PATTERNS.at(systString).c_str(),
                                                            hc.c_str(),
                                                            predId.topology.c_str()));
     predObjNames.emplace_back("pred_interp_" + predId.topology);
 
-    std::cout << "File location: " << inputDir + "/" + Form("%s", Form(files::FILE_PATTERNS.at("nd-quantiles").c_str(), hc.c_str(), predId.topology.c_str())) << std::endl;
+    std::cout << "File location: " << inputDir + "/" + Form("%s", Form(files::FILE_PATTERNS.at(systString).c_str(), hc.c_str(), predId.topology.c_str())) << std::endl;
     auto pred = ndfit::LoadPreds(sampleFilenamePairs, predObjNames, caf::kNEARDET);
     preds.emplace_back(std::move(pred[0]));
     std::cout << "Added to preds: " << hc << "_nd_pred_interp_" << predId.topology << std::endl;
@@ -149,6 +138,7 @@ void apply_ndfit_rep_sample_to_nd_reco_enu_quantile_predictions()
             [](const auto syst1, const auto syst2) {
                 return syst1->ShortName() < syst2->ShortName();
             });
+  std::cout << "There are this many systematics in this vector: " << systsPreds.size() << std::endl;
 
 
 // NOTE: the only difference between systematics is: Light_Level_FD.
