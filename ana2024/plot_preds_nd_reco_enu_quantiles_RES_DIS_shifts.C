@@ -130,7 +130,7 @@ void plot_preds_nd_reco_enu_quantiles_RES_DIS_shifts(const std::string& systStri
                                                            predId.topology.c_str()));
     predObjNames.emplace_back("pred_interp_" + predId.topology);
 
-    std::cout << "File location: " << inputDir + "/" + Form("%s", Form(files::FILE_PATTERNS.at(systString).c_str(), hc.c_str(), predId.topology.c_str())) << std::endl;
+    std::cout << "File location: " << inputDir + "/" + Form("%s", Form(files::FILE_PATTERNS.at(systString).c_str(), systString.c_str(), hc.c_str(), predId.topology.c_str())) << std::endl;
     auto pred = ndfit::LoadPreds(sampleFilenamePairs, predObjNames, caf::kNEARDET);
     preds.emplace_back(std::move(pred[0]));
     std::cout << "Added to preds: " << hc << "_nd_pred_interp_" << predId.topology << std::endl;
