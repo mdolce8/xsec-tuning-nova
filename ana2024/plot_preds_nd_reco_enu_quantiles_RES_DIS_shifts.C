@@ -125,6 +125,7 @@ void plot_preds_nd_reco_enu_quantiles_RES_DIS_shifts(const std::string& systStri
     std::string hc = predId.horn == ana::Loaders::kFHC ? "fhc" : "rhc";
     sampleFilenamePairs.emplace_back(hc + "_nd",
                                      inputDir + "/" + Form(files::FILE_PATTERNS.at(systString).c_str(),
+                                                           systString.c_str(),
                                                            hc.c_str(),
                                                            predId.topology.c_str()));
     predObjNames.emplace_back("pred_interp_" + predId.topology);
