@@ -167,7 +167,7 @@ void plot_preds_nd_reco_enu_quantiles_RES_DIS_shifts(const std::string& systStri
 
     auto hc = ndfit::visuals::GetHornCurrent(predBundle.name);
     const double POT = dataSpectra.at(predBundle.name).POT();
-    std::cout << "horn: " << hc  << ", data pot: " << pot << std::endl;
+    std::cout << "horn: " << hc  << ", data pot: " << POT << std::endl;
     std::cout << "MC pot is from predBundle.pot = " << predBundle.pot << std::endl;
 
     // Systematics from the Prediction
@@ -180,6 +180,9 @@ void plot_preds_nd_reco_enu_quantiles_RES_DIS_shifts(const std::string& systStri
 
 
     TH1 * hnom = predBundle.pred->PredictSyst(calc2020BF.get(), SystShifts::Nominal()).ToTH1(POT);
+
+    TH1* hData = dataSpectra.at(predBundle.name).ToTH1(POT);
+
 
 
 
@@ -333,6 +336,47 @@ void plot_preds_nd_reco_enu_quantiles_RES_DIS_shifts(const std::string& systStri
       for (const auto &ext: {"pdf", "png"})
         c.SaveAs(ndfit::FullFilename(outDirPlot, "plot_" + predBundleName + "_" + syst->ShortName() + "_reco_enu_shifts_ratio." + ext).c_str());
       c.Clear();
+
+
+
+      /// Draw with error bands
+      // --------------------
+      c.cd();
+      pad1->cd();
+
+      TPaveText ptTopology(0.7, 0.68, 0.85, 0.75, "ARC NDC");
+      ptTopology.SetFillStyle(0);
+      ptTopology.SetFillColor(0);
+      ptTopology.SetBorderSize(0);
+      ptTopology.AddText(beamType.c_str());
+      ptTopology.AddText(topologyName.c_str());
+
+      ndfit::visuals::PredPreDrawAesthetics(hnom, 1e-5, false);
+      ndfit::visuals::DataPreDrawAesthetics(hData, 1e-5);
+      for (TH1* h : histsUp1) h->Scale(1e-5);
+      for (TH1* h : histsDn1) h->Scale(1e-5);
+
+      auto plotErrorBand = PlotWithSystErrorBand(hnom, histsUp1, histsDn1, kGray, kGray + 2);
+      hData->Draw("same hist p");
+
+      TLegend leg2(0.6, 0.75, 0.9, 0.9);
+      leg2.SetFillColor(0);
+      leg2.SetFillStyle(0);
+      const std::string systLegName = "CV Prediction & 1#sigma: " + syst->ShortName();
+      leg2.AddEntry(hnom, Form("%s", systLegName.c_str()), "l");
+      leg2.AddEntry(hData, "Prod5.1 Data", "p");
+
+      leg2.Draw("same");
+      ptTopology.Draw("same");
+      Preliminary();
+
+      // ratio
+      pad2->cd();
+      pad2->SetGridy(1);
+      TH1 * hUnity = (TH1F*) hnom->Clone("hUnity");
+      hUnity->Divide(hnom);
+
+
 
       systsCount++;
     } // systs
