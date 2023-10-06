@@ -188,8 +188,9 @@ void generate_nd_reco_enu_quantiles_predictions(const std::string& beam = "fhc",
   std::map<std::string, const PredictionInterp*> predInterps;
 
 
-  // NOTE: we need the LSTM energy estimator for these systematics. 
-  HistAxis histaxisRecoEnu("Reconstructed Neutrino Energy (GeV)", kNumuCCEOptimisedBinning, nullptr);
+  // NOTE: we need the LSTM energy estimator for these systematics.
+  const Var lstmNuMuE = SIMPLEVAR(energy.numu.lstmnu);
+  HistAxis histaxisRecoEnu("Reconstructed Neutrino Energy (GeV)", kNumuCCEOptimisedBinning, lstmNuMuE);
   // NOTE: kNumuND2020 should be a fine cut for now. The binning may also be changed too...
 
 // for consistency in LoadNDTopologicalPreds and its file structure
