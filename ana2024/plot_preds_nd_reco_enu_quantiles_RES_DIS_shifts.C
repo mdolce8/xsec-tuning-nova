@@ -338,8 +338,7 @@ void plot_preds_nd_reco_enu_quantiles_RES_DIS_shifts(const std::string& systStri
         c.SaveAs(ndfit::FullFilename(outDirPlot, "plot_" + predBundleName + "_" + syst->ShortName() + "_reco_enu_shifts_ratio." + ext).c_str());
       c.Clear();
 
-      delete pad1;
-      delete pad2;
+
 
 
       /// Draw with error bands
