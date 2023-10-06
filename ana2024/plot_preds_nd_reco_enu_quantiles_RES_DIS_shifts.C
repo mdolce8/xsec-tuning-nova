@@ -338,12 +338,16 @@ void plot_preds_nd_reco_enu_quantiles_RES_DIS_shifts(const std::string& systStri
         c.SaveAs(ndfit::FullFilename(outDirPlot, "plot_" + predBundleName + "_" + syst->ShortName() + "_reco_enu_shifts_ratio." + ext).c_str());
       c.Clear();
 
+      delete pad1;
+      delete pad2;
 
 
       /// Draw with error bands
       // --------------------
       c.cd();
-      pad1->cd();
+      TPad *pad3 = new TPad("pad3", "pad3", 0, 0.3, 1, 1.0);
+      TPad *pad4 = new TPad("pad4", "pad4", 0, 0.05, 1, 0.3);
+      pad3->cd();
 
       TPaveText ptTopology(0.7, 0.68, 0.85, 0.75, "ARC NDC");
       ptTopology.SetFillStyle(0);
@@ -377,8 +381,8 @@ void plot_preds_nd_reco_enu_quantiles_RES_DIS_shifts(const std::string& systStri
       Preliminary();
 
       // ratio
-      pad2->cd();
-      pad2->SetGridy(1);
+      pad4->cd();
+      pad4->SetGridy(1);
       TH1 * hUnity = (TH1F*) hnom->Clone("hUnity");
       hUnity->Divide(hnom);
       TH1 * hDataRatio = (TH1F*) hData->Clone("hDataRatio");
