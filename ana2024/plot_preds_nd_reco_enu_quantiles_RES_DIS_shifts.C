@@ -40,6 +40,9 @@
 #include "TPad.h"
 #include "TPaveText.h"
 
+#include "boost/algorithm/string.hpp"
+
+
 
 
 namespace files
@@ -97,7 +100,6 @@ void plot_preds_nd_reco_enu_quantiles_RES_DIS_shifts(const std::string& systStri
 // =====================================================================================================
 {
 
-  const std::string& outDirROOT = "/nova/ana/users/mdolce/mcmc/residual-difference-fit";
   const std::string& outDirPlot = "/nova/ana/users/mdolce/xsec-tuning-nova/plots/ana2024/plot_preds_nd_reco_enu_quantiles_RES_DIS_shifts";
 
   //load all systs that exist in the preds ROOT file
@@ -153,9 +155,6 @@ void plot_preds_nd_reco_enu_quantiles_RES_DIS_shifts(const std::string& systStri
   } // beam
 
 
-  std::map<std::string, TH1*> mapHistsRepSample;
-  std::map<std::string, TH1*> mapHistsRepSample_NoMuEScaleSyst;
-  std::map<std::string, TH1*> mapHistsNominal;
 
   TCanvas c("c","c", 600,650); // this will be a square plot...
   c.cd();
@@ -179,9 +178,10 @@ void plot_preds_nd_reco_enu_quantiles_RES_DIS_shifts(const std::string& systStri
               });
 
 
-    TH1 * hnom = predBundle.pred->PredictSyst(calc2020BF.get(), SystShifts::Nominal()).ToTH1(POT);
+    // We are bin-wdith normalizing these plots!!
+    TH1 * hnom = predBundle.pred->PredictSyst(calc2020BF.get(), SystShifts::Nominal()).ToTH1(POT, EExposureType::kPOT, EBinType::kBinDensity);
 
-    TH1* hData = dataSpectra.at(predBundle.name).ToTH1(POT);
+    TH1 * hData = dataSpectra.at(predBundle.name).ToTH1(POT, EExposureType::kPOT, EBinType::kBinDensity);
 
 
 
@@ -212,30 +212,30 @@ void plot_preds_nd_reco_enu_quantiles_RES_DIS_shifts(const std::string& systStri
       /// Create the hists
       SystShifts shifts;
       shifts.SetShift(syst, +1.0);
-      TH1 * up1 = pred->PredictSyst(calc2020BF.get(), shifts).ToTH1(POT);
+      TH1 * up1 = pred->PredictSyst(calc2020BF.get(), shifts).ToTH1(POT, EExposureType::kPOT, EBinType::kBinDensity);
       up1->SetLineColor(kBlue+1);
       histsUp1.push_back(up1);
 
       shifts.SetShift(syst, +2);
-      TH1 * up2 = pred->PredictSyst(calc2020BF.get(), shifts).ToTH1(POT);
+      TH1 * up2 = pred->PredictSyst(calc2020BF.get(), shifts).ToTH1(POT, EExposureType::kPOT, EBinType::kBinDensity);
       up2->SetLineColor(kBlue); up2->SetLineStyle(kDashed);
 
       shifts.SetShift(syst, +3);
-      TH1 * up3 = pred->PredictSyst(calc2020BF.get(), shifts).ToTH1(POT);
+      TH1 * up3 = pred->PredictSyst(calc2020BF.get(), shifts).ToTH1(POT, EExposureType::kPOT, EBinType::kBinDensity);
       up3->SetLineColor(kBlue-4); up3->SetLineStyle(kDotted);
 
 
       shifts.SetShift(syst, -1);
-      TH1 * down1 = pred->PredictSyst(calc2020BF.get(), shifts).ToTH1(POT);
+      TH1 * down1 = pred->PredictSyst(calc2020BF.get(), shifts).ToTH1(POT, EExposureType::kPOT, EBinType::kBinDensity);
       down1->SetLineColor(kRed+1);
       histsDn1.push_back(down1);
 
       shifts.SetShift(syst, -2);
-      TH1 * down2 = pred->PredictSyst(calc2020BF.get(), shifts).ToTH1(POT);
+      TH1 * down2 = pred->PredictSyst(calc2020BF.get(), shifts).ToTH1(POT, EExposureType::kPOT, EBinType::kBinDensity);
       down2->SetLineColor(kRed); down2->SetLineStyle(kDashed);
 
       shifts.SetShift(syst, -3);
-      TH1 * down3 = pred->PredictSyst(calc2020BF.get(), shifts).ToTH1(POT);
+      TH1 * down3 = pred->PredictSyst(calc2020BF.get(), shifts).ToTH1(POT, EExposureType::kPOT, EBinType::kBinDensity);
       down3->SetLineColor(kRed-4); down3->SetLineStyle(kDotted);
       // -------------------
 
@@ -351,8 +351,13 @@ void plot_preds_nd_reco_enu_quantiles_RES_DIS_shifts(const std::string& systStri
       ptTopology.AddText(beamType.c_str());
       ptTopology.AddText(topologyName.c_str());
 
-      ndfit::visuals::PredPreDrawAesthetics(hnom, 1e-5, false);
-      ndfit::visuals::DataPreDrawAesthetics(hData, 1e-5);
+      hnom->SetLineColor(kGray + 2);
+      hnom->Scale(1e-5);
+      hnom->SetLineWidth(3);
+      hData->SetMarkerColor(kBlack);
+      hData->SetMarkerStyle(kFullCircle);
+      hData->Scale(1e-5);
+      hData->SetLineWidth(2);
       for (TH1* h : histsUp1) h->Scale(1e-5);
       for (TH1* h : histsDn1) h->Scale(1e-5);
 
@@ -375,6 +380,37 @@ void plot_preds_nd_reco_enu_quantiles_RES_DIS_shifts(const std::string& systStri
       pad2->SetGridy(1);
       TH1 * hUnity = (TH1F*) hnom->Clone("hUnity");
       hUnity->Divide(hnom);
+      TH1 * hDataRatio = (TH1F*) hData->Clone("hDataRatio");
+      for (TH1* h : histsUp1) h->Divide(hnom);
+      for (TH1* h : histsDn1) h->Divide(hnom);
+
+
+      hUnity->GetXaxis()->CenterTitle();
+      hUnity->GetXaxis()->SetTitleOffset(1.);
+      hUnity->GetXaxis()->SetTitleSize(0.045);
+      hUnity->SetXTitle("#vec{q}_{3} Reco (GeV)");
+      hUnity->GetYaxis()->CenterTitle();
+      hUnity->GetYaxis()->SetRangeUser(0.5, 1.5);
+      hUnity->GetYaxis()->SetTitleSize(0.02);
+      hUnity->GetYaxis()->SetLabelSize(0.02);
+      hUnity->GetYaxis()->SetTitleOffset(1.5);
+      hUnity->SetYTitle("#frac{Prod5.1 Data}{MC}");
+      hUnity->GetYaxis()->CenterTitle();
+//      xAxisq3->Draw("same");
+
+
+      hDataRatio->SetMarkerColor(kBlack);
+      hDataRatio->SetMarkerStyle(kFullCircle);
+      hDataRatio->Draw("hist same pe");
+
+      hUnity->Draw("same hist pe");
+      hDataRatio->Draw("same hist p");
+
+
+      for (const auto & ext : {"png", "pdf"})
+        c.SaveAs(ndfit::FullFilename(outDirPlot, "plot_" + predBundle.name + "NOvA_errorband_RecoEnu." + ext).c_str());
+
+
 
 
 
