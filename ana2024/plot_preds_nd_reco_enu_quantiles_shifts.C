@@ -304,7 +304,7 @@ void plot_preds_nd_reco_enu_quantiles_shifts(const std::string& systString)     
       pad2->Draw();
       pad1->cd();
 
-      hnom->GetYaxis()->SetTitle("Events");
+      hnom->GetYaxis()->SetTitle("Events / GeV");
       hnom->GetYaxis()->SetTitleOffset(.8);
       hnom->GetYaxis()->CenterTitle();
       hnom->Draw("hist");

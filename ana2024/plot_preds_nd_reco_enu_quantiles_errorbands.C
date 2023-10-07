@@ -26,7 +26,6 @@
 
 #include "CAFAna/Analysis/Plots.h"
 #include "CAFAna/Experiment/MultiExperiment.h"
-#include "CAFAna/Fit/MCMCSamples.h"
 
 #include "OscLib/OscCalcAnalytic.h"
 
@@ -248,11 +247,6 @@ void plot_preds_nd_reco_enu_quantiles_errorbands(const std::string& systString) 
       auto *xAxisENu = new TGaxis(0.001, 0.5, 5.0, 0.501, 0., 5.0, 10, "");
       xAxisENu->SetLabelOffset(-0.015); // //	  std::cout << xAxisENu->GetLabelOffset() --> 0.005
       xAxisENu->SetLabelFont(42);
-      auto *mcmcTxtENu = new TLatex(5.14, 1.5, "#frac{MCMC Rep. Sample}{NOvA CV}");
-      mcmcTxtENu->SetTextAlign(11);
-      mcmcTxtENu->SetTextSize(0.02);
-      mcmcTxtENu->SetTextAngle(270);
-      mcmcTxtENu->SetTextColor(kAzure - 4);
 
 
 
@@ -314,7 +308,7 @@ void plot_preds_nd_reco_enu_quantiles_errorbands(const std::string& systString) 
       TLegend leg(0.45, 0.65, 0.9, 0.9);
       leg.SetFillColor(0);
       leg.SetFillStyle(0);
-      const std::string errorBands = Form("#pm1#sigma %s", syst->ShortName().c_str());
+      const std::string errorBands = Form("#pm1#sigma %s", syst->LatexName().c_str());
       const std::string cvPred = "NOvA 2024 MC"; // 2020 tune (MEC+FSI)";
       std::string legCVText;
       leg.AddEntry(hEnuCVPred, cvPred.c_str(), "l");
@@ -370,7 +364,6 @@ void plot_preds_nd_reco_enu_quantiles_errorbands(const std::string& systString) 
 
       hEnuDataRatio->Draw("hist same pe");
 
-      mcmcTxtENu->Draw();
 
       ndfit::visuals::DetectorLabel(predBundle.det);
       for (const auto &ext: {".png", ".pdf"}) // ".root"
