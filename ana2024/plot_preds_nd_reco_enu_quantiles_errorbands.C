@@ -1,11 +1,11 @@
-/* plot_preds_nd_reco_enu_quantiles_shifts.C
+/* plot_preds_nd_reco_enu_quantiles_errorbands.C
  *
  * preparation for Ana2024.
  *
  * produce some plots of the ND predictions
  * of the "new" RES and DIS systematics,
- * and MEC systematics
- * in the inclusive and quantile distributions.
+ * in the inclusive and quantile distributions
+ * in 1 sigma error bands.
  *
  * Large chunk taken from: plot_fd_systematic_shifts_from_numu_quantile_predictions.C
  *
@@ -97,17 +97,16 @@ namespace histogram
 using namespace ana;
 
 // =====================================================================================================
-void plot_preds_nd_reco_enu_quantiles_shifts(const std::string& systString)          // "resdis", "mecdg", "mecshape"
+void plot_preds_nd_reco_enu_quantiles_errorbands(const std::string& systString)          // "resdis", "mecdg", "mecshape"
 // =====================================================================================================
 {
 
-  const std::string& outDirPlot = "/nova/ana/users/mdolce/xsec-tuning-nova/plots/ana2024/plot_preds_nd_reco_enu_quantiles_shifts";
+  const std::string& outDirPlot = "/nova/ana/users/mdolce/xsec-tuning-nova/plots/ana2024/plot_preds_nd_reco_enu_quantiles_errorbands";
 
   //load all systs that exist in the preds ROOT file
   NewRESDISSysts();
-
-  auto calc2020BF = std::make_unique<osc::OscCalcAnalytic>();
-  ndfit::Calculator2020BestFit(*calc2020BF);
+  getMECtuneSystsCorrected_GSFProd5p1();
+  MECsysts();
 
 
 
@@ -157,273 +156,248 @@ void plot_preds_nd_reco_enu_quantiles_shifts(const std::string& systString)     
   } // beam
 
 
+  auto calc2020BF = std::make_unique<osc::OscCalcAnalytic>();
+  ndfit::Calculator2020BestFit(*calc2020BF);
 
-  TCanvas c("c","c", 600,650); // this will be a square plot...
-  c.cd();
-  c.Clear();
-
-  // Loop through the ND Numu Quantile predictions
-  for (const ana::FitPredictions &predBundle : preds){
-    std::cout << "Looping through " << predBundle.name << std::endl;
-
-    auto hc = ndfit::visuals::GetHornCurrent(predBundle.name);
-    const double POT = dataSpectra.at(predBundle.name).POT();
-    std::cout << "horn: " << hc  << ", data pot: " << POT << std::endl;
-    std::cout << "MC pot is from predBundle.pot = " << predBundle.pot << std::endl;
-
-    // Systematics from the Prediction
-    auto systs = dynamic_cast<const ana::PredictionInterp *>(preds[0].pred)->GetAllSysts();
-    std::sort(systs.begin(),
-              systs.end(),
-              [](const auto syst1, const auto syst2) {
-                  return syst1->ShortName() < syst2->ShortName();
-              });
+  // Systematics from the Prediction
+  auto systs = dynamic_cast<const ana::PredictionInterp *>(preds[0].pred)->GetAllSysts();
+  std::sort(systs.begin(),
+            systs.end(),
+            [](const auto syst1, const auto syst2) {
+                return syst1->ShortName() < syst2->ShortName();
+            });
 
 
-    // We are bin-wdith normalizing these plots!!
-    TH1 * hnom = predBundle.pred->PredictSyst(calc2020BF.get(), SystShifts::Nominal()).ToTH1(POT, EExposureType::kPOT, EBinType::kBinDensity);
+  ///TODO: could add this in later if we want...
+//  // load the expts to get the LL for each topology
+//  std::vector<std::pair<const std::string, std::unique_ptr<ana::IExperiment>>> expts = ndfit::BuildExperiments(dataSpectra, preds);
+//  std::unique_ptr<ana::MultiExperiment> expt = ndfit::BuildMultiExperiment(ndfit::ExptPtrs(expts), acceptedSystsSet, false);
 
-    TH1 * hData = dataSpectra.at(predBundle.name).ToTH1(POT, EExposureType::kPOT, EBinType::kBinDensity);
+//  // total ChiSq. Value printed at end of macro -- easier to read.
+//  double chiSqNominalTotal = expt->ChiSq(calc2020BF.get(), SystShifts::Nominal());
+//  double chiSqShiftedTotal = expt->ChiSq(calcRepSample.get(), *shiftsRepSample); // NO DoF
+//  int totalBins = 0; // every single bin.
+//  int totalMCBins = 0; // all non-zero MC bins (used in the chiSq calculation).
+//  // value to use to check to confirm the total expt->ChiSq() = expts.at(sampleType)->ChiSq() for Rep Sample
+//  double chiSqRepSampleTotal_Check = 0.;
+//
+//  //save the ChiSq for each topology into here
+//  std::unordered_map<std::string, double> chiSqMCMCMap {};
+//  std::unordered_map<std::string, double> chiSqNominalMap {};
 
 
+  TCanvas c("c","c", 600,600); // 900, 600
+  TPad * p1, * p2; //p1 upper, p2 lower
 
 
+  // set the max and scale factors here at the start.
+  double maxFactor = 1. , scaleFactor = 1.;
 
-    std::string predBundleName = predBundle.name;
-    std::vector<std::string> result;
-    boost::split(result, predBundleName, boost::is_any_of("_"));
-    const ndfit::Quantiles topologyEnum = ndfit::visuals::GetQuantileEnum(predBundleName);
-    const std::string& topologyName = ndfit::visuals::GetQuantileString(topologyEnum);
+  int sampleType = 0;
+
+  std::cout << "Plotting the ratio and fitted predictions with data" << std::endl;
+  std::cout << "Looping through systematics. Total number of systematics: " << systs.size() << std::endl;
+
+  for (const auto &predBundle : preds) {
+    std::cout << predBundle.name << "......." << std::endl;
+    const double dataPOT = dataSpectra.at(predBundle.name).POT();
+
+    /// create the error bands
+    std::vector<TH1*> up1ShiftEnuReco, dn1ShiftEnuReco;
+
+    // use the systs from each specific topology
+    // Use ONLY the systs that were used in the fitting...
+    for (const auto &syst : systs) {
+      SystShifts pm1SigmaShift;
+      pm1SigmaShift.SetShift(syst, +1.);
+      TH1 * hUp1ShiftEnuReco = predBundle.pred->PredictSyst(calc2020BF.get(), pm1SigmaShift).ToTH1(dataPOT, EExposureType::kPOT, kBinDensity);
+      up1ShiftEnuReco.push_back(hUp1ShiftEnuReco);
+
+      pm1SigmaShift.SetShift(syst, -1.);
+      TH1 * hDn1ShiftEnuReco = predBundle.pred->PredictSyst(calc2020BF.get(), pm1SigmaShift).ToTH1(dataPOT, EExposureType::kPOT, kBinDensity);
+      dn1ShiftEnuReco.push_back(hDn1ShiftEnuReco);
+
+    } //systs -- to create the error bands
+
+    // retrieve the ChiSq()s for each topological sample.
+//    double tmpChiSqMCMC = expts.at(sampleType).second->ChiSq(calcRepSample.get(), *shiftsRepSample); // this is the REAL ChiSq.
+//    double tmpChiSqNom  = expts.at(sampleType).second->ChiSq(calc2020BF.get(), SystShifts::Nominal());
+//    chiSqMCMCMap.try_emplace(predBundle.name, tmpChiSqMCMC);
+//    chiSqNominalMap.try_emplace(predBundle.name, tmpChiSqNom);
+//    chiSqRepSampleTotal_Check += tmpChiSqMCMC;
+//
+//    // calculate total bins for: chi2/D.o.F.
+//    TH1 * hPred = predBundle.pred->PredictSyst(calcRepSample.get(), SystShifts::Nominal()).ToTH1(dataPOT);
+//    for (int i = 1; i <= hPred->GetNbinsX(); ++i) {
+//      if (hPred->GetBinContent(i) > 0.) totalMCBins++;
+//      totalBins++;
+//    } // i
+
+    c.cd();
+    c.Clear();
+
+
+    const ndfit::Quantiles q = ndfit::visuals::GetQuantileEnum(predBundle.name);
+    const std::string quantileString = ndfit::visuals::GetQuantileString(q);
     const std::string beamType = ndfit::visuals::GetHornCurrent(predBundle.name);
 
 
-    /// this is crucial to getting the systs and shifting them
-    auto pred = dynamic_cast<const ana::PredictionInterp *>(predBundle.pred);
 
-    /// for recording the up and down error bands for all systs (in Ev)
-    std::vector<TH1*> histsUp1, histsDn1;
-
-    int systsCount = 0;
-    std::cout << "Now looping over systematics......" << systs.size() << std::endl;
-    for (const ISyst* syst : systs) {
-
-      /// Save the information for the 1sigma shifts for error bands
-      SystShifts pm1SigmaShift;
-      // -------------------
-
-      /// Create the hists
-      SystShifts shifts;
-      shifts.SetShift(syst, +1.0);
-      TH1 * up1 = pred->PredictSyst(calc2020BF.get(), shifts).ToTH1(POT, EExposureType::kPOT, EBinType::kBinDensity);
-      up1->SetLineColor(kBlue+1);
-      histsUp1.push_back(up1);
-
-      shifts.SetShift(syst, +2);
-      TH1 * up2 = pred->PredictSyst(calc2020BF.get(), shifts).ToTH1(POT, EExposureType::kPOT, EBinType::kBinDensity);
-      up2->SetLineColor(kBlue); up2->SetLineStyle(kDashed);
-
-      shifts.SetShift(syst, +3);
-      TH1 * up3 = pred->PredictSyst(calc2020BF.get(), shifts).ToTH1(POT, EExposureType::kPOT, EBinType::kBinDensity);
-      up3->SetLineColor(kBlue-4); up3->SetLineStyle(kDotted);
-
-
-      shifts.SetShift(syst, -1);
-      TH1 * down1 = pred->PredictSyst(calc2020BF.get(), shifts).ToTH1(POT, EExposureType::kPOT, EBinType::kBinDensity);
-      down1->SetLineColor(kRed+1);
-      histsDn1.push_back(down1);
-
-      shifts.SetShift(syst, -2);
-      TH1 * down2 = pred->PredictSyst(calc2020BF.get(), shifts).ToTH1(POT, EExposureType::kPOT, EBinType::kBinDensity);
-      down2->SetLineColor(kRed); down2->SetLineStyle(kDashed);
-
-      shifts.SetShift(syst, -3);
-      TH1 * down3 = pred->PredictSyst(calc2020BF.get(), shifts).ToTH1(POT, EExposureType::kPOT, EBinType::kBinDensity);
-      down3->SetLineColor(kRed-4); down3->SetLineStyle(kDotted);
-      // -------------------
-
-
-
-      double maxContent= 1.6 * std::max(up3->GetMaximum(), down3->GetMaximum());
-      hnom->SetMaximum(maxContent);
-
-      double legx1, legx2, legy1, legy2;
-      legx1=.6;legx2=0.9; legy1=0.55; legy2=0.85;
-      auto *leg = new TLegend(legx1,legy1,legx2,legy2);
-      leg->SetFillStyle(0);
-      leg->SetLineColor(0);
-      leg->AddEntry(hnom, "NOvA N18_10j_00_000 tune","l");
-      leg->AddEntry(up3,"+3 #sigma shift","l");
-      leg->AddEntry(up2,"+2 #sigma shift","l");
-      leg->AddEntry(up1,"+1 #sigma shift","l");
-      leg->AddEntry(down1,"-1 #sigma shift","l");
-      leg->AddEntry(down2,"-2 #sigma shift","l");
-      leg->AddEntry(down3,"-3 #sigma shift","l");
-
-      TH1* ratio_up1 = (TH1*)up1->Clone("ratio_up1");       ratio_up1->Divide(hnom);
-      TH1* ratio_up2 = (TH1*)up2->Clone("ratio_up2");       ratio_up2->Divide(hnom);
-      TH1* ratio_up3 = (TH1*)up3->Clone("ratio_up3");       ratio_up3->Divide(hnom);
-      TH1* ratio_down1 = (TH1*)down1->Clone("ratio_down1"); ratio_down1->Divide(hnom);
-      TH1* ratio_down2 = (TH1*)down2->Clone("ratio_down2"); ratio_down2->Divide(hnom);
-      TH1* ratio_down3 = (TH1*)down3->Clone("ratio_down3"); ratio_down3->Divide(hnom);
-
-      ratio_up1->SetMinimum(0.5);
-      ratio_up1->SetMaximum(1.5);
-      ratio_up1->GetYaxis()->SetTitle("Shifted / CV");
-      ratio_up1->GetYaxis()->SetTitleFont(43);
-      ratio_up1->GetYaxis()->SetTitleOffset(1.4);
-      ratio_up1->GetYaxis()->SetLabelFont(43); // Absolute font size in pixel (precision 3)
-      ratio_up1->GetYaxis()->SetLabelSize(15);
-      ratio_up1->GetYaxis()->SetTitleSize(15);
-      ratio_up1->GetXaxis()->SetTitle("Reco. E_{#nu} (GeV)");
-      ratio_up1->GetXaxis()->CenterTitle();
-      ratio_up1->GetXaxis()->SetTitleFont(43);
-      ratio_up1->GetXaxis()->SetTitleOffset(3.4);
-      ratio_up1->GetXaxis()->SetNdivisions(510, "X");
-      ratio_up1->GetXaxis()->SetTitleOffset(3.5);
-      ratio_up1->GetXaxis()->SetLabelFont(43); // Absolute font size in pixel (precision 3)
-      ratio_up1->GetXaxis()->SetLabelSize(15);
-      ratio_up1->GetXaxis()->SetTitleSize(21);
-
-      TLatex latex;
-      latex.SetTextSize(0.04);
-      latex.SetTextAlign(13);  //align at top
-
-
-      // gPad->SetBottomMargin(0.15);
-      c.Draw();
-      // Upper plot will be in pad1
-      TPad *pad1 = new TPad("pad1", "pad1", 0, 0.3, 1, 1.0);
-      pad1->SetBottomMargin(0); // Upper and lower plot are joined
-      pad1->Draw();             // Draw the upper pad: pad1
-      c.cd();          // Go back to the main canvas before defining pad2
-      TPad *pad2 = new TPad("pad2", "pad2", 0, 0.05, 1, 0.3);
-      pad2->SetTopMargin(0);
-      pad2->SetBottomMargin(0.3);
-      pad2->Draw();
-      pad1->cd();
-
-      hnom->GetYaxis()->SetTitle("Events");
-      hnom->GetYaxis()->SetTitleOffset(.8);
-      hnom->GetYaxis()->CenterTitle();
-      hnom->Draw("hist");
-      up1->Draw("hist same");
-      up2->Draw("hist same");
-      up3->Draw("hist same");
-      down1->Draw("hist same");
-      down2->Draw("hist same");
-      down3->Draw("hist same");
-      c.Update();
-      leg->Draw();
-      latex.DrawLatexNDC(.15,.85,("#color[1]{"+ndfit::visuals::GetHornCurrent(predBundle.name)+"}").c_str());
-      latex.DrawLatexNDC(.15,.8,("#color[1]{"+topologyName+"}").c_str());
-      latex.DrawLatexNDC(.15,.75,("#color[1]{"+syst->LatexName()+"}").c_str());
-      ndfit::visuals::NeutrinoLabel(ndfit::NeutrinoType::kNumu);
-      Simulation();
-      ndfit::visuals::DetectorLabel(caf::kFARDET);
-      pad1->Update();
-      c.Update();
-      c.cd();
-      pad2->cd();
-      pad2->SetGridy();
-
-      ratio_up1->Draw("hist");
-      ratio_up2->Draw("hist same");
-      ratio_up3->Draw("hist same");
-      ratio_down1->Draw("hist same");
-      ratio_down2->Draw("hist same");
-      ratio_down3->Draw("hist same");
-
-      pad2->Update();
-      pad2->Update();
-      for (const auto &ext: {"pdf", "png"})
-        c.SaveAs(ndfit::FullFilename(outDirPlot, "plot_" + predBundleName + "_" + syst->ShortName() + "_reco_enu_shifts_ratio." + ext).c_str());
-      c.Clear();
+    auto * xAxisENu = new TGaxis(0.001, 0.5, 5.0, 0.501, 0., 5.0, 10, "");
+    xAxisENu->SetLabelOffset(-0.015); // //	  std::cout << xAxisENu->GetLabelOffset() --> 0.005
+    xAxisENu->SetLabelFont(42);
+    auto * mcmcTxtENu = new TLatex(5.14, 1.5, "#frac{MCMC Rep. Sample}{NOvA CV}");
+    mcmcTxtENu->SetTextAlign(11); mcmcTxtENu->SetTextSize(0.02);
+    mcmcTxtENu->SetTextAngle(270); mcmcTxtENu->SetTextColor(kAzure - 4);
 
 
 
 
-      /// Draw with error bands
-      // --------------------
-      c.cd();
-      TPad *pad3 = new TPad("pad3", "pad3", 0, 0.3, 1, 1.0);
-      TPad *pad4 = new TPad("pad4", "pad4", 0, 0.05, 1, 0.3);
-      pad3->cd();
-
-      TPaveText ptTopology(0.7, 0.68, 0.85, 0.75, "ARC NDC");
-      ptTopology.SetFillStyle(0);
-      ptTopology.SetFillColor(0);
-      ptTopology.SetBorderSize(0);
-      ptTopology.AddText(beamType.c_str());
-      ptTopology.AddText(topologyName.c_str());
-
-      hnom->SetLineColor(kGray + 2);
-      hnom->Scale(1e-5);
-      hnom->SetLineWidth(3);
-      hData->SetMarkerColor(kBlack);
-      hData->SetMarkerStyle(kFullCircle);
-      hData->Scale(1e-5);
-      hData->SetLineWidth(2);
-      for (TH1* h : histsUp1) h->Scale(1e-5);
-      for (TH1* h : histsDn1) h->Scale(1e-5);
-
-      auto plotErrorBand = PlotWithSystErrorBand(hnom, histsUp1, histsDn1, kGray, kGray + 2);
-      hData->Draw("same hist p");
-
-      TLegend leg2(0.6, 0.75, 0.9, 0.9);
-      leg2.SetFillColor(0);
-      leg2.SetFillStyle(0);
-      const std::string systLegName = "CV Prediction & 1#sigma: " + syst->ShortName();
-      leg2.AddEntry(hnom, Form("%s", systLegName.c_str()), "l");
-      leg2.AddEntry(hData, "Prod5.1 Data", "p");
-
-      leg2.Draw("same");
-      ptTopology.Draw("same");
-      Preliminary();
-
-      // ratio
-      pad4->cd();
-      pad4->SetGridy(1);
-      TH1 * hUnity = (TH1F*) hnom->Clone("hUnity");
-      hUnity->Divide(hnom);
-      TH1 * hDataRatio = (TH1F*) hData->Clone("hDataRatio");
-      for (TH1* h : histsUp1) h->Divide(hnom);
-      for (TH1* h : histsDn1) h->Divide(hnom);
+    //pavetext to print out the events for each topology
+    TPaveText ptEnuEvents(0.7, 0.60, 0.85, 0.67, "ARC NDC");
+    ptEnuEvents.SetFillColor(0); ptEnuEvents.SetFillStyle(0); ptEnuEvents.SetBorderSize(0); ptEnuEvents.SetTextSize(0.032); ptEnuEvents.SetTextFont(102);
 
 
-      hUnity->GetXaxis()->CenterTitle();
-      hUnity->GetXaxis()->SetTitleOffset(1.);
-      hUnity->GetXaxis()->SetTitleSize(0.045);
-      hUnity->SetXTitle("#vec{q}_{3} Reco (GeV)");
-      hUnity->GetYaxis()->CenterTitle();
-      hUnity->GetYaxis()->SetRangeUser(0.5, 1.5);
-      hUnity->GetYaxis()->SetTitleSize(0.02);
-      hUnity->GetYaxis()->SetLabelSize(0.02);
-      hUnity->GetYaxis()->SetTitleOffset(1.5);
-      hUnity->SetYTitle("#frac{Prod5.1 Data}{MC}");
-      hUnity->GetYaxis()->CenterTitle();
-//      xAxisq3->Draw("same");
-
-
-      hDataRatio->SetMarkerColor(kBlack);
-      hDataRatio->SetMarkerStyle(kFullCircle);
-      hDataRatio->Draw("hist same pe");
-
-      hUnity->Draw("same hist pe");
-      hDataRatio->Draw("same hist p");
-
-
-      for (const auto & ext : {"png", "pdf"})
-        c.SaveAs(ndfit::FullFilename(outDirPlot, "plot_" + predBundle.name + "NOvA_errorband_RecoEnu." + ext).c_str());
+    // 2D profiled view the two variables: Enu_Reco & EHadVis.
+    PlotWithSystErrorBand((IPrediction *&) predBundle.pred, systs, calc2020BF.get(), dataPOT, kGray + 2, kGray);
+    c.SaveAs(ndfit::FullFilename(outDirPlot, "profiled_error_bands_plot_" + predBundle.name + ".png").c_str());
+    c.Clear();
+    // 2D profile
 
 
 
 
+    /// Plot comparison and ratio on save canvas
+    SplitCanvas(0.25,p1,p2);
+    // Enu-Reco
+    //create the histograms for the PlotWithSystErrorBand() function
+    std::cout << "Producing Enu-Reco plots for " << predBundle.name << "......" << std::endl;
+    TH1 * hEnuData = dataSpectra.at(predBundle.name).ToTH1(dataPOT, EExposureType::kPOT,  kBinDensity);
+    TH1 * hEnuCVPred = predBundle.pred->PredictSyst(calc2020BF.get(), SystShifts::Nominal()).ToTH1(dataPOT, EExposureType::kPOT, kBinDensity);
 
-      systsCount++;
-    } // systs
+
+    //get the events BEFORE the re-scaling
+    int dataEnuEvents = hEnuData->Integral();
+    int nomEnuEvents = hEnuCVPred->Integral();
+    std:: cout << "Events (data, CV): " << dataEnuEvents <<  ", " << nomEnuEvents  << std::endl;
+
+    ndfit::visuals::PredPreDrawAesthetics(hEnuCVPred, scaleFactor, false);
+    ndfit::visuals::DataPreDrawAesthetics(hEnuData, scaleFactor);
+    for (auto & hist : up1ShiftEnuReco)
+      hist->Scale(scaleFactor);
+    for (auto & hist : dn1ShiftEnuReco)
+      hist->Scale(scaleFactor);
 
 
-  } // predBundle
+    p1->cd();
+    auto EnuErrorBand = PlotWithSystErrorBand(hEnuCVPred, up1ShiftEnuReco, dn1ShiftEnuReco, kGray + 2, kGray);
+    hEnuCVPred->Draw("same hist e");
+    hEnuData->Draw("same hist p"); // draw as points (to distinguish with data)
+
+    hEnuCVPred->GetYaxis()->SetTitle("Events / GeV");
+    hEnuCVPred->GetYaxis()->SetTitleSize(0.036);
+    hEnuCVPred->GetYaxis()->SetTitleOffset(1.1);
+    hEnuCVPred->SetMaximum(hEnuCVPred->GetMaximum() * 1.8);
+    hEnuCVPred->GetXaxis()->SetLabelSize(0.0); hEnuCVPred->GetXaxis()->SetTitleSize(0.0);
+
+    TLegend leg(0.45, 0.65, 0.9, 0.9);
+    leg.SetFillColor(0);
+    leg.SetFillStyle(0);
+    const std::string errorBands = "1#sigma NOvA selected uncertainties";
+    const std::string cvPred = "NOvA 2020 prediction"; // 2020 tune (MEC+FSI)";
+    std::string legCVText;
+    leg.AddEntry(hEnuCVPred, cvPred.c_str(), "l");
+    up1ShiftEnuReco.at(0)->SetFillColor(kGray);
+    up1ShiftEnuReco.at(0)->SetLineColor(kGray);
+    leg.AddEntry(up1ShiftEnuReco.at(0), Form("%s", errorBands.c_str()), "f");
+    leg.AddEntry(hEnuData, "Prod5.1 Data", "p");
+    leg.Draw("same");
+    TLatex latex;
+    latex.SetTextSize(0.04);
+    latex.SetTextAlign(13);
+    latex.DrawLatexNDC(.15,.85,(Form("%s", beamType.c_str())));
+    latex.DrawLatexNDC(.15, .8, Form("%s", quantileString.c_str()));
+    latex.Draw("same");
+//    ptEnuEvents.Draw("same");
+    Preliminary();
+
+    /// Enu-Reco ratio
+    p2->cd();
+    p2->SetGridy(1);
+    TH1 * hEnuUnity = (TH1F *) hEnuCVPred->Clone("hEnuUnity");
+    hEnuUnity->Divide(hEnuCVPred);
+    TH1 * hEnuDataRatio = (TH1F *) hEnuData->Clone("hEnuDataRatio");
+    hEnuDataRatio->Divide(hEnuCVPred);
+
+
+    ///create the ratios for the error bands
+    auto up1ShiftEnuRecoRatio = up1ShiftEnuReco;
+    auto dn1ShiftEnuRecoRatio = dn1ShiftEnuReco;
+    for (auto &hist : up1ShiftEnuRecoRatio)
+      hist->Divide(hEnuCVPred);
+    for (auto &hist : dn1ShiftEnuRecoRatio)
+      hist->Divide(hEnuCVPred);
+
+
+    PlotWithSystErrorBand(hEnuUnity, up1ShiftEnuRecoRatio, dn1ShiftEnuRecoRatio, kGray + 2, kGray);
+
+    hEnuUnity->GetXaxis()->CenterTitle();
+    hEnuUnity->GetXaxis()->SetTitleOffset(1.);
+    hEnuUnity->GetXaxis()->SetTitleSize(0.045);
+    hEnuUnity->SetXTitle("Reco. E_{#nu} (GeV)");
+    hEnuUnity->GetYaxis()->CenterTitle();
+    hEnuUnity->GetYaxis()->SetRangeUser(0.5, 1.5);
+    hEnuUnity->GetYaxis()->SetTitleSize(0.02);
+    hEnuUnity->GetYaxis()->SetLabelSize(0.02);
+    hEnuUnity->GetYaxis()->SetTitleOffset(1.5);
+    hEnuUnity->SetYTitle("#frac{Prod5.1 Data}{NOvA MC}");
+    hEnuUnity->GetYaxis()->CenterTitle();
+    xAxisENu->Draw("same");
+
+    hEnuDataRatio->Draw("hist same pe");
+
+    mcmcTxtENu->Draw();
+
+    ndfit::visuals::DetectorLabel(predBundle.det);
+    for (const auto & ext : {".png", ".pdf"} ) // ".root"
+      c.SaveAs(ndfit::FullFilename(outDirPlot,  "plot_" + predBundle.name + "_" + syst->ShortName() + "_RecoEnu_errorbands_" + ext).c_str());
+
+    // write captions here...
+
+
+    sampleType++;
+  } //predBundle in preds
+
+//
+//  std::cout << "Printing X^2 numbers for the FD spectra only...." << std::endl;
+//  std::cout << "========== Nominal X^2 =========== (NO DoF): " << std::endl;
+//  for (auto const & pair : chiSqNominalMap) std::cout << pair.first << " --> " << pair.second << std::endl;
+//  std::cout << "========== MCMC X^2 =========== (NO DoF): " << chiSqShiftedTotal << ". and the check: " << chiSqRepSampleTotal_Check << std::endl;
+//  for (auto const & pair : chiSqMCMCMap) std::cout << pair.first << " --> " << pair.second << std::endl;
+//  std::cout << "============================================" << std::endl;
+//  std::cout << "============================================" << std::endl;
+//  std::cout << "Total X^2 (NO DoF) Nominal is: " << chiSqNominalTotal << std::endl;
+//  std::cout << "Total X^2 (NO DoF) Rep. Sample is: " << chiSqShiftedTotal << std::endl;
+//  std::cout << "============================================" << std::endl;
+//  std::cout << "============================================" << std::endl;
+//  std::cout << "Total LL for Nominal is: " << chiSqNominalTotal / -2. << std::endl;
+//  std::cout << "Total LL for Rep. Sample is: " << chiSqShiftedTotal / -2. << std::endl;
+//  // NOTE: very dangerous not to use the function directly, but this is the correct math....
+//  std::cout << "============================================" << std::endl;
+//  std::cout << "Total bins = " << totalBins << std::endl;
+//  std::cout << "Total Non-zero MC bins = " << totalMCBins << std::endl;
+//  std::cout << "Total systs = " << totalSysts << std::endl;
+//  std::cout << "Total vars = " << totalfitVars << std::endl;
+//  const int totalDoF = totalSysts + totalfitVars;
+//  std::cout << "Total DoF = " << totalDoF << std::endl;
+//  double chiSqDoFNominal = chiSqNominalTotal;
+//  chiSqDoFNominal /= (totalMCBins - (double) totalDoF);
+//  double chiSqDoFRepSample = chiSqShiftedTotal;
+//  chiSqDoFRepSample /= (totalMCBins - (double) totalDoF);
+//  std::cout << "============================================" << std::endl;
+//  std::cout << "Total X^2/DoF Nominal is: " << chiSqDoFNominal << std::endl;
+//  std::cout << "Total X^2/DoF Rep. Sample is: " << chiSqDoFRepSample << std::endl;
+//// printout the X^2 per degree of freedom.
 
 
 }
