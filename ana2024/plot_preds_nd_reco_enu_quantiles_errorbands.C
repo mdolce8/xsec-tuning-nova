@@ -274,8 +274,8 @@ void plot_preds_nd_reco_enu_quantiles_errorbands(const std::string& systString) 
       // Enu-Reco
       //create the histograms for the PlotWithSystErrorBand() function
       std::cout << "Producing Enu-Reco plots for " << predBundle.name << "......" << std::endl;
-      TH1 *hEnuData = dataSpectra.at(predBundle.name).ToTH1(dataPOT, EExposureType::kPOT, kBinDensity);
-      TH1 *hEnuCVPred = predBundle.pred->PredictSyst(calc2020BF.get(), SystShifts::Nominal()).ToTH1(dataPOT,
+      TH1 * hEnuData = dataSpectra.at(predBundle.name).ToTH1(dataPOT, EExposureType::kPOT, kBinDensity);
+      TH1 * hEnuCVPred = predBundle.pred->PredictSyst(calc2020BF.get(), SystShifts::Nominal()).ToTH1(dataPOT,
                                                                                                     EExposureType::kPOT,
                                                                                                     kBinDensity);
 
@@ -326,7 +326,6 @@ void plot_preds_nd_reco_enu_quantiles_errorbands(const std::string& systString) 
 //    ptEnuEvents.Draw("same");
       Preliminary();
       ndfit::visuals::NeutrinoLabel(ndfit::NeutrinoType::kNumu);
-      Simulation();
       ndfit::visuals::DetectorLabel(caf::kNEARDET);
 
       /// Enu-Reco ratio
