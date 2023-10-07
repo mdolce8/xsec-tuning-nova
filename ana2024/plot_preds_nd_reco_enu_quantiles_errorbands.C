@@ -210,16 +210,19 @@ void plot_preds_nd_reco_enu_quantiles_errorbands(const std::string& systString) 
     for (const auto &syst : systs) {
       SystShifts pm1SigmaShift;
       pm1SigmaShift.SetShift(syst, +1.);
-      TH1 * hUp1ShiftEnuReco = predBundle.pred->PredictSyst(calc2020BF.get(), pm1SigmaShift).ToTH1(dataPOT, EExposureType::kPOT, kBinDensity);
+      TH1 *hUp1ShiftEnuReco = predBundle.pred->PredictSyst(calc2020BF.get(), pm1SigmaShift).ToTH1(dataPOT,
+                                                                                                  EExposureType::kPOT,
+                                                                                                  kBinDensity);
       up1ShiftEnuReco.push_back(hUp1ShiftEnuReco);
 
       pm1SigmaShift.SetShift(syst, -1.);
-      TH1 * hDn1ShiftEnuReco = predBundle.pred->PredictSyst(calc2020BF.get(), pm1SigmaShift).ToTH1(dataPOT, EExposureType::kPOT, kBinDensity);
+      TH1 *hDn1ShiftEnuReco = predBundle.pred->PredictSyst(calc2020BF.get(), pm1SigmaShift).ToTH1(dataPOT,
+                                                                                                  EExposureType::kPOT,
+                                                                                                  kBinDensity);
       dn1ShiftEnuReco.push_back(hDn1ShiftEnuReco);
 
-    } //systs -- to create the error bands
 
-    // retrieve the ChiSq()s for each topological sample.
+      // retrieve the ChiSq()s for each topological sample.
 //    double tmpChiSqMCMC = expts.at(sampleType).second->ChiSq(calcRepSample.get(), *shiftsRepSample); // this is the REAL ChiSq.
 //    double tmpChiSqNom  = expts.at(sampleType).second->ChiSq(calc2020BF.get(), SystShifts::Nominal());
 //    chiSqMCMCMap.try_emplace(predBundle.name, tmpChiSqMCMC);
@@ -233,134 +236,146 @@ void plot_preds_nd_reco_enu_quantiles_errorbands(const std::string& systString) 
 //      totalBins++;
 //    } // i
 
-    c.cd();
-    c.Clear();
+      c.cd();
+      c.Clear();
 
 
-    const ndfit::Quantiles q = ndfit::visuals::GetQuantileEnum(predBundle.name);
-    const std::string quantileString = ndfit::visuals::GetQuantileString(q);
-    const std::string beamType = ndfit::visuals::GetHornCurrent(predBundle.name);
+      const ndfit::Quantiles q = ndfit::visuals::GetQuantileEnum(predBundle.name);
+      const std::string quantileString = ndfit::visuals::GetQuantileString(q);
+      const std::string beamType = ndfit::visuals::GetHornCurrent(predBundle.name);
 
 
-
-    auto * xAxisENu = new TGaxis(0.001, 0.5, 5.0, 0.501, 0., 5.0, 10, "");
-    xAxisENu->SetLabelOffset(-0.015); // //	  std::cout << xAxisENu->GetLabelOffset() --> 0.005
-    xAxisENu->SetLabelFont(42);
-    auto * mcmcTxtENu = new TLatex(5.14, 1.5, "#frac{MCMC Rep. Sample}{NOvA CV}");
-    mcmcTxtENu->SetTextAlign(11); mcmcTxtENu->SetTextSize(0.02);
-    mcmcTxtENu->SetTextAngle(270); mcmcTxtENu->SetTextColor(kAzure - 4);
-
-
-
-
-    //pavetext to print out the events for each topology
-    TPaveText ptEnuEvents(0.7, 0.60, 0.85, 0.67, "ARC NDC");
-    ptEnuEvents.SetFillColor(0); ptEnuEvents.SetFillStyle(0); ptEnuEvents.SetBorderSize(0); ptEnuEvents.SetTextSize(0.032); ptEnuEvents.SetTextFont(102);
-
-
-    // 2D profiled view the two variables: Enu_Reco & EHadVis.
-    PlotWithSystErrorBand((IPrediction *&) predBundle.pred, systs, calc2020BF.get(), dataPOT, kGray + 2, kGray);
-    c.SaveAs(ndfit::FullFilename(outDirPlot, "profiled_error_bands_plot_" + predBundle.name + ".png").c_str());
-    c.Clear();
-    // 2D profile
+      auto *xAxisENu = new TGaxis(0.001, 0.5, 5.0, 0.501, 0., 5.0, 10, "");
+      xAxisENu->SetLabelOffset(-0.015); // //	  std::cout << xAxisENu->GetLabelOffset() --> 0.005
+      xAxisENu->SetLabelFont(42);
+      auto *mcmcTxtENu = new TLatex(5.14, 1.5, "#frac{MCMC Rep. Sample}{NOvA CV}");
+      mcmcTxtENu->SetTextAlign(11);
+      mcmcTxtENu->SetTextSize(0.02);
+      mcmcTxtENu->SetTextAngle(270);
+      mcmcTxtENu->SetTextColor(kAzure - 4);
 
 
 
 
-    /// Plot comparison and ratio on save canvas
-    SplitCanvas(0.25,p1,p2);
-    // Enu-Reco
-    //create the histograms for the PlotWithSystErrorBand() function
-    std::cout << "Producing Enu-Reco plots for " << predBundle.name << "......" << std::endl;
-    TH1 * hEnuData = dataSpectra.at(predBundle.name).ToTH1(dataPOT, EExposureType::kPOT,  kBinDensity);
-    TH1 * hEnuCVPred = predBundle.pred->PredictSyst(calc2020BF.get(), SystShifts::Nominal()).ToTH1(dataPOT, EExposureType::kPOT, kBinDensity);
+      //pavetext to print out the events for each topology
+      TPaveText ptEnuEvents(0.7, 0.60, 0.85, 0.67, "ARC NDC");
+      ptEnuEvents.SetFillColor(0);
+      ptEnuEvents.SetFillStyle(0);
+      ptEnuEvents.SetBorderSize(0);
+      ptEnuEvents.SetTextSize(0.032);
+      ptEnuEvents.SetTextFont(102);
 
 
-    //get the events BEFORE the re-scaling
-    int dataEnuEvents = hEnuData->Integral();
-    int nomEnuEvents = hEnuCVPred->Integral();
-    std:: cout << "Events (data, CV): " << dataEnuEvents <<  ", " << nomEnuEvents  << std::endl;
-
-    ndfit::visuals::PredPreDrawAesthetics(hEnuCVPred, scaleFactor, false);
-    ndfit::visuals::DataPreDrawAesthetics(hEnuData, scaleFactor);
-    for (auto & hist : up1ShiftEnuReco)
-      hist->Scale(scaleFactor);
-    for (auto & hist : dn1ShiftEnuReco)
-      hist->Scale(scaleFactor);
+      // 2D profiled view the two variables: Enu_Reco & EHadVis.
+      PlotWithSystErrorBand((IPrediction *&) predBundle.pred, systs, calc2020BF.get(), dataPOT, kGray + 2, kGray);
+      c.SaveAs(ndfit::FullFilename(outDirPlot, "profiled_error_bands_plot_" + predBundle.name + ".png").c_str());
+      c.Clear();
+      // 2D profile
 
 
-    p1->cd();
-    auto EnuErrorBand = PlotWithSystErrorBand(hEnuCVPred, up1ShiftEnuReco, dn1ShiftEnuReco, kGray + 2, kGray);
-    hEnuCVPred->Draw("same hist e");
-    hEnuData->Draw("same hist p"); // draw as points (to distinguish with data)
 
-    hEnuCVPred->GetYaxis()->SetTitle("Events / GeV");
-    hEnuCVPred->GetYaxis()->SetTitleSize(0.036);
-    hEnuCVPred->GetYaxis()->SetTitleOffset(1.1);
-    hEnuCVPred->SetMaximum(hEnuCVPred->GetMaximum() * 1.8);
-    hEnuCVPred->GetXaxis()->SetLabelSize(0.0); hEnuCVPred->GetXaxis()->SetTitleSize(0.0);
 
-    TLegend leg(0.45, 0.65, 0.9, 0.9);
-    leg.SetFillColor(0);
-    leg.SetFillStyle(0);
-    const std::string errorBands = "1#sigma NOvA selected uncertainties";
-    const std::string cvPred = "NOvA 2020 prediction"; // 2020 tune (MEC+FSI)";
-    std::string legCVText;
-    leg.AddEntry(hEnuCVPred, cvPred.c_str(), "l");
-    up1ShiftEnuReco.at(0)->SetFillColor(kGray);
-    up1ShiftEnuReco.at(0)->SetLineColor(kGray);
-    leg.AddEntry(up1ShiftEnuReco.at(0), Form("%s", errorBands.c_str()), "f");
-    leg.AddEntry(hEnuData, "Prod5.1 Data", "p");
-    leg.Draw("same");
-    TLatex latex;
-    latex.SetTextSize(0.04);
-    latex.SetTextAlign(13);
-    latex.DrawLatexNDC(.15,.85,(Form("%s", beamType.c_str())));
-    latex.DrawLatexNDC(.15, .8, Form("%s", quantileString.c_str()));
-    latex.Draw("same");
+      /// Plot comparison and ratio on save canvas
+      SplitCanvas(0.25, p1, p2);
+      // Enu-Reco
+      //create the histograms for the PlotWithSystErrorBand() function
+      std::cout << "Producing Enu-Reco plots for " << predBundle.name << "......" << std::endl;
+      TH1 *hEnuData = dataSpectra.at(predBundle.name).ToTH1(dataPOT, EExposureType::kPOT, kBinDensity);
+      TH1 *hEnuCVPred = predBundle.pred->PredictSyst(calc2020BF.get(), SystShifts::Nominal()).ToTH1(dataPOT,
+                                                                                                    EExposureType::kPOT,
+                                                                                                    kBinDensity);
+
+
+      //get the events BEFORE the re-scaling
+      int dataEnuEvents = hEnuData->Integral();
+      int nomEnuEvents = hEnuCVPred->Integral();
+      std::cout << "Events (data, CV): " << dataEnuEvents << ", " << nomEnuEvents << std::endl;
+
+      ndfit::visuals::PredPreDrawAesthetics(hEnuCVPred, scaleFactor, false);
+      ndfit::visuals::DataPreDrawAesthetics(hEnuData, scaleFactor);
+      for (auto &hist: up1ShiftEnuReco)
+        hist->Scale(scaleFactor);
+      for (auto &hist: dn1ShiftEnuReco)
+        hist->Scale(scaleFactor);
+
+
+      p1->cd();
+      auto EnuErrorBand = PlotWithSystErrorBand(hEnuCVPred, up1ShiftEnuReco, dn1ShiftEnuReco, kGray + 2, kGray);
+      hEnuCVPred->Draw("same hist e");
+      hEnuData->Draw("same hist p"); // draw as points (to distinguish with data)
+
+      hEnuCVPred->GetYaxis()->SetTitle("Events / GeV");
+      hEnuCVPred->GetYaxis()->SetTitleSize(0.036);
+      hEnuCVPred->GetYaxis()->SetTitleOffset(1.1);
+      hEnuCVPred->SetMaximum(hEnuCVPred->GetMaximum() * 1.8);
+      hEnuCVPred->GetXaxis()->SetLabelSize(0.0);
+      hEnuCVPred->GetXaxis()->SetTitleSize(0.0);
+
+      TLegend leg(0.45, 0.65, 0.9, 0.9);
+      leg.SetFillColor(0);
+      leg.SetFillStyle(0);
+      const std::string errorBands = Form("#pm1#sigma %s", syst->ShortName().c_str());
+      const std::string cvPred = "NOvA 2024 MC"; // 2020 tune (MEC+FSI)";
+      std::string legCVText;
+      leg.AddEntry(hEnuCVPred, cvPred.c_str(), "l");
+      up1ShiftEnuReco.at(0)->SetFillColor(kGray);
+      up1ShiftEnuReco.at(0)->SetLineColor(kGray);
+      leg.AddEntry(up1ShiftEnuReco.at(0), Form("%s", errorBands.c_str()), "f");
+      leg.AddEntry(hEnuData, "Prod5.1 Data", "p");
+      leg.Draw("same");
+      TLatex latex;
+      latex.SetTextSize(0.04);
+      latex.SetTextAlign(13);
+      latex.DrawLatexNDC(.15, .85, (Form("%s", beamType.c_str())));
+      latex.DrawLatexNDC(.15, .8, Form("%s", quantileString.c_str()));
+      latex.Draw("same");
 //    ptEnuEvents.Draw("same");
-    Preliminary();
+      Preliminary();
 
-    /// Enu-Reco ratio
-    p2->cd();
-    p2->SetGridy(1);
-    TH1 * hEnuUnity = (TH1F *) hEnuCVPred->Clone("hEnuUnity");
-    hEnuUnity->Divide(hEnuCVPred);
-    TH1 * hEnuDataRatio = (TH1F *) hEnuData->Clone("hEnuDataRatio");
-    hEnuDataRatio->Divide(hEnuCVPred);
-
-
-    ///create the ratios for the error bands
-    auto up1ShiftEnuRecoRatio = up1ShiftEnuReco;
-    auto dn1ShiftEnuRecoRatio = dn1ShiftEnuReco;
-    for (auto &hist : up1ShiftEnuRecoRatio)
-      hist->Divide(hEnuCVPred);
-    for (auto &hist : dn1ShiftEnuRecoRatio)
-      hist->Divide(hEnuCVPred);
+      /// Enu-Reco ratio
+      p2->cd();
+      p2->SetGridy(1);
+      TH1 *hEnuUnity = (TH1F *) hEnuCVPred->Clone("hEnuUnity");
+      hEnuUnity->Divide(hEnuCVPred);
+      TH1 *hEnuDataRatio = (TH1F *) hEnuData->Clone("hEnuDataRatio");
+      hEnuDataRatio->Divide(hEnuCVPred);
 
 
-    PlotWithSystErrorBand(hEnuUnity, up1ShiftEnuRecoRatio, dn1ShiftEnuRecoRatio, kGray + 2, kGray);
+      ///create the ratios for the error bands
+      auto up1ShiftEnuRecoRatio = up1ShiftEnuReco;
+      auto dn1ShiftEnuRecoRatio = dn1ShiftEnuReco;
+      for (auto &hist: up1ShiftEnuRecoRatio)
+        hist->Divide(hEnuCVPred);
+      for (auto &hist: dn1ShiftEnuRecoRatio)
+        hist->Divide(hEnuCVPred);
 
-    hEnuUnity->GetXaxis()->CenterTitle();
-    hEnuUnity->GetXaxis()->SetTitleOffset(1.);
-    hEnuUnity->GetXaxis()->SetTitleSize(0.045);
-    hEnuUnity->SetXTitle("Reco. E_{#nu} (GeV)");
-    hEnuUnity->GetYaxis()->CenterTitle();
-    hEnuUnity->GetYaxis()->SetRangeUser(0.5, 1.5);
-    hEnuUnity->GetYaxis()->SetTitleSize(0.02);
-    hEnuUnity->GetYaxis()->SetLabelSize(0.02);
-    hEnuUnity->GetYaxis()->SetTitleOffset(1.5);
-    hEnuUnity->SetYTitle("#frac{Prod5.1 Data}{NOvA MC}");
-    hEnuUnity->GetYaxis()->CenterTitle();
-    xAxisENu->Draw("same");
 
-    hEnuDataRatio->Draw("hist same pe");
+      PlotWithSystErrorBand(hEnuUnity, up1ShiftEnuRecoRatio, dn1ShiftEnuRecoRatio, kGray + 2, kGray);
 
-    mcmcTxtENu->Draw();
+      hEnuUnity->GetXaxis()->CenterTitle();
+      hEnuUnity->GetXaxis()->SetTitleOffset(1.);
+      hEnuUnity->GetXaxis()->SetTitleSize(0.045);
+      hEnuUnity->SetXTitle("Reco. E_{#nu} (GeV)");
+      hEnuUnity->GetYaxis()->CenterTitle();
+      hEnuUnity->GetYaxis()->SetRangeUser(0.5, 1.5);
+      hEnuUnity->GetYaxis()->SetTitleSize(0.02);
+      hEnuUnity->GetYaxis()->SetLabelSize(0.02);
+      hEnuUnity->GetYaxis()->SetTitleOffset(1.5);
+      hEnuUnity->SetYTitle("#frac{Prod5.1 Data}{NOvA MC}");
+      hEnuUnity->GetYaxis()->CenterTitle();
+      xAxisENu->Draw("same");
 
-    ndfit::visuals::DetectorLabel(predBundle.det);
-    for (const auto & ext : {".png", ".pdf"} ) // ".root"
-      c.SaveAs(ndfit::FullFilename(outDirPlot,  "plot_" + predBundle.name + "_" + syst->ShortName() + "_RecoEnu_errorbands_" + ext).c_str());
+      hEnuDataRatio->Draw("hist same pe");
+
+      mcmcTxtENu->Draw();
+
+      ndfit::visuals::DetectorLabel(predBundle.det);
+      for (const auto &ext: {".png", ".pdf"}) // ".root"
+        c.SaveAs(ndfit::FullFilename(outDirPlot,
+                                     "plot_" + predBundle.name + "_" + syst->ShortName() + "_RecoEnu_errorbands_" +
+                                     ext).c_str());
+
+    } // systs
 
     // write captions here...
 
