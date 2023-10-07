@@ -97,7 +97,7 @@ namespace histogram
 using namespace ana;
 
 // =====================================================================================================
-void plot_preds_nd_reco_enu_quantiles_RES_DIS_shifts(const std::string& systString)          // "resdis", "mecdg", "mecshape"
+void plot_preds_nd_reco_enu_quantiles_shifts(const std::string& systString)          // "resdis", "mecdg", "mecshape"
 // =====================================================================================================
 {
 
