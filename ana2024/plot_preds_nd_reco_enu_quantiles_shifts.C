@@ -253,7 +253,7 @@ void plot_preds_nd_reco_enu_quantiles_shifts(const std::string& systString)     
       auto *leg = new TLegend(legx1,legy1,legx2,legy2);
       leg->SetFillStyle(0);
       leg->SetLineColor(0);
-      leg->AddEntry(hnom, "NOvA N18_10j_00_000 tune","l");
+      leg->AddEntry(hnom, "NOvA 2024 CV","l");
       leg->AddEntry(up3,"+3 #sigma shift","l");
       leg->AddEntry(up2,"+2 #sigma shift","l");
       leg->AddEntry(up1,"+1 #sigma shift","l");
@@ -321,7 +321,7 @@ void plot_preds_nd_reco_enu_quantiles_shifts(const std::string& systString)     
       latex.DrawLatexNDC(.15,.75,("#color[1]{"+syst->LatexName()+"}").c_str());
       ndfit::visuals::NeutrinoLabel(ndfit::NeutrinoType::kNumu);
       Simulation();
-      ndfit::visuals::DetectorLabel(caf::kFARDET);
+      ndfit::visuals::DetectorLabel(caf::kNEARDET);
       pad1->Update();
       c.Update();
       c.cd();
