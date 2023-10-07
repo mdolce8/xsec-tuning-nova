@@ -331,6 +331,9 @@ void plot_preds_nd_reco_enu_quantiles_errorbands(const std::string& systString) 
       latex.Draw("same");
 //    ptEnuEvents.Draw("same");
       Preliminary();
+      ndfit::visuals::NeutrinoLabel(ndfit::NeutrinoType::kNumu);
+      Simulation();
+      ndfit::visuals::DetectorLabel(caf::kNEARDET);
 
       /// Enu-Reco ratio
       p2->cd();
@@ -372,7 +375,7 @@ void plot_preds_nd_reco_enu_quantiles_errorbands(const std::string& systString) 
       ndfit::visuals::DetectorLabel(predBundle.det);
       for (const auto &ext: {".png", ".pdf"}) // ".root"
         c.SaveAs(ndfit::FullFilename(outDirPlot,
-                                     "plot_" + predBundle.name + "_" + syst->ShortName() + "_RecoEnu_errorbands_" +
+                                     "plot_" + predBundle.name + "_" + syst->ShortName() + "_RecoEnu_errorbands" +
                                      ext).c_str());
 
     } // systs
