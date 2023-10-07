@@ -1,9 +1,10 @@
-/* plot_preds_nd_reco_enu_quantiles_RES_DIS_shifts.C
+/* plot_preds_nd_reco_enu_quantiles_shifts.C
  *
  * preparation for Ana2024.
  *
  * produce some plots of the ND predictions
  * of the "new" RES and DIS systematics,
+ * and MEC systematics
  * in the inclusive and quantile distributions.
  *
  * Large chunk taken from: plot_fd_systematic_shifts_from_numu_quantile_predictions.C
@@ -100,7 +101,7 @@ void plot_preds_nd_reco_enu_quantiles_RES_DIS_shifts(const std::string& systStri
 // =====================================================================================================
 {
 
-  const std::string& outDirPlot = "/nova/ana/users/mdolce/xsec-tuning-nova/plots/ana2024/plot_preds_nd_reco_enu_quantiles_RES_DIS_shifts";
+  const std::string& outDirPlot = "/nova/ana/users/mdolce/xsec-tuning-nova/plots/ana2024/plot_preds_nd_reco_enu_quantiles_shifts";
 
   //load all systs that exist in the preds ROOT file
   NewRESDISSysts();
