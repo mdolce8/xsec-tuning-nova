@@ -285,11 +285,16 @@ void plot_preds_nd_reco_enu_quantiles_errorbands(const std::string& systString) 
       int nomEnuEvents = hEnuCVPred->Integral();
       std::cout << "Events (data, CV): " << dataEnuEvents << ", " << nomEnuEvents << std::endl;
 
-      ndfit::visuals::PredPreDrawAesthetics(hEnuCVPred, scaleFactor, false);
-      ndfit::visuals::DataPreDrawAesthetics(hEnuData, scaleFactor);
-      for (auto &hist: up1ShiftEnuReco)
+      hEnuCVPred->SetLineColor(kGray + 2);
+      hEnuCVPred->SetLineWidth(3);
+      hEnuCVPred->Scale(scaleFactor);
+      hEnuData->SetMarkerColor(kBlack);
+      hEnuData->SetMarkerStyle(kFullCircle);
+      hEnuData->SetLineWidth(2);
+      hEnuData->Scale(scaleFactor);
+      for (TH1 * hist: up1ShiftEnuReco)
         hist->Scale(scaleFactor);
-      for (auto &hist: dn1ShiftEnuReco)
+      for (TH1 * hist: dn1ShiftEnuReco)
         hist->Scale(scaleFactor);
 
 
