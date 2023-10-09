@@ -260,7 +260,7 @@ void plot_preds_nd_reco_enu_quantiles_errorbands(const std::string& systString) 
       ptEnuEvents.SetTextFont(102);
 
 
-      // 2D profiled view the two variables: Enu_Reco & EHadVis.
+      // contains all systs
       PlotWithSystErrorBand((IPrediction *&) predBundle.pred, systs, calc2020BF.get(), dataPOT, kGray + 2, kGray);
       c.SaveAs(ndfit::FullFilename(outDirPlot, "profiled_error_bands_plot_" + predBundle.name + ".png").c_str());
       c.Clear();
@@ -287,15 +287,15 @@ void plot_preds_nd_reco_enu_quantiles_errorbands(const std::string& systString) 
 
       hEnuCVPred->SetLineColor(kGray + 2);
       hEnuCVPred->SetLineWidth(3);
-      hEnuCVPred->Scale(scaleFactor);
+//      hEnuCVPred->Scale(scaleFactor);
       hEnuData->SetMarkerColor(kBlack);
       hEnuData->SetMarkerStyle(kFullCircle);
       hEnuData->SetLineWidth(2);
-      hEnuData->Scale(scaleFactor);
-      for (TH1 * hist: up1ShiftEnuReco)
-        hist->Scale(scaleFactor);
-      for (TH1 * hist: dn1ShiftEnuReco)
-        hist->Scale(scaleFactor);
+//      hEnuData->Scale(scaleFactor);
+//      for (TH1 * hist: up1ShiftEnuReco)
+//        hist->Scale(scaleFactor);
+//      for (TH1 * hist: dn1ShiftEnuReco)
+//        hist->Scale(scaleFactor);
 
 
       p1->cd();
@@ -343,8 +343,8 @@ void plot_preds_nd_reco_enu_quantiles_errorbands(const std::string& systString) 
 
 
       ///create the ratios for the error bands
-      auto up1ShiftEnuRecoRatio = up1ShiftEnuReco;
-      auto dn1ShiftEnuRecoRatio = dn1ShiftEnuReco;
+      std::vector<TH1*> up1ShiftEnuRecoRatio = up1ShiftEnuReco;
+      std::vector<TH1*> dn1ShiftEnuRecoRatio = dn1ShiftEnuReco;
       for (auto &hist: up1ShiftEnuRecoRatio)
         hist->Divide(hEnuCVPred);
       for (auto &hist: dn1ShiftEnuRecoRatio)
