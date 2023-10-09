@@ -207,6 +207,7 @@ void plot_preds_nd_reco_enu_quantiles_errorbands(const std::string& systString) 
     // use the systs from each specific topology
     // Use ONLY the systs that were used in the fitting...
     for (const auto &syst : systs) {
+      std::cout << "Looping through syst....." << syst->ShortName() << std::endl;
       SystShifts pm1SigmaShift;
       pm1SigmaShift.SetShift(syst, +1.);
       TH1 *hUp1ShiftEnuReco = predBundle.pred->PredictSyst(calc2020BF.get(), pm1SigmaShift).ToTH1(dataPOT,
