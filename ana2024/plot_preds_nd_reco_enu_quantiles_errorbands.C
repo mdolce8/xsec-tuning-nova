@@ -211,13 +211,13 @@ void plot_preds_nd_reco_enu_quantiles_errorbands(const std::string& systString) 
       pm1SigmaShift.SetShift(syst, +1.);
       TH1 *hUp1ShiftEnuReco = predBundle.pred->PredictSyst(calc2020BF.get(), pm1SigmaShift).ToTH1(dataPOT,
                                                                                                   EExposureType::kPOT,
-                                                                                                  kBinDensity);
+                                                                                                  kBinContent);
       up1ShiftEnuReco.push_back(hUp1ShiftEnuReco);
 
       pm1SigmaShift.SetShift(syst, -1.);
       TH1 *hDn1ShiftEnuReco = predBundle.pred->PredictSyst(calc2020BF.get(), pm1SigmaShift).ToTH1(dataPOT,
                                                                                                   EExposureType::kPOT,
-                                                                                                  kBinDensity);
+                                                                                                  kBinContent);
       dn1ShiftEnuReco.push_back(hDn1ShiftEnuReco);
 
 
@@ -274,10 +274,10 @@ void plot_preds_nd_reco_enu_quantiles_errorbands(const std::string& systString) 
       // Enu-Reco
       //create the histograms for the PlotWithSystErrorBand() function
       std::cout << "Producing Enu-Reco plots for " << predBundle.name << "......" << std::endl;
-      TH1 * hEnuData = dataSpectra.at(predBundle.name).ToTH1(dataPOT, EExposureType::kPOT, kBinDensity);
+      TH1 * hEnuData = dataSpectra.at(predBundle.name).ToTH1(dataPOT, EExposureType::kPOT, kBinContent);
       TH1 * hEnuCVPred = predBundle.pred->PredictSyst(calc2020BF.get(), SystShifts::Nominal()).ToTH1(dataPOT,
                                                                                                     EExposureType::kPOT,
-                                                                                                    kBinDensity);
+                                                                                                    kBinContent);
 
 
       //get the events BEFORE the re-scaling
