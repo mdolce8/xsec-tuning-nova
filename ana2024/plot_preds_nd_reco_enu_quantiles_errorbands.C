@@ -201,13 +201,15 @@ void plot_preds_nd_reco_enu_quantiles_errorbands(const std::string& systString) 
     std::cout << predBundle.name << "......." << std::endl;
     const double dataPOT = dataSpectra.at(predBundle.name).POT();
 
-    /// create the error bands
-    std::vector<TH1*> up1ShiftEnuReco, dn1ShiftEnuReco;
 
     // use the systs from each specific topology
     // Use ONLY the systs that were used in the fitting...
     for (const auto &syst : systs) {
       std::cout << "Looping through syst....." << syst->ShortName() << std::endl;
+
+      /// create the error bands
+      std::vector<TH1*> up1ShiftEnuReco, dn1ShiftEnuReco;
+
       SystShifts pm1SigmaShift;
       pm1SigmaShift.SetShift(syst, +1.);
       TH1 *hUp1ShiftEnuReco = predBundle.pred->PredictSyst(calc2020BF.get(), pm1SigmaShift).ToTH1(dataPOT,
