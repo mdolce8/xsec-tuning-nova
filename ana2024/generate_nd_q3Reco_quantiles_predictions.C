@@ -33,6 +33,7 @@
 #include "CAFAna/Cuts/SpillCuts.h"
 #include "CAFAna/Cuts/TruthCuts.h"
 #include "CAFAna/Prediction/PredictionNoOsc.h"
+#include "CAFAna/Systs/MECSysts.h"
 #include "CAFAna/Systs/RESSysts.h"
 #include "CAFAna/Weights/PPFXWeights.h"
 
@@ -85,7 +86,12 @@ namespace ndfit {
       } // systString == mecdg
 
       // the MEC Enu Shape, and MEC NP frac (for nu and nubar)
-      else if (systString == "mecshape") for (auto &syst: ana::MECsysts()) systs_ptrs.push_back(syst);
+      else if (systString == "mecshape"){
+        systs_ptrs.push_back(&kMECInitStateNPFracSyst2020Nu);
+        systs_ptrs.push_back(&kMECInitStateNPFracSyst2020AntiNu);
+        systs_ptrs.push_back(&kMECShapeSyst2020GSFNu);
+        systs_ptrs.push_back(&kMECShapeSyst2020GSFAntiNu);
+      }
 
 
       // RES/FSI custom systs (ResScale{Delta,Other}, DISHadro{nu,nubar}, RESvpvn{nu,nubar}ratio)
@@ -106,7 +112,7 @@ namespace ndfit {
 using namespace ana;
 
 // =====================================================================================================
-void generate_nd_ehadvis_quantiles_predictions(const std::string& beam = "fhc", // or "rhc"
+void generate_nd_q3Reco_quantiles_predictions(const std::string& beam = "fhc", // or "rhc"
                                                 const std::string& systString = "",
                                                 const bool test = true,
                                                 const bool gridSubmission = false, 			// outdir for grid is "."
