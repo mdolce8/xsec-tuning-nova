@@ -34,6 +34,7 @@
 #include "CAFAna/Cuts/TruthCuts.h"
 #include "CAFAna/Prediction/PredictionNoOsc.h"
 #include "CAFAna/Systs/RESSysts.h"
+#include "CAFAna/Systs/MECSysts.h"
 #include "CAFAna/Weights/PPFXWeights.h"
 
 #include "OscLib/OscCalcPMNSOpt.h"
@@ -84,8 +85,13 @@ namespace ndfit {
         for (auto &syst: mecDGSysts) systs_ptrs.push_back(syst);
       } // systString == mecdg
 
-      // the MEC Enu Shape, and MEC NP frac (for nu and nubar)
-      else if (systString == "mecshape") for (auto &syst: ana::MECsysts()) systs_ptrs.push_back(syst);
+      // the MEC Enu Shape, and MEC NP frac (for nu and nubar) -- with GSF systs (no longer ana::MECSysts())
+      else if (systString == "mecshape"){
+        systs_ptrs.push_back(&kMECInitStateNPFracSyst2020Nu);
+        systs_ptrs.push_back(&kMECInitStateNPFracSyst2020AntiNu);
+        systs_ptrs.push_back(&kMECShapeSyst2020GSFNu);
+        systs_ptrs.push_back(&kMECShapeSyst2020GSFAntiNu);
+      }
 
 
       // RES/FSI custom systs (ResScale{Delta,Other}, DISHadro{nu,nubar}, RESvpvn{nu,nubar}ratio)
