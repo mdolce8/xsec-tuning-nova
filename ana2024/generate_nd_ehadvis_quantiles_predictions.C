@@ -201,13 +201,13 @@ void generate_nd_ehadvis_quantiles_predictions(const std::string& beam = "fhc", 
 // for consistency in LoadNDTopologicalPreds and its file structure
   for (unsigned int quantileIdx = 0; quantileIdx < cutQuantiles.size(); quantileIdx++) {
     predGens.try_emplace(Form("pred_interp_Q%d", quantileIdx+1),
-                         NoOscPredictionGenerator(loaders.GetLoader(caf::kNEARDET, Loaders::kMC), histaxisEHadVisE, kNumu2020ND && cutQuantiles[quantileIdx], kPPFXFluxCVWgt*kXSecCVWgt2020GSFwFSIProd51));
+                         NoOscPredictionGenerator(loaders.GetLoader(caf::kNEARDET, Loaders::kMC), histaxisEHadVisE, kNumu2020ND && cutQuantiles[quantileIdx], kPPFXFluxCVWgt*kXSecCVWgt2020GSFProd51));
   }
 
   // Create the FD "AllNumu" predinterp as well. It is Q5.
   // jeremy says this is typically quantile 4.... (and 1 is 0), but this is my way.
   predGens.try_emplace(Form("pred_interp_Q%d", (int) cutQuantiles.size()+1),
-                       NoOscPredictionGenerator(loaders.GetLoader(caf::kNEARDET, Loaders::kMC), histaxisEHadVisE, kNumu2020ND, kPPFXFluxCVWgt*kXSecCVWgt2020GSFwFSIProd51));
+                       NoOscPredictionGenerator(loaders.GetLoader(caf::kNEARDET, Loaders::kMC), histaxisEHadVisE, kNumu2020ND, kPPFXFluxCVWgt*kXSecCVWgt2020GSFProd51));
 
   for (const auto &predGen : predGens) {
     predInterps.try_emplace(predGen.first,
