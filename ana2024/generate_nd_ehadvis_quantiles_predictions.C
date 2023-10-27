@@ -1,13 +1,12 @@
 /*
  *  generate_nd_ehadvis_quantiles_predictions.C
  *
- *	Generate ND Reco. Ev quantiles predictions.
+ *	Generate ND Reco. E Had Vis predictions
+ *	with the quantiles cuts.
  *	These predictions will be used to produce some
  *	validation plots for the NOvA 2024 analysis.
- *	Specifically:
- *	  -- the "new" RES/DIS systs and
- *	  -- MEC systs
- *	    (shape and Double Gaussian).
+ *	They will go inside a blessing package too.
+ *
  *
  *  Saves each Quantile prediction into its own ROOT file.
  *
@@ -19,7 +18,6 @@
 
 #include "3FlavorAna/Cuts/NumuCuts2020.h"
 #include "3FlavorAna/Cuts/QuantileCuts2020.h"
-#include "3FlavorAna/Systs/EnergySysts2020.h"
 #include "3FlavorAna/Systs/3FlavorAna2020Systs.h"
 #include "3FlavorAna/Systs/3FlavorSystHelper.h"
 #include "3FlavorAna/Vars/Binnings.h"
@@ -33,8 +31,7 @@
 #include "CAFAna/Cuts/SpillCuts.h"
 #include "CAFAna/Cuts/TruthCuts.h"
 #include "CAFAna/Prediction/PredictionNoOsc.h"
-#include "CAFAna/Systs/MECSysts.h"
-#include "CAFAna/Systs/RESSysts.h"
+#include "CAFAna/Systs/XSecSystLists.h"
 #include "CAFAna/Weights/PPFXWeights.h"
 
 #include "OscLib/OscCalcPMNSOpt.h"
@@ -55,68 +52,21 @@ namespace save
     }
 }
 
-namespace ndfit {
-    // systString takes either: "resdis", "mecdg", or "mecshape", or "all"
-    std::vector<const ana::ISyst *> GetSystematics(const std::string& systString, const bool reducedDG = false) {
-      std::vector<const ana::ISyst *> systs_ptrs;
-      std::cout << "'systString' is == " << systString << std::endl;
 
-      if (systString == "mecdg"){
-        auto mecDGSysts = ana::getMECtuneSystsCorrected_GSFProd5p1();
-
-        if (reducedDG) {
-          std::cout << "Removing the MEC DG systs that were omitted from the ND fitting..." << std::endl;
-          for (auto &syst: mecDGSysts) {
-            for (unsigned int i = 0; i < mecDGSysts.size(); i++) {
-              if (mecDGSysts[i]->ShortName() == "MECDoubleGaussEnhSystNorm_2_GSFProd5p1")
-                mecDGSysts.erase(mecDGSysts.begin() + i); //rm this element
-            }
-            for (unsigned int i = 0; i < mecDGSysts.size(); i++) {
-              if (mecDGSysts[i]->ShortName() == "MECDoubleGaussEnhSystMeanQ0_2_GSFProd5p1")
-                mecDGSysts.erase(mecDGSysts.begin() + i);
-            }
-            for (unsigned int i = 0; i < mecDGSysts.size(); i++) {
-              if (mecDGSysts[i]->ShortName() == "MECDoubleGaussEnhSystCorr_2_GSFProd5p1")
-                mecDGSysts.erase(mecDGSysts.begin() + i); //rm this element
-            }
-          } // Double Gaussian systs
-        } // reduced DG
-
-        for (auto &syst: mecDGSysts) systs_ptrs.push_back(syst);
-      } // systString == mecdg
-
-      // the MEC Enu Shape, and MEC NP frac (for nu and nubar)
-      else if (systString == "mecshape"){
-        systs_ptrs.push_back(&kMECInitStateNPFracSyst2020Nu);
-        systs_ptrs.push_back(&kMECInitStateNPFracSyst2020AntiNu);
-        systs_ptrs.push_back(&kMECShapeSyst2020GSFNu);
-        systs_ptrs.push_back(&kMECShapeSyst2020GSFAntiNu);
-      }
-
-
-      // RES/FSI custom systs (ResScale{Delta,Other}, DISHadro{nu,nubar}, RESvpvn{nu,nubar}ratio)
-      else if (systString == "resdis") for (auto &syst: ana::NewRESDISSysts()) systs_ptrs.push_back(syst);
-
-      else {std::cerr << "ERROR. Unknown 'systString' = " << systString << std::endl; exit(1);}
-
-      return systs_ptrs;
-    }
-}
 
 // for snapshot do: cafe -ss
 
 // NOTE: these are reweightable systematics only!
 
-//todo: maybe create a README.txt which lists the `opt` indicating which systematics were used in the predictions?
+// NOTE: These predictions contain ALL Ana2024 xsec systematics.
+// -- Moreover, they will be used for a blessing package.
 
 using namespace ana;
 
 // =====================================================================================================
 void generate_nd_ehadvis_quantiles_predictions(const std::string& beam = "fhc", // or "rhc"
-                                                const std::string& systString = "",
                                                 const bool test = true,
-                                                const bool gridSubmission = false, 			// outdir for grid is "."
-                                                const bool fillSysts = true            // generate preds w/o systs
+                                                const bool gridSubmission = false 			// outdir for grid is "."
 )
 // =====================================================================================================
 {
@@ -137,20 +87,16 @@ void generate_nd_ehadvis_quantiles_predictions(const std::string& beam = "fhc", 
   std::vector<const ISyst *> systs_ptrs;
 
   // will store all fit parameters
-  if (fillSysts) {
-    std::cout << "Filling preds with systs..." << std::endl;
+  std::cout << "Filling preds with systs..." << std::endl;
 
-    // these are the reweightable systematics only! (no detector systs)
-    systs_ptrs = ndfit::GetSystematics(systString);
+  // these are the reweightable systematics only! (no detector systs)
+  systs_ptrs = getAllXsecSysts_2020_GSF();
+  for (const ISyst* syst: ana::NewRESDISSysts()) systs_ptrs.push_back(syst);
 
-    std::cout << "******* We are filling predictions for  " << systs_ptrs.size() << " systematic parameters *******" << std::endl;
-    for (auto &syst: systs_ptrs) std::cout << syst->ShortName() << std::endl;
-  } // fillSysts = true
+  std::cout << "******* We are filling predictions for  " << systs_ptrs.size() << " systematic parameters *******" << std::endl;
+  for (auto &syst: systs_ptrs) std::cout << syst->ShortName() << std::endl;
 
-  else {
-    std::cout << "Generating predictions with NO systematics." << std::endl;
-    std::cout << "number of systs: " << systs_ptrs.size() << std::endl;
-  }
+  std::cout << "number of systs: " << systs_ptrs.size() << std::endl;
   std::cout << "**********************************************************" << std::endl;
 //  ------------------------------------------------------------------------------
 
@@ -173,9 +119,6 @@ void generate_nd_ehadvis_quantiles_predictions(const std::string& beam = "fhc", 
 
   if (defNonSwap.empty()) throw std::runtime_error( "MC SAM Definition is empty" );
 
-
-  //important notes: kCCE = kNumuE2020 (Reco Ev), kTrueE (true Ev).
-  // kIsNumuCC is a truth-level cut, so we prob don't want that for our MC.
 
   // Cuts.
   // quantiles (different for FHC or RHC).
@@ -233,7 +176,7 @@ void generate_nd_ehadvis_quantiles_predictions(const std::string& beam = "fhc", 
   for (const std::pair<std::string, const PredictionInterp*> predPair : predInterps){
 
     // create ROOT file.
-    std::string fileName = Form("pred_interp_nxp_%s_nd_%s_numu_Q%i.root",  systString.c_str(), beam.c_str(), quantileCount);
+    std::string fileName = Form("pred_interp_nxp_xsec24_nd_%s_numu_Q%i.root", beam.c_str(), quantileCount);
     const std::string& finalOutDir = out_dir + "/" + fileName;
     TFile ofile(Form("%s", finalOutDir.c_str()), "recreate");
 
