@@ -356,7 +356,7 @@ void plot_preds_nd_ehadvis_quantiles_errorbands(const std::string& systString = 
       hUnity->GetXaxis()->CenterTitle();
       hUnity->GetXaxis()->SetTitleOffset(1.);
       hUnity->GetXaxis()->SetTitleSize(0.045);
-      hUnity->SetXTitle("E_{had}^{vis} (GeV)");
+      hUnity->SetXTitle(""); // set from the TAxis object
       hUnity->GetYaxis()->CenterTitle();
       hUnity->GetYaxis()->SetRangeUser(0.5, 1.5);
       hUnity->GetYaxis()->SetTitleSize(0.02);
