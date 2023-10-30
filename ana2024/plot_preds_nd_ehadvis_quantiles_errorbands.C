@@ -78,6 +78,7 @@ namespace files
     const std::unordered_map<std::string, std::string> FILE_PATTERNS
             {
                     // Prod5.1 ND Reco Enu Quantile Cut pred Files
+                    {"xsec24", "pred_interp_nxp_%s_nd_%s_numu_%s.root"},
                     {"resdis", "pred_interp_nxp_%s_nd_%s_numu_%s.root"},
                     {"mecdg", "pred_interp_nxp_%s_nd_%s_numu_%s.root"},
                     {"mecshape", "pred_interp_nxp_%s_nd_%s_numu_%s.root"}
