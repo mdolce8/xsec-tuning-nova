@@ -277,7 +277,7 @@ void plot_preds_nd_ehadvis_quantiles_errorbands(const std::string& systString = 
       //get the events BEFORE the re-scaling
 //      int dataEnuEvents = hData->Integral();
       int nomEnuEvents = hCVPred->Integral();
-      std::cout << "Events (data, CV): " << dataEnuEvents << ", " << nomEnuEvents << std::endl;
+//      std::cout << "Events (data, CV): " << dataEnuEvents << ", " << nomEnuEvents << std::endl;
 
       hCVPred->SetLineColor(kGray + 2);
       hCVPred->SetLineWidth(3);
