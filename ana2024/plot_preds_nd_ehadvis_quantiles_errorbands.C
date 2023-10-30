@@ -95,6 +95,9 @@ namespace histogram
 
 using namespace ana;
 
+// TODO: include data (requires making data) for these plots
+// TODO: make the error band for each systematics separately...? for now its one big error band.
+
 // =====================================================================================================
 void plot_preds_nd_ehadvis_quantiles_errorbands(const std::string& systString = "xsec24")          // systs descr. in filename.
 // =====================================================================================================
@@ -114,7 +117,7 @@ void plot_preds_nd_ehadvis_quantiles_errorbands(const std::string& systString = 
 
 
 
-  // Load the ND Reco Enu Quantile predictions.
+  // Load the ND Quantile predictions.
   const std::string& inputDir = "/nova/ana/users/mdolce/preds+spectra/ana2024/generate_nd_ehadvis_quantiles_predictions_ana2024/";
   // code from LoadFDNumuPreds(), but adapted to read in any input directory.
   auto it_topo = files::ND_QUANTILE_PREDS.find("nd-quantiles");
@@ -169,22 +172,7 @@ void plot_preds_nd_ehadvis_quantiles_errorbands(const std::string& systString = 
             });
 
 
-  ///TODO: could add this in later if we want...
-//  // load the expts to get the LL for each topology
-//  std::vector<std::pair<const std::string, std::unique_ptr<ana::IExperiment>>> expts = ndfit::BuildExperiments(dataSpectra, preds);
-//  std::unique_ptr<ana::MultiExperiment> expt = ndfit::BuildMultiExperiment(ndfit::ExptPtrs(expts), acceptedSystsSet, false);
 
-//  // total ChiSq. Value printed at end of macro -- easier to read.
-//  double chiSqNominalTotal = expt->ChiSq(calc2020BF.get(), SystShifts::Nominal());
-//  double chiSqShiftedTotal = expt->ChiSq(calcRepSample.get(), *shiftsRepSample); // NO DoF
-//  int totalBins = 0; // every single bin.
-//  int totalMCBins = 0; // all non-zero MC bins (used in the chiSq calculation).
-//  // value to use to check to confirm the total expt->ChiSq() = expts.at(sampleType)->ChiSq() for Rep Sample
-//  double chiSqRepSampleTotal_Check = 0.;
-//
-//  //save the ChiSq for each topology into here
-//  std::unordered_map<std::string, double> chiSqMCMCMap {};
-//  std::unordered_map<std::string, double> chiSqNominalMap {};
 
 
   TCanvas c("c","c", 600,600); // 900, 600
@@ -203,31 +191,31 @@ void plot_preds_nd_ehadvis_quantiles_errorbands(const std::string& systString = 
     std::cout << predBundle.name << "......." << std::endl;
     const double dataPOT = dataSpectra.at(predBundle.name).POT();
 
+    /// create the error bands -- one vector for each prediction.
+    std::vector<TH1*> up1Shifts, dn1Shifts;
 
     // use the systs from each specific topology
     // Use ONLY the systs that were used in the fitting...
     for (const auto &syst : systs) {
       std::cout << "Looping through syst....." << syst->ShortName() << std::endl;
 
-      /// create the error bands
-      std::vector<TH1*> up1ShiftEnuReco, dn1ShiftEnuReco;
 
       SystShifts pm1SigmaShift;
       pm1SigmaShift.SetShift(syst, +1.);
-      TH1 *hUp1ShiftEnuReco = predBundle.pred->PredictSyst(calc2020BF.get(), pm1SigmaShift).ToTH1(dataPOT,
-                                                                                                  EExposureType::kPOT,
-                                                                                                  kBinDensity);
-      std::cout << "Up integral: " << hUp1ShiftEnuReco->Integral() << std::endl;
-      up1ShiftEnuReco.push_back(hUp1ShiftEnuReco);
+      TH1 *hUp1 = predBundle.pred->PredictSyst(calc2020BF.get(), pm1SigmaShift).ToTH1(dataPOT,
+                                                                                      EExposureType::kPOT,
+                                                                                      kBinDensity);
+      std::cout << "Up integral: " << hUp1->Integral() << std::endl;
+      up1Shifts.push_back(hUp1);
 
       pm1SigmaShift.SetShift(syst, -1.);
-      TH1 *hDn1ShiftEnuReco = predBundle.pred->PredictSyst(calc2020BF.get(), pm1SigmaShift).ToTH1(dataPOT,
-                                                                                                  EExposureType::kPOT,
-                                                                                                  kBinDensity);
-      std::cout << "Down integral: " << hDn1ShiftEnuReco->Integral() << std::endl;
-      dn1ShiftEnuReco.push_back(hDn1ShiftEnuReco);
+      TH1 *hDn1 = predBundle.pred->PredictSyst(calc2020BF.get(), pm1SigmaShift).ToTH1(dataPOT,
+                                                                                      EExposureType::kPOT,
+                                                                                      kBinDensity);
+      std::cout << "Down integral: " << hDn1->Integral() << std::endl;
+      dn1Shifts.push_back(hDn1);
 
-
+    } // systs to create error bands
 
 
       c.cd();
@@ -266,26 +254,26 @@ void plot_preds_nd_ehadvis_quantiles_errorbands(const std::string& systString = 
 
       /// Plot comparison and ratio on save canvas
       SplitCanvas(0.25, p1, p2);
-      // Enu-Reco
+      // EHadVis
       //create the histograms for the PlotWithSystErrorBand() function
-      std::cout << "Producing Enu-Reco plots for " << predBundle.name << "......" << std::endl;
-      TH1 * hEnuData = dataSpectra.at(predBundle.name).ToTH1(dataPOT, EExposureType::kPOT, kBinDensity);
-      TH1 * hEnuCVPred = predBundle.pred->PredictSyst(calc2020BF.get(), SystShifts::Nominal()).ToTH1(dataPOT,
-                                                                                                    EExposureType::kPOT,
-                                                                                                    kBinDensity);
+      std::cout << "Producing EHadVis plots for " << predBundle.name << "......" << std::endl;
+      TH1 * hData = dataSpectra.at(predBundle.name).ToTH1(dataPOT, EExposureType::kPOT, kBinDensity);
+      TH1 * hCVPred = predBundle.pred->PredictSyst(calc2020BF.get(), SystShifts::Nominal()).ToTH1(dataPOT,
+                                                                                                  EExposureType::kPOT,
+                                                                                                  kBinDensity);
 
 
       //get the events BEFORE the re-scaling
-      int dataEnuEvents = hEnuData->Integral();
-      int nomEnuEvents = hEnuCVPred->Integral();
+      int dataEnuEvents = hData->Integral();
+      int nomEnuEvents = hCVPred->Integral();
       std::cout << "Events (data, CV): " << dataEnuEvents << ", " << nomEnuEvents << std::endl;
 
-      hEnuCVPred->SetLineColor(kGray + 2);
-      hEnuCVPred->SetLineWidth(3);
+      hCVPred->SetLineColor(kGray + 2);
+      hCVPred->SetLineWidth(3);
 //      hEnuCVPred->Scale(scaleFactor);
-      hEnuData->SetMarkerColor(kBlack);
-      hEnuData->SetMarkerStyle(kFullCircle);
-      hEnuData->SetLineWidth(2);
+      hData->SetMarkerColor(kBlack);
+      hData->SetMarkerStyle(kFullCircle);
+      hData->SetLineWidth(2);
 //      hEnuData->Scale(scaleFactor);
 //      for (TH1 * hist: up1ShiftEnuReco)
 //        hist->Scale(scaleFactor);
@@ -294,28 +282,28 @@ void plot_preds_nd_ehadvis_quantiles_errorbands(const std::string& systString = 
 
 
       p1->cd();
-      auto EnuErrorBand = PlotWithSystErrorBand(hEnuCVPred, up1ShiftEnuReco, dn1ShiftEnuReco, kGray + 2, kGray);
-      hEnuCVPred->Draw("same hist e");
-      hEnuData->Draw("same hist p"); // draw as points (to distinguish with data)
+      auto ErrorBand = PlotWithSystErrorBand(hCVPred, up1Shifts, dn1Shifts, kGray + 2, kGray);
+      hCVPred->Draw("same hist e");
+      hData->Draw("same hist p"); // draw as points (to distinguish with data)
 
-      hEnuCVPred->GetYaxis()->SetTitle("Events / GeV");
-      hEnuCVPred->GetYaxis()->SetTitleSize(0.036);
-      hEnuCVPred->GetYaxis()->SetTitleOffset(1.1);
-      hEnuCVPred->SetMaximum(hEnuCVPred->GetMaximum() * 1.8);
-      hEnuCVPred->GetXaxis()->SetLabelSize(0.0);
-      hEnuCVPred->GetXaxis()->SetTitleSize(0.0);
+      hCVPred->GetYaxis()->SetTitle("Events / GeV");
+      hCVPred->GetYaxis()->SetTitleSize(0.036);
+      hCVPred->GetYaxis()->SetTitleOffset(1.1);
+      hCVPred->SetMaximum(hCVPred->GetMaximum() * 1.8);
+      hCVPred->GetXaxis()->SetLabelSize(0.0);
+      hCVPred->GetXaxis()->SetTitleSize(0.0);
 
       TLegend leg(0.45, 0.65, 0.9, 0.9);
       leg.SetFillColor(0);
       leg.SetFillStyle(0);
-      const std::string errorBands = Form("#pm1#sigma %s", syst->LatexName().c_str());
-      const std::string cvPred = "NOvA 2024 MC"; // 2020 tune (MEC+FSI)";
+      const std::string errorBands = "#pm1#sigma xsec24";
+      const std::string cvPred = "NOvA 2024 MC";
       std::string legCVText;
-      leg.AddEntry(hEnuCVPred, cvPred.c_str(), "l");
-      up1ShiftEnuReco.at(0)->SetFillColor(kGray);
-      up1ShiftEnuReco.at(0)->SetLineColor(kGray);
-      leg.AddEntry(up1ShiftEnuReco.at(0), Form("%s", errorBands.c_str()), "f");
-      leg.AddEntry(hEnuData, "Prod5.1 Data", "p");
+      leg.AddEntry(hCVPred, cvPred.c_str(), "l");
+      up1Shifts.at(0)->SetFillColor(kGray);
+      up1Shifts.at(0)->SetLineColor(kGray);
+      leg.AddEntry(up1Shifts.at(0), Form("%s", errorBands.c_str()), "f");
+      leg.AddEntry(hData, "Prod5.1 Data", "p");
       leg.Draw("same");
       TLatex latex;
       latex.SetTextSize(0.04);
@@ -328,49 +316,45 @@ void plot_preds_nd_ehadvis_quantiles_errorbands(const std::string& systString = 
       ndfit::visuals::NeutrinoLabel(ndfit::NeutrinoType::kNumu);
       ndfit::visuals::DetectorLabel(caf::kNEARDET);
 
-      /// Enu-Reco ratio
+      /// EHadVis ratio
       p2->cd();
       p2->SetGridy(1);
-      TH1 *hEnuUnity = (TH1F *) hEnuCVPred->Clone("hEnuUnity");
-      hEnuUnity->Divide(hEnuCVPred);
-      TH1 *hEnuDataRatio = (TH1F *) hEnuData->Clone("hEnuDataRatio");
-      hEnuDataRatio->Divide(hEnuCVPred);
+      TH1 *hUnity = (TH1F *) hCVPred->Clone("hEUnity");
+      hUnity->Divide(hCVPred);
+      TH1 *hDataRatio = (TH1F *) hData->Clone("hDataRatio");
+      hDataRatio->Divide(hCVPred);
 
 
       ///create the ratios for the error bands
-      std::vector<TH1*> up1ShiftEnuRecoRatio = up1ShiftEnuReco;
-      std::vector<TH1*> dn1ShiftEnuRecoRatio = dn1ShiftEnuReco;
-      for (auto &hist: up1ShiftEnuRecoRatio)
-        hist->Divide(hEnuCVPred);
-      for (auto &hist: dn1ShiftEnuRecoRatio)
-        hist->Divide(hEnuCVPred);
+      std::vector<TH1*> up1ShiftsRatio = up1Shifts;
+      std::vector<TH1*> dn1ShiftsRatio = dn1Shifts;
+      for (auto &hist: up1ShiftsRatio)
+        hist->Divide(hCVPred);
+      for (auto &hist: dn1ShiftsRatio)
+        hist->Divide(hCVPred);
 
 
-      PlotWithSystErrorBand(hEnuUnity, up1ShiftEnuRecoRatio, dn1ShiftEnuRecoRatio, kGray + 2, kGray);
+      PlotWithSystErrorBand(hUnity, up1ShiftsRatio, dn1ShiftsRatio, kGray + 2, kGray);
 
-      hEnuUnity->GetXaxis()->CenterTitle();
-      hEnuUnity->GetXaxis()->SetTitleOffset(1.);
-      hEnuUnity->GetXaxis()->SetTitleSize(0.045);
-      hEnuUnity->SetXTitle("Reco. E_{#nu} (GeV)");
-      hEnuUnity->GetYaxis()->CenterTitle();
-      hEnuUnity->GetYaxis()->SetRangeUser(0.5, 1.5);
-      hEnuUnity->GetYaxis()->SetTitleSize(0.02);
-      hEnuUnity->GetYaxis()->SetLabelSize(0.02);
-      hEnuUnity->GetYaxis()->SetTitleOffset(1.5);
-      hEnuUnity->SetYTitle("#frac{Prod5.1 Data}{NOvA MC}");
-      hEnuUnity->GetYaxis()->CenterTitle();
+      hUnity->GetXaxis()->CenterTitle();
+      hUnity->GetXaxis()->SetTitleOffset(1.);
+      hUnity->GetXaxis()->SetTitleSize(0.045);
+      hUnity->SetXTitle("E_{had}^{vis} (GeV)");
+      hUnity->GetYaxis()->CenterTitle();
+      hUnity->GetYaxis()->SetRangeUser(0.5, 1.5);
+      hUnity->GetYaxis()->SetTitleSize(0.02);
+      hUnity->GetYaxis()->SetLabelSize(0.02);
+      hUnity->GetYaxis()->SetTitleOffset(1.5);
+      hUnity->SetYTitle("#frac{Prod5.1 Data}{NOvA MC}");
+      hUnity->GetYaxis()->CenterTitle();
       xAxisENu->Draw("same");
 
-      hEnuDataRatio->Draw("hist same pe");
+      hDataRatio->Draw("hist same pe");
 
 
       ndfit::visuals::DetectorLabel(predBundle.det);
       for (const auto &ext: {".png", ".pdf"}) // ".root"
-        c.SaveAs(ndfit::FullFilename(outDirPlot,
-                                     "plot_" + predBundle.name + "_" + syst->ShortName() + "_RecoEnu_errorbands" +
-                                     ext).c_str());
-
-    } // systs
+        c.SaveAs(ndfit::FullFilename(outDirPlot, "plot_" + predBundle.name + "_EHadVis_xsec24_errorbands" + ext).c_str());
 
     // write captions here...
 
@@ -378,36 +362,6 @@ void plot_preds_nd_ehadvis_quantiles_errorbands(const std::string& systString = 
     sampleType++;
   } //predBundle in preds
 
-//
-//  std::cout << "Printing X^2 numbers for the FD spectra only...." << std::endl;
-//  std::cout << "========== Nominal X^2 =========== (NO DoF): " << std::endl;
-//  for (auto const & pair : chiSqNominalMap) std::cout << pair.first << " --> " << pair.second << std::endl;
-//  std::cout << "========== MCMC X^2 =========== (NO DoF): " << chiSqShiftedTotal << ". and the check: " << chiSqRepSampleTotal_Check << std::endl;
-//  for (auto const & pair : chiSqMCMCMap) std::cout << pair.first << " --> " << pair.second << std::endl;
-//  std::cout << "============================================" << std::endl;
-//  std::cout << "============================================" << std::endl;
-//  std::cout << "Total X^2 (NO DoF) Nominal is: " << chiSqNominalTotal << std::endl;
-//  std::cout << "Total X^2 (NO DoF) Rep. Sample is: " << chiSqShiftedTotal << std::endl;
-//  std::cout << "============================================" << std::endl;
-//  std::cout << "============================================" << std::endl;
-//  std::cout << "Total LL for Nominal is: " << chiSqNominalTotal / -2. << std::endl;
-//  std::cout << "Total LL for Rep. Sample is: " << chiSqShiftedTotal / -2. << std::endl;
-//  // NOTE: very dangerous not to use the function directly, but this is the correct math....
-//  std::cout << "============================================" << std::endl;
-//  std::cout << "Total bins = " << totalBins << std::endl;
-//  std::cout << "Total Non-zero MC bins = " << totalMCBins << std::endl;
-//  std::cout << "Total systs = " << totalSysts << std::endl;
-//  std::cout << "Total vars = " << totalfitVars << std::endl;
-//  const int totalDoF = totalSysts + totalfitVars;
-//  std::cout << "Total DoF = " << totalDoF << std::endl;
-//  double chiSqDoFNominal = chiSqNominalTotal;
-//  chiSqDoFNominal /= (totalMCBins - (double) totalDoF);
-//  double chiSqDoFRepSample = chiSqShiftedTotal;
-//  chiSqDoFRepSample /= (totalMCBins - (double) totalDoF);
-//  std::cout << "============================================" << std::endl;
-//  std::cout << "Total X^2/DoF Nominal is: " << chiSqDoFNominal << std::endl;
-//  std::cout << "Total X^2/DoF Rep. Sample is: " << chiSqDoFRepSample << std::endl;
-//// printout the X^2 per degree of freedom.
 
 
 }
