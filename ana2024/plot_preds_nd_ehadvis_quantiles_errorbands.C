@@ -102,7 +102,8 @@ using namespace ana;
 // TODO: make the error band for each systematics separately...? for now its one big error band.
 
 // =====================================================================================================
-void plot_preds_nd_ehadvis_quantiles_errorbands(const std::string& systString = "xsec24")          // systs descr. in filename.
+void plot_preds_nd_ehadvis_quantiles_errorbands(const std::string& systString = "xsec24",          // systs descr. in filename.
+                                                const bool plotData = false)
 // =====================================================================================================
 {
 
@@ -324,7 +325,8 @@ void plot_preds_nd_ehadvis_quantiles_errorbands(const std::string& systString = 
       latex.DrawLatexNDC(.15, .8, Form("%s", quantileString.c_str()));
       latex.Draw("same");
 //    ptEnuEvents.Draw("same");
-      Preliminary();
+      if (plotData) Preliminary();
+      else {Simulation();}
       ndfit::visuals::NeutrinoLabel(ndfit::NeutrinoType::kNumu);
       ndfit::visuals::DetectorLabel(caf::kNEARDET);
 
