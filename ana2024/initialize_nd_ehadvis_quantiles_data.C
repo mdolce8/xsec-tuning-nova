@@ -36,7 +36,7 @@ void initialize_nd_ehadvis_quantiles_data(const std::string& beam,        // fhc
 // =====================================================================================================
 {
 
-  std::cout << "Producing Prod5.1 ND Data Spectra with FD Numu 2024 Quantile cuts on Reco Enu........" << std::endl;
+  std::cout << "Producing Prod5.1 ND Data Spectra with FD Numu 2024 Quantile cuts on EHadVis........" << std::endl;
 
   std::string outDir;
   if (test)
