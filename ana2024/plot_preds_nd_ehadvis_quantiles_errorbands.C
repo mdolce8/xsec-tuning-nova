@@ -24,8 +24,10 @@
 #include "3FlavorAna/NDFit/NDFitEnums.h"
 #include "3FlavorAna/Systs/EnergySysts2020.h"
 
+#include "CAFAna/Analysis/Exposures.h"
 #include "CAFAna/Analysis/Plots.h"
 #include "CAFAna/Experiment/MultiExperiment.h"
+#include "CAFAna/Systs/XSecSystLists.h"
 
 #include "OscLib/OscCalcAnalytic.h"
 
@@ -111,6 +113,7 @@ void plot_preds_nd_ehadvis_quantiles_errorbands(const std::string& systString = 
   NewRESDISSysts();
   getMECtuneSystsCorrected_GSFProd5p1();
   MECsysts();
+  getAllXsecSysts_2020_GSF();
 
 
 
@@ -144,20 +147,20 @@ void plot_preds_nd_ehadvis_quantiles_errorbands(const std::string& systString = 
 
 
   // TODO: need to create the data for the ND EHadVis Quantile predictions....!
-  // Load the ND Reco Enu Quantile data to get the pot.
-  std::cout << "Loading the ND Reco Enu Quantile data for the pot...." << std::endl;
-  std::map<std::string, ana::Spectrum> dataSpectra;
-  const std::string& dataPath = "/nova/ana/users/mdolce/mcmc/data/nd_ehadvis_quantiles/";
-  for (std::string beam : {"fhc","rhc"}){
-    for (const std::string& q : {"Q1", "Q2", "Q3", "Q4", "Q5"}){
-      const std::string& dataFilename = Form("nd_ehadvis_prod5.1_data_%s_numu_%s.root", beam.c_str(), q.c_str());
-      const std::string& filenameStr = dataPath + "/" + dataFilename;
-      TFile* infileData= TFile::Open(filenameStr.c_str(), "read");
-      const std::string spectraName = Form("%s_nd_pred_interp_%s", beam.c_str(), q.c_str());
-      // I am giving this map an R-value, which is a temporary object and has no name.
-      dataSpectra.try_emplace(spectraName, *ana::Spectrum::LoadFrom(infileData, Form("pred_interp_%s", q.c_str()))); // this works, ignore the CLion error
-    } // quantiles
-  } // beam
+//  // Load the ND Reco Enu Quantile data to get the pot.
+//  std::cout << "Loading the ND Reco Enu Quantile data for the pot...." << std::endl;
+//  std::map<std::string, ana::Spectrum> dataSpectra;
+//  const std::string& dataPath = "/nova/ana/users/mdolce/mcmc/data/nd_ehadvis_quantiles/";
+//  for (std::string beam : {"fhc","rhc"}){
+//    for (const std::string& q : {"Q1", "Q2", "Q3", "Q4", "Q5"}){
+//      const std::string& dataFilename = Form("nd_ehadvis_prod5.1_data_%s_numu_%s.root", beam.c_str(), q.c_str());
+//      const std::string& filenameStr = dataPath + "/" + dataFilename;
+//      TFile* infileData= TFile::Open(filenameStr.c_str(), "read");
+//      const std::string spectraName = Form("%s_nd_pred_interp_%s", beam.c_str(), q.c_str());
+//      // I am giving this map an R-value, which is a temporary object and has no name.
+//      dataSpectra.try_emplace(spectraName, *ana::Spectrum::LoadFrom(infileData, Form("pred_interp_%s", q.c_str()))); // this works, ignore the CLion error
+//    } // quantiles
+//  } // beam
 
 
   auto calc2020BF = std::make_unique<osc::OscCalcAnalytic>();
@@ -189,7 +192,18 @@ void plot_preds_nd_ehadvis_quantiles_errorbands(const std::string& systString = 
 
   for (const auto &predBundle : preds) {
     std::cout << predBundle.name << "......." << std::endl;
-    const double dataPOT = dataSpectra.at(predBundle.name).POT();
+
+    const ndfit::Quantiles q = ndfit::visuals::GetQuantileEnum(predBundle.name);
+    const std::string quantileString = ndfit::visuals::GetQuantileString(q);
+    const std::string beamType = ndfit::visuals::GetHornCurrent(predBundle.name);
+
+    double POT;
+    if ( predBundle.name.find("fhc") != std::string::npos)
+      POT = kAna2024SensitivityFHCPOT;
+    else {
+      POT = kAna2024SensitivityRHCPOT;
+    }
+//      dataSpectra.at(predBundle.name).POT();
 
     /// create the error bands -- one vector for each prediction.
     std::vector<TH1*> up1Shifts, dn1Shifts;
@@ -202,14 +216,14 @@ void plot_preds_nd_ehadvis_quantiles_errorbands(const std::string& systString = 
 
       SystShifts pm1SigmaShift;
       pm1SigmaShift.SetShift(syst, +1.);
-      TH1 *hUp1 = predBundle.pred->PredictSyst(calc2020BF.get(), pm1SigmaShift).ToTH1(dataPOT,
+      TH1 *hUp1 = predBundle.pred->PredictSyst(calc2020BF.get(), pm1SigmaShift).ToTH1(POT,
                                                                                       EExposureType::kPOT,
                                                                                       kBinDensity);
       std::cout << "Up integral: " << hUp1->Integral() << std::endl;
       up1Shifts.push_back(hUp1);
 
       pm1SigmaShift.SetShift(syst, -1.);
-      TH1 *hDn1 = predBundle.pred->PredictSyst(calc2020BF.get(), pm1SigmaShift).ToTH1(dataPOT,
+      TH1 *hDn1 = predBundle.pred->PredictSyst(calc2020BF.get(), pm1SigmaShift).ToTH1(POT,
                                                                                       EExposureType::kPOT,
                                                                                       kBinDensity);
       std::cout << "Down integral: " << hDn1->Integral() << std::endl;
@@ -222,9 +236,6 @@ void plot_preds_nd_ehadvis_quantiles_errorbands(const std::string& systString = 
       c.Clear();
 
 
-      const ndfit::Quantiles q = ndfit::visuals::GetQuantileEnum(predBundle.name);
-      const std::string quantileString = ndfit::visuals::GetQuantileString(q);
-      const std::string beamType = ndfit::visuals::GetHornCurrent(predBundle.name);
 
 
       auto *xAxisENu = new TGaxis(0.001, 0.5, 5.0, 0.501, 0., 5.0, 10, "");
@@ -244,7 +255,7 @@ void plot_preds_nd_ehadvis_quantiles_errorbands(const std::string& systString = 
 
 
       // contains all systs
-      PlotWithSystErrorBand((IPrediction *&) predBundle.pred, systs, calc2020BF.get(), dataPOT, kGray + 2, kGray);
+      PlotWithSystErrorBand((IPrediction *&) predBundle.pred, systs, calc2020BF.get(), POT, kGray + 2, kGray);
       c.SaveAs(ndfit::FullFilename(outDirPlot, "profiled_error_bands_plot_" + predBundle.name + ".png").c_str());
       c.Clear();
       // 2D profile
@@ -257,23 +268,23 @@ void plot_preds_nd_ehadvis_quantiles_errorbands(const std::string& systString = 
       // EHadVis
       //create the histograms for the PlotWithSystErrorBand() function
       std::cout << "Producing EHadVis plots for " << predBundle.name << "......" << std::endl;
-      TH1 * hData = dataSpectra.at(predBundle.name).ToTH1(dataPOT, EExposureType::kPOT, kBinDensity);
-      TH1 * hCVPred = predBundle.pred->PredictSyst(calc2020BF.get(), SystShifts::Nominal()).ToTH1(dataPOT,
+//      TH1 * hData = dataSpectra.at(predBundle.name).ToTH1(POT, EExposureType::kPOT, kBinDensity);
+      TH1 * hCVPred = predBundle.pred->PredictSyst(calc2020BF.get(), SystShifts::Nominal()).ToTH1(POT,
                                                                                                   EExposureType::kPOT,
                                                                                                   kBinDensity);
 
 
       //get the events BEFORE the re-scaling
-      int dataEnuEvents = hData->Integral();
+//      int dataEnuEvents = hData->Integral();
       int nomEnuEvents = hCVPred->Integral();
       std::cout << "Events (data, CV): " << dataEnuEvents << ", " << nomEnuEvents << std::endl;
 
       hCVPred->SetLineColor(kGray + 2);
       hCVPred->SetLineWidth(3);
 //      hEnuCVPred->Scale(scaleFactor);
-      hData->SetMarkerColor(kBlack);
-      hData->SetMarkerStyle(kFullCircle);
-      hData->SetLineWidth(2);
+//      hData->SetMarkerColor(kBlack);
+//      hData->SetMarkerStyle(kFullCircle);
+//      hData->SetLineWidth(2);
 //      hEnuData->Scale(scaleFactor);
 //      for (TH1 * hist: up1ShiftEnuReco)
 //        hist->Scale(scaleFactor);
@@ -284,7 +295,7 @@ void plot_preds_nd_ehadvis_quantiles_errorbands(const std::string& systString = 
       p1->cd();
       auto ErrorBand = PlotWithSystErrorBand(hCVPred, up1Shifts, dn1Shifts, kGray + 2, kGray);
       hCVPred->Draw("same hist e");
-      hData->Draw("same hist p"); // draw as points (to distinguish with data)
+//      hData->Draw("same hist p"); // draw as points (to distinguish with data)
 
       hCVPred->GetYaxis()->SetTitle("Events / GeV");
       hCVPred->GetYaxis()->SetTitleSize(0.036);
@@ -303,7 +314,7 @@ void plot_preds_nd_ehadvis_quantiles_errorbands(const std::string& systString = 
       up1Shifts.at(0)->SetFillColor(kGray);
       up1Shifts.at(0)->SetLineColor(kGray);
       leg.AddEntry(up1Shifts.at(0), Form("%s", errorBands.c_str()), "f");
-      leg.AddEntry(hData, "Prod5.1 Data", "p");
+//      leg.AddEntry(hData, "Prod5.1 Data", "p");
       leg.Draw("same");
       TLatex latex;
       latex.SetTextSize(0.04);
@@ -321,8 +332,8 @@ void plot_preds_nd_ehadvis_quantiles_errorbands(const std::string& systString = 
       p2->SetGridy(1);
       TH1 *hUnity = (TH1F *) hCVPred->Clone("hEUnity");
       hUnity->Divide(hCVPred);
-      TH1 *hDataRatio = (TH1F *) hData->Clone("hDataRatio");
-      hDataRatio->Divide(hCVPred);
+//      TH1 *hDataRatio = (TH1F *) hData->Clone("hDataRatio");
+//      hDataRatio->Divide(hCVPred);
 
 
       ///create the ratios for the error bands
@@ -349,7 +360,7 @@ void plot_preds_nd_ehadvis_quantiles_errorbands(const std::string& systString = 
       hUnity->GetYaxis()->CenterTitle();
       xAxisENu->Draw("same");
 
-      hDataRatio->Draw("hist same pe");
+//      hDataRatio->Draw("hist same pe");
 
 
       ndfit::visuals::DetectorLabel(predBundle.det);
