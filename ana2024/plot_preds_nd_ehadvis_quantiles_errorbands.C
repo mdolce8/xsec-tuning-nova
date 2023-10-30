@@ -240,10 +240,13 @@ void plot_preds_nd_ehadvis_quantiles_errorbands(const std::string& systString = 
 
 
 
-      auto *xAxisENu = new TGaxis(0.001, 0.5, 5.0, 0.501, 0., 5.0, 10, "");
-      xAxisENu->SetLabelOffset(-0.015); // //	  std::cout << xAxisENu->GetLabelOffset() --> 0.005
-      xAxisENu->SetLabelFont(42);
-
+      auto * xAxisEHad = new TGaxis(0.001, 0.5, 0.8, 0.501, 0., 0.8, 10, "");
+      xAxisEHad->SetLabelOffset(-0.015); // default is 0.005
+      xAxisEHad->SetLabelFont(42);
+      xAxisEHad->SetTitle("E_{had}^{vis} (GeV)");
+      xAxisEHad->SetTitleOffset(1.2);
+      xAxisEHad->CenterTitle();
+      xAxisEHad->SetTitleFont(42);
 
 
 
@@ -361,7 +364,7 @@ void plot_preds_nd_ehadvis_quantiles_errorbands(const std::string& systString = 
       hUnity->GetYaxis()->SetTitleOffset(1.5);
       hUnity->SetYTitle("#frac{Prod5.1 Data}{NOvA MC}");
       hUnity->GetYaxis()->CenterTitle();
-      xAxisENu->Draw("same");
+      xAxisEHad->Draw("same");
 
 //      hDataRatio->Draw("hist same pe");
 
