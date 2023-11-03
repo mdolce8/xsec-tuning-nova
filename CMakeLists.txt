@@ -8,6 +8,7 @@ include_directories(/Users/michaeldolce/Development/novasoft-code/novasoft)
 include_directories(/cvmfs/nova.opensciencegrid.org/externals/cafanacore/v01.35/include)
 include_directories(/cvmfs/nova.opensciencegrid.org/externals/osclib/v00.04/include)
 include_directories(/cvmfs/nova.opensciencegrid.org/externals/root/v6_16_00/Linux64bit+2.6-2.12-e17-debug/include)
+#include_directories(/cvmfs/nova.opensciencegrid.org/externals/novarwgt/v00.44/inc)
 
 include_directories(/cvmfs/nova-development.opensciencegrid.org/novasoft/releases/development/include)
 
