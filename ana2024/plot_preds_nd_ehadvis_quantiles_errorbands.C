@@ -162,7 +162,7 @@ void plot_preds_nd_ehadvis_quantiles_errorbands(const bool plotData = false,
 
 
   // Load the ND Reco Enu Quantile data to get the pot.
-  std::cout << "Loading the ND Reco Enu Quantile data for the pot...." << std::endl;
+  std::cout << "Loading the ND data...." << std::endl;
   std::map<std::string, ana::Spectrum> dataSpectra;
   const std::string& dataPath = "/nova/ana/users/mdolce/preds+spectra/ana2024/initialize_nd_ehadvis_quantiles_data_ana2024/";
   for (std::string beam : {"fhc","rhc"}){
@@ -231,7 +231,7 @@ void plot_preds_nd_ehadvis_quantiles_errorbands(const bool plotData = false,
     // use the systs from each specific topology
     // Use ONLY the systs that were used in the fitting...
     for (const auto &syst : systs) {
-      std::cout << "Looping through syst....." << syst->ShortName() << std::endl;
+//      std::cout << "Looping through syst....." << syst->ShortName() << std::endl;
 
 
       SystShifts pm1SigmaShift;
@@ -239,14 +239,14 @@ void plot_preds_nd_ehadvis_quantiles_errorbands(const bool plotData = false,
       TH1 *hUp1 = predBundle.pred->PredictSyst(calc2020BF.get(), pm1SigmaShift).ToTH1(POT,
                                                                                       EExposureType::kPOT,
                                                                                       kBinDensity);
-      std::cout << "Up integral: " << hUp1->Integral() << std::endl;
+//      std::cout << "Up integral: " << hUp1->Integral() << std::endl;
       up1Shifts.push_back(hUp1);
 
       pm1SigmaShift.SetShift(syst, -1.);
       TH1 *hDn1 = predBundle.pred->PredictSyst(calc2020BF.get(), pm1SigmaShift).ToTH1(POT,
                                                                                       EExposureType::kPOT,
                                                                                       kBinDensity);
-      std::cout << "Down integral: " << hDn1->Integral() << std::endl;
+//      std::cout << "Down integral: " << hDn1->Integral() << std::endl;
       dn1Shifts.push_back(hDn1);
 
     } // systs to create error bands
