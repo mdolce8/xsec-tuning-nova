@@ -40,9 +40,9 @@ void initialize_nd_ehadvis_quantiles_data(const std::string& beam,        // fhc
 
   std::string outDir;
   if (test)
-    outDir = "/nova/ana/users/mdolce/preds+spectra/ana2024/generate_nd_ehadvis_quantiles_data_ana2024/test/";
+    outDir = "/nova/ana/users/mdolce/preds+spectra/ana2024/initialize_nd_ehadvis_quantiles_data_ana2024/test/";
   else {
-    outDir = "/nova/ana/users/mdolce/preds+spectra/ana2024/generate_nd_ehadvis_quantiles_data_ana2024/";
+    outDir = "/nova/ana/users/mdolce/preds+spectra/ana2024/initialize_nd_ehadvis_quantiles_data_ana2024/";
   }
   std::cout << "Predictions will be made and placed into..." << outDir << std::endl;
 
