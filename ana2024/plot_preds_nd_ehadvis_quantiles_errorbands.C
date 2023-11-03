@@ -99,9 +99,10 @@ namespace histogram
 
 void NeutrinoLabel(const ndfit::NeutrinoType nu, const bool antiParticle = false){
   std::string nuLtx;
+  std::cout << "antiNeutrino ? " << antiParticle << std::endl;
   nu == ndfit::NeutrinoType::kNue ? nuLtx = "#nu_{e}" : nuLtx = "#nu_{#mu}";
   if (antiParticle) nuLtx = "#bar{" + nuLtx + "}";
-  auto * prelim = new TLatex(.25, .65, Form("%s", nuLtx.c_str())); // top left: below topology, horn
+  auto * prelim = new TLatex(.25, .7, Form("%s", nuLtx.c_str())); // top left: below topology, horn
   prelim->SetTextColor(nu == ndfit::NeutrinoType::kNumu ? kBlue - 3 :  kRed - 3);
   prelim->SetNDC();
   prelim->SetTextSize(2/30.);
@@ -196,7 +197,7 @@ void plot_preds_nd_ehadvis_quantiles_errorbands(const bool plotData = false,
 
 
   // set scale factors here.
-  const double scaleFactor = 1e6;
+  const double scaleFactor = 1e-6;
 
   int sampleType = 0;
 
@@ -342,7 +343,7 @@ void plot_preds_nd_ehadvis_quantiles_errorbands(const bool plotData = false,
 //    ptEnuEvents.Draw("same");
       if (plotData) Preliminary();
       else {Simulation();}
-      NeutrinoLabel(ndfit::NeutrinoType::kNumu, beamType == "AntiNeutrino Beam");
+      NeutrinoLabel(ndfit::NeutrinoType::kNumu, beamType == "Antineutrino Beam");
       ndfit::visuals::DetectorLabel(caf::kNEARDET);
 
       /// EHadVis ratio
