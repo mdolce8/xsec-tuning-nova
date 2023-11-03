@@ -112,8 +112,6 @@ void NeutrinoLabel(const ndfit::NeutrinoType nu, const bool antiParticle = false
 
 using namespace ana;
 
-// TODO: include data flag for these plots... because we want to be able to make both: set of plots with and WITHOUT data
-// TODO: next need to make captions too...
 
 // =====================================================================================================
 void plot_preds_nd_ehadvis_quantiles_errorbands(const bool plotData = false,
