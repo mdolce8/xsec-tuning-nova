@@ -315,7 +315,7 @@ void plot_preds_nd_ehadvis_quantiles_errorbands(const bool plotData = false,
       auto ErrorBand = PlotWithSystErrorBand(hCVPred, up1Shifts, dn1Shifts, kGray + 2, kGray);
       hCVPred->Draw("same hist e");
       if (plotData) hData->Draw("same hist p"); // draw data as points
-      hCVPred->GetYaxis()->SetTitle("Events / GeV");
+      hCVPred->GetYaxis()->SetTitle("10^{6} Events / GeV");
       hCVPred->GetYaxis()->SetTitleSize(0.036);
       hCVPred->GetYaxis()->SetTitleOffset(1.1);
       hCVPred->SetMaximum(hCVPred->GetMaximum() * 2.0);
