@@ -375,7 +375,7 @@ void plot_preds_nd_ehadvis_quantiles_errorbands(const bool plotData = false,
       hUnity->GetYaxis()->SetTitleSize(0.02);
       hUnity->GetYaxis()->SetLabelSize(0.02);
       hUnity->GetYaxis()->SetTitleOffset(1.5);
-      hUnity->SetYTitle("#frac{Prod5.1 Data}{NOvA MC}");
+      hUnity->SetYTitle(plotData ? "#frac{Prod5.1 Data}{NOvA MC}" : "NOvA MC Ratio");
       hUnity->GetYaxis()->CenterTitle();
       xAxisEHad->Draw("same");
 
