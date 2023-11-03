@@ -96,10 +96,22 @@ namespace histogram
     }
 }
 
+void NeutrinoLabel(const ndfit::NeutrinoType nu, const bool antiParticle = false){
+  std::string nuLtx;
+  nu == ndfit::NeutrinoType::kNue ? nuLtx = "#nu_{e}" : nuLtx = "#nu_{#mu}";
+  if (antiParticle) nuLtx = "#bar{" + nuLtx + "}";
+  auto * prelim = new TLatex(.25, .65, Form("%s", nuLtx.c_str())); // top left: below topology, horn
+  prelim->SetTextColor(nu == ndfit::NeutrinoType::kNumu ? kBlue - 3 :  kRed - 3);
+  prelim->SetNDC();
+  prelim->SetTextSize(2/30.);
+  prelim->SetTextAlign(32);
+  prelim->Draw();
+}
+
 using namespace ana;
 
-// TODO: include data (requires making data) for these plots
-// TODO: make the error band for each systematics separately...? for now its one big error band.
+// TODO: include data flag for these plots... because we want to be able to make both: set of plots with and WITHOUT data
+// TODO: next need to make captions too...
 
 // =====================================================================================================
 void plot_preds_nd_ehadvis_quantiles_errorbands(const std::string& systString = "xsec24",          // systs descr. in filename.
@@ -286,7 +298,7 @@ void plot_preds_nd_ehadvis_quantiles_errorbands(const std::string& systString = 
 
       hCVPred->SetLineColor(kGray + 2);
       hCVPred->SetLineWidth(3);
-//      hEnuCVPred->Scale(scaleFactor);
+      hCVPred->Scale(1e6);
 //      hData->SetMarkerColor(kBlack);
 //      hData->SetMarkerStyle(kFullCircle);
 //      hData->SetLineWidth(2);
@@ -305,7 +317,7 @@ void plot_preds_nd_ehadvis_quantiles_errorbands(const std::string& systString = 
       hCVPred->GetYaxis()->SetTitle("Events / GeV");
       hCVPred->GetYaxis()->SetTitleSize(0.036);
       hCVPred->GetYaxis()->SetTitleOffset(1.1);
-      hCVPred->SetMaximum(hCVPred->GetMaximum() * 1.8);
+      hCVPred->SetMaximum(hCVPred->GetMaximum() * 2.0);
       hCVPred->GetXaxis()->SetLabelSize(0.0);
       hCVPred->GetXaxis()->SetTitleSize(0.0);
 
@@ -330,7 +342,7 @@ void plot_preds_nd_ehadvis_quantiles_errorbands(const std::string& systString = 
 //    ptEnuEvents.Draw("same");
       if (plotData) Preliminary();
       else {Simulation();}
-      ndfit::visuals::NeutrinoLabel(ndfit::NeutrinoType::kNumu);
+      NeutrinoLabel(ndfit::NeutrinoType::kNumu);
       ndfit::visuals::DetectorLabel(caf::kNEARDET);
 
       /// EHadVis ratio
