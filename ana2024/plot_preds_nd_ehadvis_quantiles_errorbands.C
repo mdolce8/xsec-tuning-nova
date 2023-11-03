@@ -15,6 +15,7 @@
 */
 
 #include <iostream>
+#include <fstream>
 
 #include "3FlavorAna/MCMC/MCMC3FShared.h"
 #include "3FlavorAna/NDFit/LoadTopoPreds.h"
@@ -114,19 +115,18 @@ using namespace ana;
 // TODO: next need to make captions too...
 
 // =====================================================================================================
-void plot_preds_nd_ehadvis_quantiles_errorbands(const std::string& systString = "xsec24",          // systs descr. in filename.
-                                                const bool plotData = false)
+void plot_preds_nd_ehadvis_quantiles_errorbands(const bool plotData = false,
+                                                const bool saveCaptions = false)
 // =====================================================================================================
 {
 
-  // systString = "xsec24" --> all xsec24 systs.
+  const std::string systString = "xsec24"; // --> all xsec24 systs.
 
-  const std::string& outDirPlot = "/nova/ana/users/mdolce/xsec-tuning-nova/plots/ana2024/plot_preds_nd_ehadvis_quantiles_errorbands";
+  std::string outDirPlot = "/nova/ana/users/mdolce/xsec-tuning-nova/plots/ana2024/plot_preds_nd_ehadvis_quantiles_errorbands";
+  if (plotData) outDirPlot += "/data/";
 
   //load all systs that exist in the preds ROOT file
   NewRESDISSysts();
-  getMECtuneSystsCorrected_GSFProd5p1();
-  MECsysts();
   getAllXsecSysts_2020_GSF();
 
 
@@ -160,21 +160,20 @@ void plot_preds_nd_ehadvis_quantiles_errorbands(const std::string& systString = 
 
 
 
-  // TODO: need to create the data for the ND EHadVis Quantile predictions....!
-//  // Load the ND Reco Enu Quantile data to get the pot.
-//  std::cout << "Loading the ND Reco Enu Quantile data for the pot...." << std::endl;
-//  std::map<std::string, ana::Spectrum> dataSpectra;
-//  const std::string& dataPath = "/nova/ana/users/mdolce/mcmc/data/nd_ehadvis_quantiles/";
-//  for (std::string beam : {"fhc","rhc"}){
-//    for (const std::string& q : {"Q1", "Q2", "Q3", "Q4", "Q5"}){
-//      const std::string& dataFilename = Form("nd_ehadvis_prod5.1_data_%s_numu_%s.root", beam.c_str(), q.c_str());
-//      const std::string& filenameStr = dataPath + "/" + dataFilename;
-//      TFile* infileData= TFile::Open(filenameStr.c_str(), "read");
-//      const std::string spectraName = Form("%s_nd_pred_interp_%s", beam.c_str(), q.c_str());
-//      // I am giving this map an R-value, which is a temporary object and has no name.
-//      dataSpectra.try_emplace(spectraName, *ana::Spectrum::LoadFrom(infileData, Form("pred_interp_%s", q.c_str()))); // this works, ignore the CLion error
-//    } // quantiles
-//  } // beam
+  // Load the ND Reco Enu Quantile data to get the pot.
+  std::cout << "Loading the ND Reco Enu Quantile data for the pot...." << std::endl;
+  std::map<std::string, ana::Spectrum> dataSpectra;
+  const std::string& dataPath = "/nova/ana/users/mdolce/preds+spectra/ana2024/initialize_nd_ehadvis_quantiles_data_ana2024/";
+  for (std::string beam : {"fhc","rhc"}){
+    for (const std::string& q : {"Q1", "Q2", "Q3", "Q4", "Q5"}){
+      const std::string& dataFilename = Form("nd_ehadvis_prod5.1_data_%s_numu_%s.root", beam.c_str(), q.c_str());
+      const std::string& filenameStr = dataPath + "/" + dataFilename;
+      TFile* infileData= TFile::Open(filenameStr.c_str(), "read");
+      const std::string spectraName = Form("%s_nd_pred_interp_%s", beam.c_str(), q.c_str());
+      // I am giving this map an R-value, which is a temporary object and has no name.
+      dataSpectra.try_emplace(spectraName, *ana::Spectrum::LoadFrom(infileData, Form("pred_interp_%s", q.c_str()))); // this works, ignore the CLion error
+    } // quantiles
+  } // beam
 
 
   auto calc2020BF = std::make_unique<osc::OscCalcAnalytic>();
@@ -196,8 +195,8 @@ void plot_preds_nd_ehadvis_quantiles_errorbands(const std::string& systString = 
   TPad * p1, * p2; //p1 upper, p2 lower
 
 
-  // set the max and scale factors here at the start.
-  double maxFactor = 1. , scaleFactor = 1.;
+  // set scale factors here.
+  const double scaleFactor = 1e6;
 
   int sampleType = 0;
 
@@ -212,12 +211,18 @@ void plot_preds_nd_ehadvis_quantiles_errorbands(const std::string& systString = 
     const std::string beamType = ndfit::visuals::GetHornCurrent(predBundle.name);
 
     double POT;
-    if ( predBundle.name.find("fhc") != std::string::npos)
-      POT = kAna2024SensitivityFHCPOT;
-    else {
-      POT = kAna2024SensitivityRHCPOT;
+    if (plotData) {
+      if (predBundle.name.find("fhc") != std::string::npos)
+        POT = kAna2024SensitivityFHCPOT;
+      else {
+        POT = kAna2024SensitivityRHCPOT;
+      }
+      std::cout << "Setting POT to MC....." << POT << std::endl;
     }
-//      dataSpectra.at(predBundle.name).POT();
+    else {
+      POT = dataSpectra.at(predBundle.name).POT();
+      std::cout << "Setting POT to data....." << POT << std::endl;
+    }
 
     /// create the error bands -- one vector for each prediction.
     std::vector<TH1*> up1Shifts, dn1Shifts;
@@ -285,35 +290,30 @@ void plot_preds_nd_ehadvis_quantiles_errorbands(const std::string& systString = 
       // EHadVis
       //create the histograms for the PlotWithSystErrorBand() function
       std::cout << "Producing EHadVis plots for " << predBundle.name << "......" << std::endl;
-//      TH1 * hData = dataSpectra.at(predBundle.name).ToTH1(POT, EExposureType::kPOT, kBinDensity);
+      TH1 * hData = dataSpectra.at(predBundle.name).ToTH1(POT, EExposureType::kPOT, kBinDensity);
       TH1 * hCVPred = predBundle.pred->PredictSyst(calc2020BF.get(), SystShifts::Nominal()).ToTH1(POT,
                                                                                                   EExposureType::kPOT,
                                                                                                   kBinDensity);
 
-
-      //get the events BEFORE the re-scaling
-//      int dataEnuEvents = hData->Integral();
-      int nomEnuEvents = hCVPred->Integral();
-//      std::cout << "Events (data, CV): " << dataEnuEvents << ", " << nomEnuEvents << std::endl;
-
+      // Rescale
       hCVPred->SetLineColor(kGray + 2);
       hCVPred->SetLineWidth(3);
-      hCVPred->Scale(1e6);
-//      hData->SetMarkerColor(kBlack);
-//      hData->SetMarkerStyle(kFullCircle);
-//      hData->SetLineWidth(2);
-//      hEnuData->Scale(scaleFactor);
-//      for (TH1 * hist: up1ShiftEnuReco)
-//        hist->Scale(scaleFactor);
-//      for (TH1 * hist: dn1ShiftEnuReco)
-//        hist->Scale(scaleFactor);
+      hCVPred->Scale(scaleFactor);
+      for (TH1 * hist : up1Shifts)
+        hist->Scale(scaleFactor);
+      for (TH1 * hist : dn1Shifts)
+        hist->Scale(scaleFactor);
+
+      hData->SetMarkerColor(kBlack);
+      hData->SetMarkerStyle(kFullCircle);
+      hData->SetLineWidth(2);
+      hData->Scale(scaleFactor);
 
 
       p1->cd();
       auto ErrorBand = PlotWithSystErrorBand(hCVPred, up1Shifts, dn1Shifts, kGray + 2, kGray);
       hCVPred->Draw("same hist e");
-//      hData->Draw("same hist p"); // draw as points (to distinguish with data)
-
+      if (plotData) hData->Draw("same hist p"); // draw data as points
       hCVPred->GetYaxis()->SetTitle("Events / GeV");
       hCVPred->GetYaxis()->SetTitleSize(0.036);
       hCVPred->GetYaxis()->SetTitleOffset(1.1);
@@ -331,7 +331,7 @@ void plot_preds_nd_ehadvis_quantiles_errorbands(const std::string& systString = 
       up1Shifts.at(0)->SetFillColor(kGray);
       up1Shifts.at(0)->SetLineColor(kGray);
       leg.AddEntry(up1Shifts.at(0), Form("%s", errorBands.c_str()), "f");
-//      leg.AddEntry(hData, "Prod5.1 Data", "p");
+      if (plotData) leg.AddEntry(hData, "Prod5.1 Data", "p");
       leg.Draw("same");
       TLatex latex;
       latex.SetTextSize(0.04);
@@ -342,7 +342,7 @@ void plot_preds_nd_ehadvis_quantiles_errorbands(const std::string& systString = 
 //    ptEnuEvents.Draw("same");
       if (plotData) Preliminary();
       else {Simulation();}
-      NeutrinoLabel(ndfit::NeutrinoType::kNumu);
+      NeutrinoLabel(ndfit::NeutrinoType::kNumu, beamType == "AntiNeutrino Beam");
       ndfit::visuals::DetectorLabel(caf::kNEARDET);
 
       /// EHadVis ratio
@@ -350,8 +350,8 @@ void plot_preds_nd_ehadvis_quantiles_errorbands(const std::string& systString = 
       p2->SetGridy(1);
       TH1 *hUnity = (TH1F *) hCVPred->Clone("hEUnity");
       hUnity->Divide(hCVPred);
-//      TH1 *hDataRatio = (TH1F *) hData->Clone("hDataRatio");
-//      hDataRatio->Divide(hCVPred);
+      TH1 *hDataRatio = (TH1F *) hData->Clone("hDataRatio");
+      hDataRatio->Divide(hCVPred);
 
 
       ///create the ratios for the error bands
@@ -378,7 +378,7 @@ void plot_preds_nd_ehadvis_quantiles_errorbands(const std::string& systString = 
       hUnity->GetYaxis()->CenterTitle();
       xAxisEHad->Draw("same");
 
-//      hDataRatio->Draw("hist same pe");
+      if (plotData) hDataRatio->Draw("hist same pe");
 
 
       ndfit::visuals::DetectorLabel(predBundle.det);
@@ -386,6 +386,19 @@ void plot_preds_nd_ehadvis_quantiles_errorbands(const std::string& systString = 
         c.SaveAs(ndfit::FullFilename(outDirPlot, "plot_" + predBundle.name + "_EHadVis_xsec24_errorbands" + ext).c_str());
 
     // write captions here...
+    if (saveCaptions) {
+      std::ofstream ofile;
+      ofile.open(ndfit::FullFilename(outDirPlot, "plot_" + predBundle.name + "_EHadVis_xsec24_errorbands.txt").c_str());
+      ofile << "Near Detector " << beamType << " Prod5.1 Ana2024 Monte Carlo prediction in the hadronic energy fraction:  " << quantileString
+                << ". The variable in this plot is reconstructed hadronic visible energy (in dark grey)."
+                   " The light grey band is the 1 sigma error from all NOvA cross-section uncertainties for the Ana2024 analysis."
+                   " This includes the new RES and DIS uncertainties from the ND fitting work."
+                   " The top distribution is the number of events, and the bottom is the ratio from the MC." << std::endl;
+                   if (plotData) {
+                     ofile << "The black points are the Prod5.1 data." << std::endl;
+                   }
+      ofile.close();
+    }
 
 
     sampleType++;
