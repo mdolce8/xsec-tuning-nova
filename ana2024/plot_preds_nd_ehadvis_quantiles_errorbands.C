@@ -381,15 +381,15 @@ void plot_preds_nd_ehadvis_quantiles_errorbands(const bool plotData = false,
 
       if (plotData) hDataRatio->Draw("hist same pe");
 
-
+      std::string strData = plotData ? "_data" : "";
       ndfit::visuals::DetectorLabel(predBundle.det);
       for (const auto &ext: {".png", ".pdf"}) // ".root"
-        c.SaveAs(ndfit::FullFilename(outDirPlot, "plot_" + predBundle.name + "_EHadVis_xsec24_errorbands" + ext).c_str());
+        c.SaveAs(ndfit::FullFilename(outDirPlot, "plot_" + predBundle.name + "_EHadVis_xsec24_errorbands" + strData + ext).c_str());
 
     // write captions here...
     if (saveCaptions) {
       std::ofstream ofile;
-      ofile.open(ndfit::FullFilename(outDirPlot, "plot_" + predBundle.name + "_EHadVis_xsec24_errorbands.txt").c_str());
+      ofile.open(ndfit::FullFilename(outDirPlot, "plot_" + predBundle.name + "_EHadVis_xsec24_errorbands" + strData + ".txt").c_str());
       ofile << "Near Detector " << beamType << " Prod5.1 Ana2024 Monte Carlo prediction in the hadronic energy fraction:  " << quantileString
                 << ". The variable in this plot is reconstructed hadronic visible energy (in dark grey)."
                    " The light grey band is the 1 sigma error from all NOvA cross-section uncertainties for the Ana2024 analysis."
