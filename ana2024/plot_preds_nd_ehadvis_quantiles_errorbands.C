@@ -210,7 +210,7 @@ void plot_preds_nd_ehadvis_quantiles_errorbands(const bool plotData = false,
     const std::string beamType = ndfit::visuals::GetHornCurrent(predBundle.name);
 
     double POT;
-    if (plotData) {
+    if (!plotData) {
       if (predBundle.name.find("fhc") != std::string::npos)
         POT = kAna2024SensitivityFHCPOT;
       else {
