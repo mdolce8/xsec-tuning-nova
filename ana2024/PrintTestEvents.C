@@ -161,7 +161,7 @@ namespace rwgt
 
 
 
-
+ // todo: make one if statement that will print out the info for either RES or DIS. not two separate loops....
 
 																if (nu.mode == caf::kRes && nu.iscc)
 																{
