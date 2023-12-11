@@ -155,11 +155,18 @@ namespace rwgt
 
 
 					  auto wgt = 1.0;
+																// Mike & Maria's new RES + DIS systematics
+																std::vector<const ana::ISyst*> systsRES{};
+																systsRES.push_back(&ana::kRESvpvnNuRatioXSecSyst);
+																systsRES.push_back(&ana::kRESvpvnNuBarRatioXSecSyst);
+																systsRES.push_back(&ana::kRESDeltaScaleSyst);
+																systsRES.push_back(&ana::kRESOtherScaleSyst);
+
 		                          std::cout << "Nominal weight = " << wgt << std::endl;
 
 		                          std::cout << "Expected syst weights:" << std::endl;
 		                          std::cout << "{" << std::endl;
-		                          for (const auto & wgtr : ana::NewRESDISSysts()) // ana::getAllXsecNuTruthSysts_2018())
+		                          for (const auto & wgtr : systsRES)
 		                          {
 					    std::cout << "starting loop over...." << wgtr->ShortName() << std::endl;
 		                          	for (const auto & sigma : {-0.5, 0.5})
