@@ -127,14 +127,14 @@ namespace rwgt
 
 		                          if (nu.mode == caf::kDIS && nu.prefsi.size() == 2)
 		                          {
-					    auto wgt = 1.0;
 					    for (const auto & wgtr : systsDIS)
 					      {
 						std::cout << "...DIS Interaction with 2 Final State Hadrons..." << std::endl;
 						for (const auto sigma : {1, 2, 3})
 						  {
 						    double wgt = 1.0;
-						    if (nu.hitnuc == 2112 || nu.hitnuc == 2212)
+								std::cout << "Nominal weight = " << wgt << std::endl;
+								if (nu.hitnuc == 2112 || nu.hitnuc == 2212)
 						      {
 							std::cout << "neutrino PDG: " << nu.pdg << std::endl;
 							std::cout << "ev.npiplus = " << nu.npiplus << ";" << std::endl;
@@ -154,15 +154,13 @@ namespace rwgt
 
 
 
-					  auto wgt = 1.0;
-																// Mike & Maria's new RES + DIS systematics
+																// Mike & Maria's new RES systematics
 																std::vector<const ana::ISyst*> systsRES{};
 																systsRES.push_back(&ana::kRESvpvnNuRatioXSecSyst);
 																systsRES.push_back(&ana::kRESvpvnNuBarRatioXSecSyst);
 																systsRES.push_back(&ana::kRESDeltaScaleSyst);
 																systsRES.push_back(&ana::kRESOtherScaleSyst);
 
-		                          std::cout << "Nominal weight = " << wgt << std::endl;
 
 		                          std::cout << "Expected syst weights:" << std::endl;
 		                          std::cout << "{" << std::endl;
@@ -172,7 +170,8 @@ namespace rwgt
 		                          	for (const auto & sigma : {-0.5, 0.5})
 		                            {
 		                          		double wgt = 1.0;
-							//							wgtr->Shift(sigma, &nuMutable, wgt);  // newer CAFAna works with this one
+																	std::cout << "Nominal weight = " << wgt << std::endl;
+																	//							wgtr->Shift(sigma, &nuMutable, wgt);  // newer CAFAna works with this one
 							wgtr->Shift(sigma, &srMutable, wgt);  // this is the version needed for old CAFAna
 		                          	     	std::string name = wgtr->ShortName();
 		                          	    // 	if (name.empty() || name == "-")
@@ -196,7 +195,8 @@ namespace rwgt
 //		                           std::cout << "RPAfix weight = " << ana::kXSecCVWgt2018RPAFix(sr) << std::endl;
 
 		                          std::cout << std::endl;
-		                          return wgt;
+																 auto wgtVar = 1.0;
+																 return wgtVar;
 	                          });
 }
 
