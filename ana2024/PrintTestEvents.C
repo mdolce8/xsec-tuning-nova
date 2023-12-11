@@ -121,16 +121,23 @@ namespace rwgt
 		                          std::cout << "ev.W = " << W << ";" << std::endl;
 					  }
 
-					  std::vector<const ana::ISyst*> systsDIS;
-					  systsDIS.push_back(&ana::kDISNuHadroQ1Syst);
-					  systsDIS.push_back(&ana::kDISNuBarHadroQ0Syst);
+															std::vector<const ana::ISyst*> systsDIS;
+															systsDIS.push_back(&ana::kDISNuHadroQ1Syst);
+															systsDIS.push_back(&ana::kDISNuBarHadroQ0Syst);
+
+															// Mike & Maria's new RES systematics
+															std::vector<const ana::ISyst*> systsRES{};
+															systsRES.push_back(&ana::kRESvpvnNuRatioXSecSyst);
+															systsRES.push_back(&ana::kRESvpvnNuBarRatioXSecSyst);
+															systsRES.push_back(&ana::kRESDeltaScaleSyst);
+															systsRES.push_back(&ana::kRESOtherScaleSyst);
 
 		                          if (nu.mode == caf::kDIS && nu.prefsi.size() == 2)
 		                          {
 					    for (const auto & wgtr : systsDIS)
 					      {
 						std::cout << "...DIS Interaction with 2 Final State Hadrons..." << std::endl;
-						for (const auto sigma : {1, 2, 3})
+						for (const auto sigma : {-1, 0, 1, 2, 3})
 						  {
 						    double wgt = 1.0;
 								std::cout << "Nominal weight = " << wgt << std::endl;
@@ -142,10 +149,10 @@ namespace rwgt
 							std::cout << "ev.npiminus = " << nu.npiminus << ";" << std::endl;
 							std::cout << "ev.nproton = " << nu.nproton << ";" << std::endl;
 							std::cout << "ev.nneutron = " << nu.nneutron << ";" << std::endl;
-							
+
 							wgtr->Shift(sigma, &srMutable, wgt);  // this is the version needed for old CAFAna
 							std::cout << "  {novarwgt::GetSystKnobByName(\"" << wgtr->ShortName() << "\"), "
-								  << "{" << sigma << ", " << wgt << "}},"                                                                                   
+								  << "{" << sigma << ", " << wgt << "}},"
 								  << std::endl;
 						      } // hit nuc
 						  } // sigma
@@ -154,12 +161,7 @@ namespace rwgt
 
 
 
-																// Mike & Maria's new RES systematics
-																std::vector<const ana::ISyst*> systsRES{};
-																systsRES.push_back(&ana::kRESvpvnNuRatioXSecSyst);
-																systsRES.push_back(&ana::kRESvpvnNuBarRatioXSecSyst);
-																systsRES.push_back(&ana::kRESDeltaScaleSyst);
-																systsRES.push_back(&ana::kRESOtherScaleSyst);
+
 
 																if (nu.mode == caf::kRes && nu.iscc)
 																{
