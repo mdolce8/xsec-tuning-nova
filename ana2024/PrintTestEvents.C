@@ -161,39 +161,35 @@ namespace rwgt
 																systsRES.push_back(&ana::kRESDeltaScaleSyst);
 																systsRES.push_back(&ana::kRESOtherScaleSyst);
 
+																if (nu.mode == caf::kRes && nu.iscc)
+																{
+																	std::cout << "Expected syst weights:" << std::endl;
+																	std::cout << "{" << std::endl;
+																	for (const auto &wgtr: systsRES) {
+																		std::cout << "starting loop over...." << wgtr->ShortName() << std::endl;
+																		for (const auto &sigma: {-0.5, 0.5}) {
+																			double wgt = 1.0;
+																			std::cout << "Nominal weight = " << wgt << std::endl;
+																			//							wgtr->Shift(sigma, &nuMutable, wgt);  // newer CAFAna works with this one
+																			wgtr->Shift(sigma, &srMutable, wgt);  // this is the version needed for old CAFAna
+																			std::string name = wgtr->ShortName();
 
-		                          std::cout << "Expected syst weights:" << std::endl;
-		                          std::cout << "{" << std::endl;
-		                          for (const auto & wgtr : systsRES)
-		                          {
-					    std::cout << "starting loop over...." << wgtr->ShortName() << std::endl;
-		                          	for (const auto & sigma : {-0.5, 0.5})
-		                            {
-		                          		double wgt = 1.0;
-																	std::cout << "Nominal weight = " << wgt << std::endl;
-																	//							wgtr->Shift(sigma, &nuMutable, wgt);  // newer CAFAna works with this one
-							wgtr->Shift(sigma, &srMutable, wgt);  // this is the version needed for old CAFAna
-		                          	     	std::string name = wgtr->ShortName();
-		                          	    // 	if (name.empty() || name == "-")
-		                          	    // 		continue;
-
-		                          	    // 	// let's not litter the output with weights that aren't doing anything.
-		                          	    // 	// we'll just test the ones that have real effects
-		                          	    // 	// (even though in principle it would be better to test that the ones
-		                          	    // 	//  that aren't _supposed_ to be doing anything really aren't)
-		                          	    	if (wgt == 1.0)
-							  {
-							    std::cout << "wgt=1.0. continue" << std::endl;
-							    continue;
-							  }
-							std::cout << "  {novarwgt::GetSystKnobByName(\"" << name << "\"), "
-								  << "{" << sigma << ", " << wgt << "}},"
-								  << std::endl;
-		                            }
-		                          }
-		                          std::cout << "}" << std::endl;
+																			// 	// let's not litter the output with weights that aren't doing anything.
+																			// 	// we'll just test the ones that have real effects
+																			// 	// (even though in principle it would be better to test that the ones
+																			// 	//  that aren't _supposed_ to be doing anything really aren't)
+																			if (wgt == 1.0) {
+																				std::cout << "wgt=1.0. continue" << std::endl;
+																				continue;
+																			}
+																			std::cout << "  {novarwgt::GetSystKnobByName(\"" << name << "\"), "
+																								<< "{" << sigma << ", " << wgt << "}},"
+																								<< std::endl;
+																		}
+																	}
+																	std::cout << "}" << std::endl;
 //		                           std::cout << "RPAfix weight = " << ana::kXSecCVWgt2018RPAFix(sr) << std::endl;
-
+																}
 		                          std::cout << std::endl;
 																 auto wgtVar = 1.0;
 																 return wgtVar;
