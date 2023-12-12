@@ -112,7 +112,7 @@ namespace rwgt
     systsDIS.push_back(&ana::kDISNuBarHadroQ0Syst);
 
 
-    if (nu.mode == caf::kDIS && nu.iscc && nu.hitnuc == 2112 || nu.hitnuc == 2212) {
+    if (nu.mode == caf::kDIS && nu.iscc && nu.hitnuc == 2112 || nu.hitnuc == 2212 && nu.prefsi.size() == 2) {
       std::cout << "ev.nupdg = " << nu.pdg << ";" << std::endl;
       std::cout << "ev.isCC = " << (nu.iscc ? "true" : "false") << ";" << std::endl;
       std::cout << "ev.reaction = novarwgt::" << ModeToEnumName(nu.mode) << ";" << std::endl;
@@ -134,7 +134,7 @@ namespace rwgt
         std::cout << "{" << std::endl;
         for (const auto &wgtr: systsDIS) {
           std::cout << "starting loop over...." << wgtr->ShortName() << std::endl;
-          for (const auto &sigma: {-0.5, 0.5}) {
+          for (const auto &sigma: {-1., -0.5, 0.5, 1.}) {
             double wgt = 1.0;
             std::cout << "Nominal weight = " << wgt << std::endl;
             //							wgtr->Shift(sigma, &nuMutable, wgt);  // newer CAFAna works with this one
