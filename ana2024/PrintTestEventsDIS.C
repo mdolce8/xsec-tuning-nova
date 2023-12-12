@@ -112,7 +112,7 @@ namespace rwgt
     systsDIS.push_back(&ana::kDISNuBarHadroQ0Syst);
 
 
-    if (nu.mode == caf::kDIS && nu.iscc && nu.hitnuc == 2112 || nu.hitnuc == 2212 && nu.prefsi.size() == 2) {
+    if (nu.mode == caf::kDIS && nu.iscc && nu.prefsi.size() == 2 && (nu.hitnuc == 2112 || nu.hitnuc == 2212)) {
       std::cout << "ev.nupdg = " << nu.pdg << ";" << std::endl;
       std::cout << "ev.isCC = " << (nu.iscc ? "true" : "false") << ";" << std::endl;
       std::cout << "ev.reaction = novarwgt::" << ModeToEnumName(nu.mode) << ";" << std::endl;
