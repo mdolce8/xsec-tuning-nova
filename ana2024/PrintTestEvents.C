@@ -109,60 +109,56 @@ namespace rwgt
 
     auto q = k1 - k2;
 
-    if (nu.mode == caf::kRes || nu.mode == caf::kDIS)
-    {
-      std::cout << "ev.nupdg = " << nu.pdg << ";" << std::endl;
-      std::cout << "ev.isCC = " << (nu.iscc ? "true" : "false") << ";" << std::endl;
-      std::cout << "ev.reaction = novarwgt::" << ModeToEnumName(nu.mode) << ";" << std::endl;
-      std::cout << "ev.struckNucl = " << nu.hitnuc << ";" << std::endl;
-      std::cout << "ev.A = " << nu.tgtA << ";" << std::endl;
-      std::cout << "ev.Enu = " << nu.E << ";" << std::endl;
-      std::cout << "ev.q = {" << q.Px() << ", " << q.Py() << ", " << q.Pz() << ", " << q0 << "};"  << std::endl;  // note: TLorentzVector initializer is (x, y, z, t)
-      std::cout << "ev.y = " << nu.y << ";" << std::endl;
-      std::cout << "ev.W = " << W << ";" << std::endl;
-    }
-
+    // Mike & Maria's new RES systematics
     std::vector<const ana::ISyst*> systsDIS;
     systsDIS.push_back(&ana::kDISNuHadroQ1Syst);
     systsDIS.push_back(&ana::kDISNuBarHadroQ0Syst);
 
-    // Mike & Maria's new RES systematics
     std::vector<const ana::ISyst*> systsRES{};
     systsRES.push_back(&ana::kRESvpvnNuRatioXSecSyst);
     systsRES.push_back(&ana::kRESvpvnNuBarRatioXSecSyst);
     systsRES.push_back(&ana::kRESDeltaScaleSyst);
     systsRES.push_back(&ana::kRESOtherScaleSyst);
 
-    if (nu.mode == caf::kDIS && nu.prefsi.size() == 2)
-    {
-      for (const auto & wgtr : systsDIS)
-      {
-          std::cout << "...DIS Interaction with 2 Final State Hadrons..." << std::endl;
-          for (const auto sigma : {-1, 0, 1, 2, 3})
-          {
+      if (nu.mode == caf::kRes || nu.mode == caf::kDIS) {
+        std::cout << "ev.nupdg = " << nu.pdg << ";" << std::endl;
+        std::cout << "ev.isCC = " << (nu.iscc ? "true" : "false") << ";" << std::endl;
+        std::cout << "ev.reaction = novarwgt::" << ModeToEnumName(nu.mode) << ";" << std::endl;
+        std::cout << "ev.struckNucl = " << nu.hitnuc << ";" << std::endl;
+        std::cout << "ev.A = " << nu.tgtA << ";" << std::endl;
+        std::cout << "ev.Enu = " << nu.E << ";" << std::endl;
+        std::cout << "ev.q = {" << q.Px() << ", " << q.Py() << ", " << q.Pz() << ", " << q0 << "};"
+                  << std::endl;  // note: TLorentzVector initializer is (x, y, z, t)
+        std::cout << "ev.y = " << nu.y << ";" << std::endl;
+        std::cout << "ev.W = " << W << ";" << std::endl;
+
+        if (nu.mode == caf::kDIS && nu.prefsi.size() == 2) {
+          for (const auto &wgtr: systsDIS) {
+            std::cout << "...DIS Interaction with 2 Final State Hadrons..." << std::endl;
+            for (const auto sigma: {-1, 0, 1, 2, 3}) {
               double wgt = 1.0;
               std::cout << "Nominal weight = " << wgt << std::endl;
-              if (nu.hitnuc == 2112 || nu.hitnuc == 2212)
-              {
-                  std::cout << "neutrino PDG: " << nu.pdg << std::endl;
-                  std::cout << "ev.npiplus = " << nu.npiplus << ";" << std::endl;
-                  std::cout << "ev.npizero = " << nu.npizero << ";" << std::endl;
-                  std::cout << "ev.npiminus = " << nu.npiminus << ";" << std::endl;
-                  std::cout << "ev.nproton = " << nu.nproton << ";" << std::endl;
-                  std::cout << "ev.nneutron = " << nu.nneutron << ";" << std::endl;
+              if (nu.hitnuc == 2112 || nu.hitnuc == 2212) {
+                std::cout << "neutrino PDG: " << nu.pdg << std::endl;
+                std::cout << "ev.npiplus = " << nu.npiplus << ";" << std::endl;
+                std::cout << "ev.npizero = " << nu.npizero << ";" << std::endl;
+                std::cout << "ev.npiminus = " << nu.npiminus << ";" << std::endl;
+                std::cout << "ev.nproton = " << nu.nproton << ";" << std::endl;
+                std::cout << "ev.nneutron = " << nu.nneutron << ";" << std::endl;
 
-                  wgtr->Shift(sigma, &srMutable, wgt);  // this is the version needed for old CAFAna
-                  std::cout << "  {novarwgt::GetSystKnobByName(\"" << wgtr->ShortName() << "\"), "
-                  << "{" << sigma << ", " << wgt << "}},"
-                  << std::endl;
+                wgtr->Shift(sigma, &srMutable, wgt);  // this is the version needed for old CAFAna
+                std::cout << "  {novarwgt::GetSystKnobByName(\"" << wgtr->ShortName() << "\"), "
+                          << "{" << sigma << ", " << wgt << "}},"
+                          << std::endl;
               } // hit nuc
-          } // sigma
-      } // systs
-    } // DIS & Mult. 2.
+            } // sigma
+          } // systs
+        } // DIS & Mult. 2.
 
+        // move the RES chunk below into here, it is much cleaner...
 
+      } // RES or DIS
 
- // todo: make one if statement that will print out the info for either RES or DIS. not two separate loops....
 
     if (nu.mode == caf::kRes && nu.iscc) {
       std::cout << "Expected syst weights:" << std::endl;
