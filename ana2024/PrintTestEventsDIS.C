@@ -26,6 +26,7 @@
 #include "CAFAna/Systs/RESSysts.h"
 #include "CAFAna/Systs/DISSysts.h"
 #include "CAFAna/Vars/TruthVars.h"
+#include "CAFAna/Weights/XsecTunes.h"
 // disable the following in really old CAFAna as needed
 #include "CAFAna/Weights/XsecTunes.h"
 #include "CAFAna/Weights/GenieWeights.h"
@@ -123,12 +124,14 @@ namespace rwgt
                 << std::endl;  // note: TLorentzVector initializer is (x, y, z, t)
       std::cout << "ev.y = " << nu.y << ";" << std::endl;
       std::cout << "ev.W = " << W << ";" << std::endl;
+      std::cout << "ev.fsPartMult = " << nu.prefsi.size() << std::endl;
       std::cout << "---------------−" << std::endl;
-        std::cout << "ev.npiplus = " << nu.npiplus << ";" << std::endl;
-        std::cout << "ev.npizero = " << nu.npizero << ";" << std::endl;
-        std::cout << "ev.npiminus = " << nu.npiminus << ";" << std::endl;
-        std::cout << "ev.nproton = " << nu.nproton << ";" << std::endl;
-        std::cout << "ev.nneutron = " << nu.nneutron << ";" << std::endl;
+      std::cout << "ev.npiplus = " << nu.npiplus << ";" << std::endl;
+      std::cout << "ev.npizero = " << nu.npizero << ";" << std::endl;
+      std::cout << "ev.npiminus = " << nu.npiminus << ";" << std::endl;
+      std::cout << "ev.nproton = " << nu.nproton << ";" << std::endl;
+      std::cout << "ev.nneutron = " << nu.nneutron << ";" << std::endl;
+      std::cout << "CV kXSecCVWgt2020GSFwFSIProd51 wgt = " << kXSecCVWgt2020GSFwFSIProd51(nu) << std::endl;
 
         std::cout << "Expected syst weights:" << std::endl;
         std::cout << "{" << std::endl;
