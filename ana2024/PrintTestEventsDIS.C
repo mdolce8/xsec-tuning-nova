@@ -131,7 +131,7 @@ namespace rwgt
       std::cout << "ev.npiminus = " << nu.npiminus << ";" << std::endl;
       std::cout << "ev.nproton = " << nu.nproton << ";" << std::endl;
       std::cout << "ev.nneutron = " << nu.nneutron << ";" << std::endl;
-      std::cout << "CV kXSecCVWgt2020GSFwFSIProd51 wgt = " << kXSecCVWgt2020GSFwFSIProd51(nu) << std::endl;
+      std::cout << "CV kXSecCVWgt2020GSFProd51 wgt = " << kXSecCVWgt2020GSFProd51(nu) << std::endl;
 
         std::cout << "Expected syst weights:" << std::endl;
         std::cout << "{" << std::endl;
