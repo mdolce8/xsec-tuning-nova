@@ -127,6 +127,9 @@ namespace rwgt
                 << std::endl;  // note: TLorentzVector initializer is (x, y, z, t)
       std::cout << "ev.y = " << nu.y << ";" << std::endl;
       std::cout << "ev.W = " << W << ";" << std::endl;
+      auto wgtCV = ana::kXSecCVWgt2020GSFProd51(sr);
+      std::cout << "CV kXSecCVWgt2020GSFProd51 wgt = " << wgtCV << std::endl;
+
       if (nu.iscc) {
         std::cout << "Expected syst weights:" << std::endl;
         std::cout << "{" << std::endl;
