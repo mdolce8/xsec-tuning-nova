@@ -119,6 +119,7 @@ namespace rwgt
       std::cout << "ev.reaction = novarwgt::" << ModeToEnumName(nu.mode) << ";" << std::endl;
       std::cout << "ev.struckNucl = " << nu.hitnuc << ";" << std::endl;
       std::cout << "ev.A = " << nu.tgtA << ";" << std::endl;
+      std::cout << "ev.Z = " << nu.tgtZ << ";" << std::endl;
       std::cout << "ev.Enu = " << nu.E << ";" << std::endl;
       std::cout << "ev.q = {" << q.Px() << ", " << q.Py() << ", " << q.Pz() << ", " << q0 << "};"
                 << std::endl;  // note: TLorentzVector initializer is (x, y, z, t)
