@@ -171,15 +171,20 @@ namespace rwgt
 
 
       // printout the particle mult. and energy.
-      std::unordered_map<std::string, double> nutruthVars
+      std::map<std::string, double> nutruthVars
               {
 //                    {"chgpi_mult", fsi_unc::MultiplicityVar({211, -211})},
-                      {"allpi_KE", fsi_unc::KEVar({211, -211, 111}, &nu)},
-                      {"neutron_KE", fsi_unc::KEVar({2112}, &nu)},
-                      {"proton_KE", fsi_unc::KEVar({2212}, &nu)},
-                      {"allpi_mult", fsi_unc::MultiplicityVar({211, -211, 111}, &nu)},
-                      {"neutron_mult", fsi_unc::MultiplicityVar({2112}, &nu)},
-                      {"proton_mult", fsi_unc::MultiplicityVar({2212}, &nu)},
+                      {"pi+_KE", fsi_unc::KEVar({211}, &nu)},
+                      {"pi0_KE", fsi_unc::KEVar({111}, &nu)},
+                      {"pi-_KE", fsi_unc::KEVar({-211}, &nu)},
+                      {"n_KE", fsi_unc::KEVar({2112}, &nu)},
+                      {"p_KE", fsi_unc::KEVar({2212}, &nu)},
+
+                      {"pi+_mult", fsi_unc::MultiplicityVar({211}, &nu)},
+                      {"pi0_mult", fsi_unc::MultiplicityVar({111}, &nu)},
+                      {"pi-_mult", fsi_unc::MultiplicityVar({-211}, &nu)},
+                      {"n_mult", fsi_unc::MultiplicityVar({2112}, &nu)},
+                      {"p_mult", fsi_unc::MultiplicityVar({2212}, &nu)},
 //                      {"Enu", ana::kTrueE_NT},
 //                      {"Q2", ana::kTrueQ2_NT},
 //                      {"W", ana::kTrueW_NT},
