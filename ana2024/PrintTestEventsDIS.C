@@ -168,6 +168,31 @@ namespace rwgt
       auto wgtFSI = ana::khNCVWgt2020(sr);
       std::cout << "FSI khNCVWgt2020 wgt = " << wgtFSI << std::endl;
 
+
+
+      // printout the particle mult. and energy.
+      std::unordered_map<std::string, double> nutruthVars
+              {
+//                    {"chgpi_mult", fsi_unc::MultiplicityVar({211, -211})},
+                      {"allpi_KE", fsi_unc::KEVar({211, -211, 111}, &nu)},
+                      {"neutron_KE", fsi_unc::KEVar({2112}, &nu)},
+                      {"proton_KE", fsi_unc::KEVar({2212}, &nu)},
+                      {"allpi_mult", fsi_unc::MultiplicityVar({211, -211, 111}, &nu)},
+                      {"neutron_mult", fsi_unc::MultiplicityVar({2112}, &nu)},
+                      {"proton_mult", fsi_unc::MultiplicityVar({2212}, &nu)},
+//                      {"Enu", ana::kTrueE_NT},
+//                      {"Q2", ana::kTrueQ2_NT},
+//                      {"W", ana::kTrueW_NT},
+//                      {"z", ana::kTruePartonZ_NT},
+//                      {"wgt", ana::NuTruthVarFromNuTruthWeight(ana::kXSecCVWgt2020GSF_NT)},
+              }; // nutruthVars
+
+      for (const auto & partPair : nutruthVars){
+        std::cout << "{" << partPair.first << ", " << partPair.second << "};" << std::endl;
+      }
+
+
+
         std::cout << "Expected syst weights:" << std::endl;
         std::cout << "{" << std::endl;
         for (const auto &wgtr: systsDIS) {
@@ -192,26 +217,7 @@ namespace rwgt
                       << std::endl;
 
 
-            // printout the particle mult. and energy.
-            std::unordered_map<std::string, double> nutruthVars
-              {
-//                    {"chgpi_mult", fsi_unc::MultiplicityVar({211, -211})},
-                      {"allpi_KE", fsi_unc::KEVar({211, -211, 111}, &nu)},
-                      {"neutron_KE", fsi_unc::KEVar({2112}, &nu)},
-                      {"proton_KE", fsi_unc::KEVar({2212}, &nu)},
-                      {"allpi_mult", fsi_unc::MultiplicityVar({211, -211, 111}, &nu)},
-                      {"neutron_mult", fsi_unc::MultiplicityVar({2112}, &nu)},
-                      {"proton_mult", fsi_unc::MultiplicityVar({2212}, &nu)},
-//                      {"Enu", ana::kTrueE_NT},
-//                      {"Q2", ana::kTrueQ2_NT},
-//                      {"W", ana::kTrueW_NT},
-//                      {"z", ana::kTruePartonZ_NT},
-//                      {"wgt", ana::NuTruthVarFromNuTruthWeight(ana::kXSecCVWgt2020GSF_NT)},
-              }; // nutruthVars
 
-              for (const auto & partPair : nutruthVars){
-                std::cout << "{" << partPair.first << ", " << partPair.second << "};" << std::endl;
-              }
           }
         }
         std::cout << "}" << std::endl;
