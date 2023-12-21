@@ -61,6 +61,39 @@ namespace rwgt
 		}
 	}
 
+
+    namespace fsi_unc
+    {
+        double MultiplicityVar(const std::vector<int>& pdgs,
+                               const caf::SRNeutrinoProxy *nu)
+        {
+          unsigned int nPart = 0;
+          for (const auto &part : nu->prim)
+          {
+            if (std::find(pdgs.begin(), pdgs.end(), part.pdg) != pdgs.end())
+              nPart++;
+          }
+          return nPart;
+        };
+
+
+        double KEVar(const std::vector<int>& pdgs,
+                     const caf::SRNeutrinoProxy *nu){
+
+          double KE = 0;
+          for (const auto &part : nu->prim)
+          {
+            if (std::find(pdgs.begin(), pdgs.end(), part.pdg) != pdgs.end())
+              KE += (1. - 1./part.p.Gamma()) * part.p.E;
+          }
+          // no particles altogether.  not interesting
+          if (KE == 0)
+            return -1.;
+          return KE;
+        }
+    }
+
+
 	std::string KnobToKnobName(rwgt::EReweightLabel knob)
 	{
 		return genie::rew::GSyst::AsString( static_cast<genie::rew::GSyst_t>(knob) );
@@ -131,6 +164,36 @@ namespace rwgt
       std::cout << "ev.resnum = " << nu.resnum << ";" << std::endl;
       auto wgtCV = ana::kXSecCVWgt2020GSFProd51(sr);
       std::cout << "CV kXSecCVWgt2020GSFProd51 wgt = " << wgtCV << std::endl;
+
+
+
+      // printout the particle mult. and energy.
+      std::map<std::string, double> nutruthVars
+              {
+//                    {"chgpi_mult", fsi_unc::MultiplicityVar({211, -211})},
+                      {"pi+_KE", fsi_unc::KEVar({211}, &nu)},
+                      {"pi0_KE", fsi_unc::KEVar({111}, &nu)},
+                      {"pi-_KE", fsi_unc::KEVar({-211}, &nu)},
+                      {"n_KE", fsi_unc::KEVar({2112}, &nu)},
+                      {"p_KE", fsi_unc::KEVar({2212}, &nu)},
+
+                      {"pi+_mult", fsi_unc::MultiplicityVar({211}, &nu)},
+                      {"pi0_mult", fsi_unc::MultiplicityVar({111}, &nu)},
+                      {"pi-_mult", fsi_unc::MultiplicityVar({-211}, &nu)},
+                      {"n_mult", fsi_unc::MultiplicityVar({2112}, &nu)},
+                      {"p_mult", fsi_unc::MultiplicityVar({2212}, &nu)},
+//                      {"Enu", ana::kTrueE_NT},
+//                      {"Q2", ana::kTrueQ2_NT},
+//                      {"W", ana::kTrueW_NT},
+//                      {"z", ana::kTruePartonZ_NT},
+//                      {"wgt", ana::NuTruthVarFromNuTruthWeight(ana::kXSecCVWgt2020GSF_NT)},
+              }; // nutruthVars
+
+      for (const auto & partPair : nutruthVars){
+        std::cout << "{" << partPair.first << ", " << partPair.second << "};" << std::endl;
+      }
+
+
 
       if (nu.iscc) {
         std::cout << "Expected syst weights:" << std::endl;
