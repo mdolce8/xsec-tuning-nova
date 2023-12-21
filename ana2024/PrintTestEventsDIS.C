@@ -196,12 +196,12 @@ namespace rwgt
             std::unordered_map<std::string, double> nutruthVars
               {
 //                    {"chgpi_mult", fsi_unc::MultiplicityVar({211, -211})},
-                      {"allpi_KE", fsi_unc::KEVar({211, -211, 111, nu})},
-                      {"neutron_KE", fsi_unc::KEVar({2112}, nu)},
-                      {"proton_KE", fsi_unc::KEVar({2212}, nu)},
-                      {"allpi_mult", fsi_unc::MultiplicityVar({211, -211, 111}, nu)},
-                      {"neutron_mult", fsi_unc::MultiplicityVar({2112}, nu)},
-                      {"proton_mult", fsi_unc::MultiplicityVar({2212}, nu)},
+                      {"allpi_KE", fsi_unc::KEVar({211, -211, 111}, &nu)},
+                      {"neutron_KE", fsi_unc::KEVar({2112}, &nu)},
+                      {"proton_KE", fsi_unc::KEVar({2212}, &nu)},
+                      {"allpi_mult", fsi_unc::MultiplicityVar({211, -211, 111}, &nu)},
+                      {"neutron_mult", fsi_unc::MultiplicityVar({2112}, &nu)},
+                      {"proton_mult", fsi_unc::MultiplicityVar({2212}, &nu)},
 //                      {"Enu", ana::kTrueE_NT},
 //                      {"Q2", ana::kTrueQ2_NT},
 //                      {"W", ana::kTrueW_NT},
