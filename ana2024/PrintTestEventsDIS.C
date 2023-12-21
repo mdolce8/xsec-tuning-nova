@@ -206,7 +206,7 @@ namespace rwgt
 //                      {"Q2", ana::kTrueQ2_NT},
 //                      {"W", ana::kTrueW_NT},
 //                      {"z", ana::kTruePartonZ_NT},
-                      {"wgt", ana::NuTruthVarFromNuTruthWeight(ana::kXSecCVWgt2020GSF_NT)},
+//                      {"wgt", ana::NuTruthVarFromNuTruthWeight(ana::kXSecCVWgt2020GSF_NT)},
               }; // nutruthVars
 
               for (const auto & partPair : nutruthVars){
