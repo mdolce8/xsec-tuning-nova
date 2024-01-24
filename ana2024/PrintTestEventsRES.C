@@ -5,6 +5,10 @@
  *   of the Prod5.1 RES systematics from the ND fitting.
  *
  *      Author: M. Dolce <mdolce@fnal.gov>
+ *
+ *
+ *  To run this script, many libraries are needed:
+ *  $ cafe --libdir /cvmfs/nova.opensciencegrid.org/externals/genie/v3_04_00/Linux64bit+3.10-2.17-e20-inclxx-prof/lib  --lib GRwFwk --lib GRwIO --lib GRwClc  --lib GFwMsg --lib GFwReg --lib GFwAlg --lib GFwInt --lib GFwGHEP --lib GFwNum --lib GFwUtl --lib GFwParDat --lib GFwEG --lib GFwNtp --lib GPhXSIg --lib GPhPDF --lib GPhNuclSt --lib GPhCmn --lib GPhDcy --lib GPhHadTransp --lib GPhHadnz --lib GPhDeEx --lib GPhAMNGXS --lib GPhAMNGEG --lib GPhChmXS --lib GPhCohXS --lib GPhCohEG --lib GPhDISXS --lib GPhDISEG --lib GPhDfrcXS --lib GPhDfrcEG --lib GPhHELptnXS --lib GPhHELptnEG --lib GPhIBDXS --lib GPhIBDEG --lib GPhHadTens --lib GPhMNucXS --lib GPhMNucEG --lib GPhMEL --lib GPhNuElXS --lib GPhNuElEG --lib GPhQELXS --lib GPhQELEG --lib GPhResXS --lib GPhResEG --lib GPhStrXS --lib GPhStrEG --lib GPhHEDISXS --lib GPhHEDISEG --lib GPhNDcy --lib GPhNNBarOsc --lib GPhBDMXS --lib GPhBDMEG --lib GPhHNL --lib GTlGeo --lib GTlFlx   --libdir $CLHEP_LIB_DIR --lib CLHEP  PrintTestEventsRES.C
  */
 
 #include <iostream>
