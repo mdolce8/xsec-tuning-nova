@@ -197,7 +197,14 @@ namespace rwgt
       std::cout << "ev.W = " << W << ";" << std::endl;
       std::cout << "ev.resnum = " << nu.resnum << ";" << std::endl;
       auto wgtCV = ana::kXSecCVWgt2020GSFProd51(sr);
+      std::cout << "ev.fsPartMult = " << nu.prefsi.size() << std::endl;
+      std::cout << "---------------−" << std::endl;
       std::cout << "CV kXSecCVWgt2020GSFProd51 wgt = " << wgtCV << std::endl;
+      std::cout << "ev.npiplus = " << nu.npiplus << ";" << std::endl;
+      std::cout << "ev.npizero = " << nu.npizero << ";" << std::endl;
+      std::cout << "ev.npiminus = " << nu.npiminus << ";" << std::endl;
+      std::cout << "ev.nproton = " << nu.nproton << ";" << std::endl;
+      std::cout << "ev.nneutron = " << nu.nneutron << ";" << std::endl;
 
 
 
