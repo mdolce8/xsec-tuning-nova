@@ -61,10 +61,11 @@ namespace rwgt
 		}
 	}
 
-
+// TODO: these particles are post-FSI. They should be pre-FSI for the "new" systs.
+// Need the Pre-FSI energies, use prefsi using prim.
     namespace fsi_unc
     {
-        double MultiplicityVar(const std::vector<int>& pdgs,
+        double VarPostFSIMultiplicity(const std::vector<int>& pdgs,
                                const caf::SRNeutrinoProxy *nu)
         {
           unsigned int nPart = 0;
@@ -76,12 +77,25 @@ namespace rwgt
           return nPart;
         };
 
+        double VarPreFSIMultiplicity(const std::vector<int>& pdgs,
+                                     const caf::SRNeutrinoProxy  *nu)
+        {
+          unsigned nPart = 0;
+          for (const auto &part : nu->prefsi)
+          {
+            if (std::find(pdgs.begin(), pdgs.end(), part.pdg) != pdgs.end())
+              nPart++;
+          }
+          return nPart;
+        }
 
-        double KEVar(const std::vector<int>& pdgs,
+
+
+        double VarPostFSIKE(const std::vector<int>& pdgs,
                      const caf::SRNeutrinoProxy *nu){
 
           double KE = 0;
-          for (const auto &part : nu->prim)
+          for (const auto &part : nu->prim) //prefsi , prim is postFSI (this gets fed into GEANT).
           {
             if (std::find(pdgs.begin(), pdgs.end(), part.pdg) != pdgs.end())
               KE += (1. - 1./part.p.Gamma()) * part.p.E;
@@ -89,6 +103,22 @@ namespace rwgt
           // no particles altogether.  not interesting
           if (KE == 0)
             return -1.;
+          return KE;
+        }
+
+        double VarPreFSIKE(const std::vector<int>& pdgs,
+                           const caf::SRNeutrinoProxy *nu){
+
+          double KE = 0;
+          for (const auto &part :nu->prefsi)
+          {
+            if (std::find(pdgs.begin(), pdgs.end(), part.pdg) != pdgs.end())
+              KE +=(1. -1./part.p.Gamma()) * part.p.E;
+          }
+
+          // no particle, nothing here.
+          if (KE == 0)
+            return -1;
           return KE;
         }
     }
@@ -171,17 +201,29 @@ namespace rwgt
       std::map<std::string, double> nutruthVars
               {
 //                    {"chgpi_mult", fsi_unc::MultiplicityVar({211, -211})},
-                      {"pi+_KE", fsi_unc::KEVar({211}, &nu)},
-                      {"pi0_KE", fsi_unc::KEVar({111}, &nu)},
-                      {"pi-_KE", fsi_unc::KEVar({-211}, &nu)},
-                      {"n_KE", fsi_unc::KEVar({2112}, &nu)},
-                      {"p_KE", fsi_unc::KEVar({2212}, &nu)},
+                      {"pi+_KE (Pre-FSI)", fsi_unc::VarPreFSIKE({211}, &nu)},
+                      {"pi0_KE (Pre-FSI)", fsi_unc::VarPreFSIKE({111}, &nu)},
+                      {"pi-_KE (Pre-FSI)", fsi_unc::VarPreFSIKE({-211}, &nu)},
+                      {"n_KE (Pre-FSI)", fsi_unc::VarPreFSIKE({2112}, &nu)},
+                      {"p_KE (Pre-FSI)", fsi_unc::VarPreFSIKE({2212}, &nu)},
 
-                      {"pi+_mult", fsi_unc::MultiplicityVar({211}, &nu)},
-                      {"pi0_mult", fsi_unc::MultiplicityVar({111}, &nu)},
-                      {"pi-_mult", fsi_unc::MultiplicityVar({-211}, &nu)},
-                      {"n_mult", fsi_unc::MultiplicityVar({2112}, &nu)},
-                      {"p_mult", fsi_unc::MultiplicityVar({2212}, &nu)},
+                      {"pi+_mult (Pre-FSI)", fsi_unc::VarPreFSIMultiplicity({211}, &nu)},
+                      {"pi0_mult (Pre-FSI)", fsi_unc::VarPreFSIMultiplicity({111}, &nu)},
+                      {"pi-_mult (Pre-FSI)", fsi_unc::VarPreFSIMultiplicity({-211}, &nu)},
+                      {"n_mult (Pre-FSI)", fsi_unc::VarPreFSIMultiplicity({2112}, &nu)},
+                      {"p_mult (Pre-FSI)", fsi_unc::VarPreFSIMultiplicity({2212}, &nu)},
+
+                      {"pi+_KE (Post-FSI)", fsi_unc::VarPostFSIKE({211}, &nu)},
+                      {"pi0_KE (Post-FSI)", fsi_unc::VarPostFSIKE({111}, &nu)},
+                      {"pi-_KE (Post-FSI)", fsi_unc::VarPostFSIKE({-211}, &nu)},
+                      {"n_KE (Post-FSI)", fsi_unc::VarPostFSIKE({2112}, &nu)},
+                      {"p_KE (Post-FSI)", fsi_unc::VarPostFSIKE({2212}, &nu)},
+
+                      {"pi+_mult (Post-FSI)", fsi_unc::VarPostFSIMultiplicity({211}, &nu)},
+                      {"pi0_mult (Post-FSI)", fsi_unc::VarPostFSIMultiplicity({111}, &nu)},
+                      {"pi-_mult (Post-FSI)", fsi_unc::VarPostFSIMultiplicity({-211}, &nu)},
+                      {"n_mult (Post-FSI)", fsi_unc::VarPostFSIMultiplicity({2112}, &nu)},
+                      {"p_mult (Post-FSI)", fsi_unc::VarPostFSIMultiplicity({2212}, &nu)},
 //                      {"Enu", ana::kTrueE_NT},
 //                      {"Q2", ana::kTrueQ2_NT},
 //                      {"W", ana::kTrueW_NT},
