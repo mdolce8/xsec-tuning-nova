@@ -151,7 +151,7 @@ namespace rwgt
                       exit(0);
     }
 
-    const auto & nu = sr->mc.nu[0];
+    const caf::SRNeutrinoProxy & nu = sr->mc.nu[0];
     double El = ana::kTrueMuonE(sr);
     double q0 = ana::kTrueQ0(sr);
     double q3 = ana::kTrueQ3(sr);
@@ -197,7 +197,6 @@ namespace rwgt
       std::cout << "ev.W = " << W << ";" << std::endl;
       std::cout << "ev.resnum = " << nu.resnum << ";" << std::endl;
       auto wgtCV = ana::kXSecCVWgt2020GSFProd51(sr);
-      std::cout << "ev.fsPartMult = " << nu.prefsi.size() << std::endl;
       std::cout << "---------------−" << std::endl;
       std::cout << "CV kXSecCVWgt2020GSFProd51 wgt = " << wgtCV << std::endl;
       std::cout << "ev.npiplus = " << nu.npiplus << ";" << std::endl;
