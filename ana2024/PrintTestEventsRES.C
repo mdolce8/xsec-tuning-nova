@@ -254,7 +254,6 @@ namespace rwgt
           std::cout << "starting loop over...." << wgtr->ShortName() << std::endl;
           for (const auto &sigma: {-1., -0.5, 0.5, 1.}) {
             double wgt = 1.0;
-            std::cout << "Nominal weight = " << wgt << std::endl;
             //							wgtr->Shift(sigma, &nuMutable, wgt);  // newer CAFAna works with this one
             wgtr->Shift(sigma, &srMutable, wgt);  // this is the version needed for old CAFAna
             std::string name = wgtr->ShortName();
@@ -264,7 +263,6 @@ namespace rwgt
             // 	// (even though in principle it would be better to test that the ones
             // 	//  that aren't _supposed_ to be doing anything really aren't)
             if (wgt == 1.0) {
-              std::cout << "wgt=1.0. continue" << std::endl;
               continue;
             }
             std::cout << "  {novarwgt::GetSystKnobByName(\"" << name << "\"), "
