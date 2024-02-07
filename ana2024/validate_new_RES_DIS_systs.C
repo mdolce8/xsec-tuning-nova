@@ -133,8 +133,8 @@ void validate_new_RES_DIS_systs(const std::string& beam = "fhc", // or "rhc"
 
   // Create the FD "AllNumu" predinterp as well. It is Q5.
   // jeremy says this is typically quantile 4.... (and 1 is 0), but this is my way.
-  predGens.try_emplace("pred_interp_Q5"),
-                       NoOscPredictionGenerator(loaders.GetLoader(caf::kNEARDET, Loaders::kMC), histaxisEHadVisE, kNumu2020ND, kPPFXFluxCVWgt*kXSecCVWgt2020GSFProd51);
+  predGens.try_emplace("pred_interp_Q5",
+                       NoOscPredictionGenerator(loaders.GetLoader(caf::kNEARDET, Loaders::kMC), histaxisEHadVisE, kNumu2020ND, kPPFXFluxCVWgt*kXSecCVWgt2020GSFProd51));
 
   for (const auto &predGen : predGens) {
     predInterps.try_emplace(predGen.first,
