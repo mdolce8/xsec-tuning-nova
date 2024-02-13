@@ -252,7 +252,7 @@ namespace rwgt
         std::cout << "{" << std::endl;
         for (const auto &wgtr: systsRES) {
           std::cout << "starting loop over...." << wgtr->ShortName() << std::endl;
-          for (const auto &sigma: {-1., -0.5, 0.5, 1.}) {
+          for (const auto &sigma: {-3, -2., -1., -0.5, 0.5, 1., 2., 3.}) {
             double wgt = 1.0;
             //							wgtr->Shift(sigma, &nuMutable, wgt);  // newer CAFAna works with this one
             wgtr->Shift(sigma, &srMutable, wgt);  // this is the version needed for old CAFAna
