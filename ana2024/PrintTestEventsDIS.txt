@@ -1,0 +1,764 @@
+Welcome to the ROOT of all evils 
+Loading SAM dataset from file cache...
+Filling 1 spectra from 400 files matching 'prod_sumdecaf_R20-11-25-prod5.1reco.a_nd_genie_N1810j0211a_nonswap_fhc_nova_v08_full_v1_numu2020'...
+
+Warning: field 'rec.mc.nu.nprim' does not exist in file. Falling back to 'rec.mc.nu.@prim.size()' which is less efficient. Consider updating StandardRecord to include 'rec.mc.nu.nprim'.
+
+
+
+
+
+
+
+
+
+
+Warning: field 'rec.mc.nu.nprefsi' does not exist in file. Falling back to 'rec.mc.nu.@prefsi.size()' which is less efficient. Consider updating StandardRecord to include 'rec.mc.nu.nprefsi'.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ev.nupdg = 14;
+ev.isCC = true;
+ev.reaction = novarwgt::kScDeepInelastic;
+ev.struckNucl = 2112;
+ev.A = 12;
+ev.Z = 6;
+ev.Enu = 2.4656;
+ev.q = {-0.17315, -0.235073, 1.51368, 1.46432};
+ev.y = 0.593899;
+ev.W = 1.84366;
+ev.fsPartMult = 2
+---------------−
+ev.npiplus = 1;
+ev.npizero = 0;
+ev.npiminus = 0;
+ev.nproton = 0;
+ev.nneutron = 1;
+
+Warning: field 'rec.mc.nu.ngenVersion' does not exist in file. Falling back to 'rec.mc.nu.@genVersion.size()' which is less efficient. Consider updating StandardRecord to include 'rec.mc.nu.ngenVersion'.
+
+
+Warning: field 'rec.mc.nu.rwgt.ngenie' does not exist in file. Falling back to 'rec.mc.nu.rwgt.@genie.size()' which is less efficient. Consider updating StandardRecord to include 'rec.mc.nu.rwgt.ngenie'.
+
+CV kXSecCVWgt2020GSFProd51 wgt = 1.11577
+FSI khNCVWgt2020 wgt = 0.923491
+{n_KE, 0.816164};
+{n_mult, 1};
+{p_KE, -1};
+{p_mult, 0};
+{pi+_KE, 0.487343};
+{pi+_mult, 1};
+{pi-_KE, -1};
+{pi-_mult, 0};
+{pi0_KE, -1};
+{pi0_mult, 0};
+Expected syst weights:
+{
+starting loop over....DIS_nu_hadro_Q1_syst
+Nominal weight = 1
+  {novarwgt::GetSystKnobByName("DIS_nu_hadro_Q1_syst"), {-3, 1.5}},
+Nominal weight = 1
+  {novarwgt::GetSystKnobByName("DIS_nu_hadro_Q1_syst"), {-2, 1.5}},
+Nominal weight = 1
+  {novarwgt::GetSystKnobByName("DIS_nu_hadro_Q1_syst"), {-1, 1.5}},
+Nominal weight = 1
+  {novarwgt::GetSystKnobByName("DIS_nu_hadro_Q1_syst"), {-0.5, 1.25}},
+Nominal weight = 1
+  {novarwgt::GetSystKnobByName("DIS_nu_hadro_Q1_syst"), {0.5, 0.75}},
+Nominal weight = 1
+  {novarwgt::GetSystKnobByName("DIS_nu_hadro_Q1_syst"), {1, 0.5}},
+Nominal weight = 1
+  {novarwgt::GetSystKnobByName("DIS_nu_hadro_Q1_syst"), {2, 0}},
+Nominal weight = 1
+  {novarwgt::GetSystKnobByName("DIS_nu_hadro_Q1_syst"), {3, 0}},
+starting loop over....DIS_nubar_hadro_Q0_syst
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+}
+
+
+
+
+
+
+
+
+ev.nupdg = 14;
+ev.isCC = true;
+ev.reaction = novarwgt::kScDeepInelastic;
+ev.struckNucl = 2112;
+ev.A = 12;
+ev.Z = 6;
+ev.Enu = 2.11342;
+ev.q = {-0.0773663, 0.10781, 2.22146, 1.91232};
+ev.y = 0.904843;
+ev.W = 1.78243;
+ev.fsPartMult = 2
+---------------−
+ev.npiplus = 1;
+ev.npizero = 0;
+ev.npiminus = 0;
+ev.nproton = 2;
+ev.nneutron = 5;
+CV kXSecCVWgt2020GSFProd51 wgt = 1.33925
+FSI khNCVWgt2020 wgt = 1.27398
+{n_KE, 0.325816};
+{n_mult, 2};
+{p_KE, 0.426794};
+{p_mult, 2};
+{pi+_KE, 1.00281};
+{pi+_mult, 1};
+{pi-_KE, -1};
+{pi-_mult, 0};
+{pi0_KE, -1};
+{pi0_mult, 0};
+Expected syst weights:
+{
+starting loop over....DIS_nu_hadro_Q1_syst
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+starting loop over....DIS_nubar_hadro_Q0_syst
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+}
+
+
+
+
+
+
+ev.nupdg = 14;
+ev.isCC = true;
+ev.reaction = novarwgt::kScDeepInelastic;
+ev.struckNucl = 2112;
+ev.A = 12;
+ev.Z = 6;
+ev.Enu = 2.08669;
+ev.q = {0.253056, -0.12214, 2.06197, 1.78548};
+ev.y = 0.85565;
+ev.W = 1.75831;
+ev.fsPartMult = 2
+---------------−
+ev.npiplus = 1;
+ev.npizero = 0;
+ev.npiminus = 0;
+ev.nproton = 0;
+ev.nneutron = 1;
+CV kXSecCVWgt2020GSFProd51 wgt = 1.17786
+FSI khNCVWgt2020 wgt = 0.970135
+{n_KE, 0.162142};
+{n_mult, 1};
+{p_KE, -1};
+{p_mult, 0};
+{pi+_KE, 1.46495};
+{pi+_mult, 1};
+{pi-_KE, -1};
+{pi-_mult, 0};
+{pi0_KE, -1};
+{pi0_mult, 0};
+Expected syst weights:
+{
+starting loop over....DIS_nu_hadro_Q1_syst
+Nominal weight = 1
+  {novarwgt::GetSystKnobByName("DIS_nu_hadro_Q1_syst"), {-3, 1.5}},
+Nominal weight = 1
+  {novarwgt::GetSystKnobByName("DIS_nu_hadro_Q1_syst"), {-2, 1.5}},
+Nominal weight = 1
+  {novarwgt::GetSystKnobByName("DIS_nu_hadro_Q1_syst"), {-1, 1.5}},
+Nominal weight = 1
+  {novarwgt::GetSystKnobByName("DIS_nu_hadro_Q1_syst"), {-0.5, 1.25}},
+Nominal weight = 1
+  {novarwgt::GetSystKnobByName("DIS_nu_hadro_Q1_syst"), {0.5, 0.75}},
+Nominal weight = 1
+  {novarwgt::GetSystKnobByName("DIS_nu_hadro_Q1_syst"), {1, 0.5}},
+Nominal weight = 1
+  {novarwgt::GetSystKnobByName("DIS_nu_hadro_Q1_syst"), {2, 0}},
+Nominal weight = 1
+  {novarwgt::GetSystKnobByName("DIS_nu_hadro_Q1_syst"), {3, 0}},
+starting loop over....DIS_nubar_hadro_Q0_syst
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ev.nupdg = 14;
+ev.isCC = true;
+ev.reaction = novarwgt::kScDeepInelastic;
+ev.struckNucl = 2112;
+ev.A = 12;
+ev.Z = 6;
+ev.Enu = 1.87685;
+ev.q = {0.0641552, -0.197842, 1.93271, 1.63697};
+ev.y = 0.87219;
+ev.W = 1.69013;
+ev.fsPartMult = 2
+---------------−
+ev.npiplus = 1;
+ev.npizero = 0;
+ev.npiminus = 0;
+ev.nproton = 0;
+ev.nneutron = 1;
+CV kXSecCVWgt2020GSFProd51 wgt = 1.09699
+FSI khNCVWgt2020 wgt = 0.820736
+{n_KE, 1.21692};
+{n_mult, 1};
+{p_KE, -1};
+{p_mult, 0};
+{pi+_KE, 0.261283};
+{pi+_mult, 1};
+{pi-_KE, -1};
+{pi-_mult, 0};
+{pi0_KE, -1};
+{pi0_mult, 0};
+Expected syst weights:
+{
+starting loop over....DIS_nu_hadro_Q1_syst
+Nominal weight = 1
+  {novarwgt::GetSystKnobByName("DIS_nu_hadro_Q1_syst"), {-3, 1.5}},
+Nominal weight = 1
+  {novarwgt::GetSystKnobByName("DIS_nu_hadro_Q1_syst"), {-2, 1.5}},
+Nominal weight = 1
+  {novarwgt::GetSystKnobByName("DIS_nu_hadro_Q1_syst"), {-1, 1.5}},
+Nominal weight = 1
+  {novarwgt::GetSystKnobByName("DIS_nu_hadro_Q1_syst"), {-0.5, 1.25}},
+Nominal weight = 1
+  {novarwgt::GetSystKnobByName("DIS_nu_hadro_Q1_syst"), {0.5, 0.75}},
+Nominal weight = 1
+  {novarwgt::GetSystKnobByName("DIS_nu_hadro_Q1_syst"), {1, 0.5}},
+Nominal weight = 1
+  {novarwgt::GetSystKnobByName("DIS_nu_hadro_Q1_syst"), {2, 0}},
+Nominal weight = 1
+  {novarwgt::GetSystKnobByName("DIS_nu_hadro_Q1_syst"), {3, 0}},
+starting loop over....DIS_nubar_hadro_Q0_syst
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+}
+
+
+
+
+
+
+
+
+
+
+
+ev.nupdg = 14;
+ev.isCC = true;
+ev.reaction = novarwgt::kScDeepInelastic;
+ev.struckNucl = 2112;
+ev.A = 35;
+ev.Z = 17;
+ev.Enu = 2.04888;
+ev.q = {-0.418996, 0.0161361, 1.85951, 1.57682};
+ev.y = 0.7696;
+ev.W = 1.64175;
+ev.fsPartMult = 2
+---------------−
+ev.npiplus = 2;
+ev.npizero = 1;
+ev.npiminus = 0;
+ev.nproton = 1;
+ev.nneutron = 2;
+CV kXSecCVWgt2020GSFProd51 wgt = 1.11829
+FSI khNCVWgt2020 wgt = 0.85247
+{n_KE, 0.0226061};
+{n_mult, 2};
+{p_KE, 1.12189};
+{p_mult, 1};
+{pi+_KE, 0.280313};
+{pi+_mult, 1};
+{pi-_KE, -1};
+{pi-_mult, 0};
+{pi0_KE, -1};
+{pi0_mult, 0};
+Expected syst weights:
+{
+starting loop over....DIS_nu_hadro_Q1_syst
+Nominal weight = 1
+  {novarwgt::GetSystKnobByName("DIS_nu_hadro_Q1_syst"), {-3, 0}},
+Nominal weight = 1
+  {novarwgt::GetSystKnobByName("DIS_nu_hadro_Q1_syst"), {-2, 0}},
+Nominal weight = 1
+  {novarwgt::GetSystKnobByName("DIS_nu_hadro_Q1_syst"), {-1, 0}},
+Nominal weight = 1
+  {novarwgt::GetSystKnobByName("DIS_nu_hadro_Q1_syst"), {-0.5, 0.5}},
+Nominal weight = 1
+  {novarwgt::GetSystKnobByName("DIS_nu_hadro_Q1_syst"), {0.5, 1.5}},
+Nominal weight = 1
+  {novarwgt::GetSystKnobByName("DIS_nu_hadro_Q1_syst"), {1, 2}},
+Nominal weight = 1
+  {novarwgt::GetSystKnobByName("DIS_nu_hadro_Q1_syst"), {2, 3}},
+Nominal weight = 1
+  {novarwgt::GetSystKnobByName("DIS_nu_hadro_Q1_syst"), {3, 3}},
+starting loop over....DIS_nubar_hadro_Q0_syst
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ev.nupdg = 14;
+ev.isCC = true;
+ev.reaction = novarwgt::kScDeepInelastic;
+ev.struckNucl = 2112;
+ev.A = 12;
+ev.Z = 6;
+ev.Enu = 2.37084;
+ev.q = {0.151962, -0.320442, 2.3955, 1.99997};
+ev.y = 0.843569;
+ev.W = 1.66519;
+ev.fsPartMult = 2
+---------------−
+ev.npiplus = 0;
+ev.npizero = 2;
+ev.npiminus = 0;
+ev.nproton = 1;
+ev.nneutron = 1;
+CV kXSecCVWgt2020GSFProd51 wgt = 0.999827
+FSI khNCVWgt2020 wgt = 0.833643
+{n_KE, 0.0334596};
+{n_mult, 1};
+{p_KE, 1.57973};
+{p_mult, 1};
+{pi+_KE, -1};
+{pi+_mult, 0};
+{pi-_KE, -1};
+{pi-_mult, 0};
+{pi0_KE, 0.225535};
+{pi0_mult, 1};
+Expected syst weights:
+{
+starting loop over....DIS_nu_hadro_Q1_syst
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+starting loop over....DIS_nubar_hadro_Q0_syst
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+}
+
+
+ev.nupdg = 14;
+ev.isCC = true;
+ev.reaction = novarwgt::kScDeepInelastic;
+ev.struckNucl = 2112;
+ev.A = 12;
+ev.Z = 6;
+ev.Enu = 2.10616;
+ev.q = {0.12217, 0.0930246, 2.14567, 1.91563};
+ev.y = 0.909535;
+ev.W = 1.87643;
+ev.fsPartMult = 2
+---------------−
+ev.npiplus = 1;
+ev.npizero = 0;
+ev.npiminus = 0;
+ev.nproton = 0;
+ev.nneutron = 1;
+CV kXSecCVWgt2020GSFProd51 wgt = 1.14618
+FSI khNCVWgt2020 wgt = 0.963781
+{n_KE, 0.66767};
+{n_mult, 1};
+{p_KE, -1};
+{p_mult, 0};
+{pi+_KE, 1.0888};
+{pi+_mult, 1};
+{pi-_KE, -1};
+{pi-_mult, 0};
+{pi0_KE, -1};
+{pi0_mult, 0};
+Expected syst weights:
+{
+starting loop over....DIS_nu_hadro_Q1_syst
+Nominal weight = 1
+  {novarwgt::GetSystKnobByName("DIS_nu_hadro_Q1_syst"), {-3, 1.5}},
+Nominal weight = 1
+  {novarwgt::GetSystKnobByName("DIS_nu_hadro_Q1_syst"), {-2, 1.5}},
+Nominal weight = 1
+  {novarwgt::GetSystKnobByName("DIS_nu_hadro_Q1_syst"), {-1, 1.5}},
+Nominal weight = 1
+  {novarwgt::GetSystKnobByName("DIS_nu_hadro_Q1_syst"), {-0.5, 1.25}},
+Nominal weight = 1
+  {novarwgt::GetSystKnobByName("DIS_nu_hadro_Q1_syst"), {0.5, 0.75}},
+Nominal weight = 1
+  {novarwgt::GetSystKnobByName("DIS_nu_hadro_Q1_syst"), {1, 0.5}},
+Nominal weight = 1
+  {novarwgt::GetSystKnobByName("DIS_nu_hadro_Q1_syst"), {2, 0}},
+Nominal weight = 1
+  {novarwgt::GetSystKnobByName("DIS_nu_hadro_Q1_syst"), {3, 0}},
+starting loop over....DIS_nubar_hadro_Q0_syst
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+}
+
+
+
+
+
+
+
+
+ev.nupdg = 14;
+ev.isCC = true;
+ev.reaction = novarwgt::kScDeepInelastic;
+ev.struckNucl = 2112;
+ev.A = 35;
+ev.Z = 17;
+ev.Enu = 1.57546;
+ev.q = {-0.323278, 0.14826, 1.67359, 1.19168};
+ev.y = 0.756404;
+ev.W = 1.26967;
+ev.fsPartMult = 2
+---------------−
+ev.npiplus = 0;
+ev.npizero = 1;
+ev.npiminus = 0;
+ev.nproton = 1;
+ev.nneutron = 0;
+CV kXSecCVWgt2020GSFProd51 wgt = 1.12695
+FSI khNCVWgt2020 wgt = 0.742494
+{n_KE, -1};
+{n_mult, 0};
+{p_KE, 0.881731};
+{p_mult, 1};
+{pi+_KE, -1};
+{pi+_mult, 0};
+{pi-_KE, -1};
+{pi-_mult, 0};
+{pi0_KE, 0.163466};
+{pi0_mult, 1};
+Expected syst weights:
+{
+starting loop over....DIS_nu_hadro_Q1_syst
+Nominal weight = 1
+  {novarwgt::GetSystKnobByName("DIS_nu_hadro_Q1_syst"), {-3, 0}},
+Nominal weight = 1
+  {novarwgt::GetSystKnobByName("DIS_nu_hadro_Q1_syst"), {-2, 0}},
+Nominal weight = 1
+  {novarwgt::GetSystKnobByName("DIS_nu_hadro_Q1_syst"), {-1, 0}},
+Nominal weight = 1
+  {novarwgt::GetSystKnobByName("DIS_nu_hadro_Q1_syst"), {-0.5, 0.5}},
+Nominal weight = 1
+  {novarwgt::GetSystKnobByName("DIS_nu_hadro_Q1_syst"), {0.5, 1.5}},
+Nominal weight = 1
+  {novarwgt::GetSystKnobByName("DIS_nu_hadro_Q1_syst"), {1, 2}},
+Nominal weight = 1
+  {novarwgt::GetSystKnobByName("DIS_nu_hadro_Q1_syst"), {2, 3}},
+Nominal weight = 1
+  {novarwgt::GetSystKnobByName("DIS_nu_hadro_Q1_syst"), {3, 3}},
+starting loop over....DIS_nubar_hadro_Q0_syst
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+ev.nupdg = 14;
+ev.isCC = true;
+ev.reaction = novarwgt::kScDeepInelastic;
+ev.struckNucl = 2112;
+ev.A = 12;
+ev.Z = 6;
+ev.Enu = 1.84908;
+ev.q = {0.146712, 0.275563, 0.495558, 0.45601};
+ev.y = 0.246614;
+ev.W = 1.26601;
+ev.fsPartMult = 2
+---------------−
+ev.npiplus = 1;
+ev.npizero = 0;
+ev.npiminus = 0;
+ev.nproton = 1;
+ev.nneutron = 2;
+CV kXSecCVWgt2020GSFProd51 wgt = 1.29477
+FSI khNCVWgt2020 wgt = 0.895909
+{n_KE, 0.102252};
+{n_mult, 1};
+{p_KE, 0.110706};
+{p_mult, 1};
+{pi+_KE, 0.0918222};
+{pi+_mult, 1};
+{pi-_KE, -1};
+{pi-_mult, 0};
+{pi0_KE, -1};
+{pi0_mult, 0};
+Expected syst weights:
+{
+starting loop over....DIS_nu_hadro_Q1_syst
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+starting loop over....DIS_nubar_hadro_Q0_syst
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+Nominal weight = 1
+wgt=1.0. continue
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+that's plenty of events. exiting....
+** NOvA Common Analysis Format Executor **
+Compiling macro...
+Linking macro...
+Executing macro...
