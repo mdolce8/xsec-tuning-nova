@@ -237,12 +237,14 @@ namespace rwgt
           std::cout << "}" << std::endl;
         } // struck neutron or proton
 
-        std::cout << std::endl;
-        auto wgtVar = 1.0;
-        return wgtVar;
+
       } // DIS , CC, 2 hadrons
+
+      std::cout << std::endl;
+      auto wgtVar = 1.0;
+      return wgtVar;
   });
-}
+} // namespace rwgt
 
 void PrintTestEventsDIS(const bool fhc = true)
 {
