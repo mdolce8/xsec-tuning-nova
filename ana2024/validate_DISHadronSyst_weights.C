@@ -1,9 +1,10 @@
 /*
  *  Plot the values of the weights for the new parameters
- *  ( RESScale{Delta,Other}, RESvpvn{Nu,NuBar}RatioXSecSyst, DISHadroQ{0,1}{Nu,NuBar}Syst )
- *  and see which parameter has weights that are unusually large.
+ *  ( DISHadronQ{0,1}{Nu,NuBar}Syst )
+ *  and look more carefully.
+ *  Just looking at the spectra they seem identical.
  *
- * May 2022
+ * Feb 2024
  * M. Dolce
  */
 
@@ -21,7 +22,7 @@
 #include "3FlavorAna/Cuts/NumuCuts2020.h"
 #include "3FlavorAna/Systs/3FlavorAna2020Systs.h"
 #include "3FlavorAna/Vars/NumuVars.h"
-#include "3FlavorAna/MCMC/NDFit/CutsPngCVNOpt.h"
+#include "3FlavorAna/NDFit/Samples/CutsPngCVNOpt.h"
 #include "3FlavorAna/NDFit/Systs/LoadSysts.h"
 
 #include "CAFAna/Analysis/Exposures.h"
@@ -63,7 +64,6 @@ using namespace ana;
 
 // =====================================================================================================
 void validate_new_parameter_weights(
-											 const std::string& outDir="", 				// local --> (full path) $ana/mcmc/plot/validation/validate_new_parameter_weights, grid --> mkdir outDir, arg is "."
                        const double threshold = 5.,              // value of weight you want to dump in the printouts
 											 const bool gridSubmission=false
 )
@@ -73,12 +73,7 @@ void validate_new_parameter_weights(
   std::cout << " -- Using prod5.1 data and MC definitions." << std::endl;
   std::cout << " -- GENIE Skew Fix Weight Applied. Using Prod5.1 MC defs." << std::endl;
 
-
-  // instantiate the RES Scale systs...
-  const ana::DummyAnaSyst *kRESDeltaScaleSyst = new ana::DummyAnaSyst("RESDeltaScaleSyst", "Resonance Scale Syst Delta");
-  const ana::DummyAnaSyst *kRESOtherScaleSyst = new ana::DummyAnaSyst("RESOtherScaleSyst", "Resonance Scale Syst Other");
-
-
+  const std::string  outDir = "/nova/ana/users/mdolce/preds+spectra/ana2024/validate_DISHadronSyst_weights/test/";
 
   std::cout << "**********************************************************" << std::endl;
 
@@ -110,8 +105,9 @@ void validate_new_parameter_weights(
 	double q0_min=0; double q0_max=0.8; int binsq0=40;
 	double q3_min=0; double q3_max=2.0; int binsq3=40;
 
-  HistAxis axis_fit_q3q0( "Reco. |#vec{q}| (GeV)"   , Binning::Simple( binsq3, q3_min, q3_max ), kRecoQmag,
-                          "Reco. E_{had, vis} (GeV)", Binning::Simple( binsq0, q0_min, q0_max ), kNumuHadVisE );
+  HistAxis haRecoq( "Reco. |#vec{q}| (GeV)"   , Binning::Simple( binsq3, q3_min, q3_max ), kRecoQmag);
+
+  HistAxis haEHad ("Reco. E_{had, vis} (GeV)", Binning::Simple( binsq0, q0_min, q0_max ), kNumuHadVisE );
 
 
 
@@ -142,12 +138,9 @@ void validate_new_parameter_weights(
 
   // there are the problematic systs....
   std::vector<const ana::ISyst*> systs;
-  systs.push_back(&kRESvpvnNuRatioXSecSyst);
-  systs.push_back(&kRESvpvnNuBarRatioXSecSyst);
-  systs.push_back(&kDISNuHadroQ1Syst);
-  systs.push_back(&kDISNuBarHadroQ0Syst);
-  systs.push_back(kRESDeltaScaleSyst);
-  systs.push_back(kRESOtherScaleSyst);
+  systs.push_back(&kDISNuHadronQ1Syst);
+  systs.push_back(&kDISNuBarHadronQ0Syst);
+
 
   std::unordered_map<std::string, ana::Var> vars;
   std::unordered_map<double, std::string> shifts
@@ -191,29 +184,32 @@ void validate_new_parameter_weights(
   // loops through each var, which is a var for each syst's weight!
   for (auto & var : vars){
 
-    // RHC problematic topologies
-    weightSpectraMap.try_emplace(Form("RHC_Muon_%s", var.first.c_str()), new Spectrum("Weight", wgtBins, rhcLoaders.GetLoader(caf::kNEARDET, Loaders::kMC), var.second, kNumu2020ND && onlyMuOpt(0.5)));
+    // RHC
+//    weightSpectraMap.try_emplace(Form("RHC_Muon_%s", var.first.c_str()), new Spectrum("Weight", wgtBins, rhcLoaders.GetLoader(caf::kNEARDET, Loaders::kMC), var.second, kNumu2020ND && onlyMuOpt(0.5)));
+//
+//    weightSpectraMap.try_emplace(Form("RHC_MuPr_%s", var.first.c_str()), new Spectrum("Weight", wgtBins, rhcLoaders.GetLoader(caf::kNEARDET, Loaders::kMC), var.second, kNumu2020ND && kMuPrOpt(0.5, 0.5)));
+//
+//    weightSpectraMap.try_emplace(Form("RHC_MuPiEtc_%s", var.first.c_str()), new Spectrum("Weight", wgtBins, rhcLoaders.GetLoader(caf::kNEARDET, Loaders::kMC), var.second, kNumu2020ND && kMu1PiOpt(0.5, 0.7)));
+//
+//    weightSpectraMap.try_emplace(Form("RHC_MuEtc_%s", var.first.c_str()), new Spectrum("Weight", wgtBins, rhcLoaders.GetLoader(caf::kNEARDET, Loaders::kMC), var.second, kNumu2020ND && kMuEtcOpt(0.5, 0.5)));
+//
+//    weightSpectraMap.try_emplace(Form("RHC_EvElse_%s", var.first.c_str()), new Spectrum("Weight", wgtBins, rhcLoaders.GetLoader(caf::kNEARDET, Loaders::kMC), var.second, kNumu2020ND && kEvElseRHC));
 
-    weightSpectraMap.try_emplace(Form("RHC_MuPr_%s", var.first.c_str()), new Spectrum("Weight", wgtBins, rhcLoaders.GetLoader(caf::kNEARDET, Loaders::kMC), var.second, kNumu2020ND && kMuPrOpt(0.5, 0.5)));
-
-    weightSpectraMap.try_emplace(Form("RHC_MuPiEtc_%s", var.first.c_str()), new Spectrum("Weight", wgtBins, rhcLoaders.GetLoader(caf::kNEARDET, Loaders::kMC), var.second, kNumu2020ND && kMu1PiOpt(0.5, 0.7)));
-
-    weightSpectraMap.try_emplace(Form("RHC_MuEtc_%s", var.first.c_str()), new Spectrum("Weight", wgtBins, rhcLoaders.GetLoader(caf::kNEARDET, Loaders::kMC), var.second, kNumu2020ND && kMuEtcOpt(0.5, 0.5)));
-
-    weightSpectraMap.try_emplace(Form("RHC_EvElse_%s", var.first.c_str()), new Spectrum("Weight", wgtBins, rhcLoaders.GetLoader(caf::kNEARDET, Loaders::kMC), var.second, kNumu2020ND && kEvElseRHC));
+    weightSpectraMap.try_emplace(Form("RHC_AllNumu_%s", var.first.c_str()), new Spectrum("Weight", wgtBins, rhcLoaders.GetLoader(caf::kNEARDET, Loaders::kMC), var.second, kNumu2020ND));
 
 
+    // FHC
+//    weightSpectraMap.try_emplace(Form("FHC_Muon_%s", var.first.c_str()), new Spectrum("Weight", wgtBins, fhcLoaders.GetLoader(caf::kNEARDET, Loaders::kMC), var.second, kNumu2020ND && onlyMuOpt(0.5)));
+//
+//    weightSpectraMap.try_emplace(Form("FHC_MuPr_%s", var.first.c_str()), new Spectrum("Weight", wgtBins, fhcLoaders.GetLoader(caf::kNEARDET, Loaders::kMC), var.second, kNumu2020ND && kMuPrOpt(0.5, 0.5)));
+//
+//    weightSpectraMap.try_emplace(Form("FHC_MuPiEtc_%s", var.first.c_str()), new Spectrum("Weight", wgtBins, fhcLoaders.GetLoader(caf::kNEARDET, Loaders::kMC), var.second, kNumu2020ND && kMu1PiOpt(0.5, 0.7)));
+//
+//    weightSpectraMap.try_emplace(Form("FHC_MuPrEtc_%s", var.first.c_str()), new Spectrum("Weight", wgtBins, fhcLoaders.GetLoader(caf::kNEARDET, Loaders::kMC), var.second, kNumu2020ND && kMuPrEtcOpt(0.5, 0.5)));
+//
+//    weightSpectraMap.try_emplace(Form("FHC_EvElse_%s", var.first.c_str()), new Spectrum("Weight", wgtBins, fhcLoaders.GetLoader(caf::kNEARDET, Loaders::kMC), var.second, kNumu2020ND && kEvElseFHC));
 
-    // FHC problematic topologies
-    weightSpectraMap.try_emplace(Form("FHC_Muon_%s", var.first.c_str()), new Spectrum("Weight", wgtBins, fhcLoaders.GetLoader(caf::kNEARDET, Loaders::kMC), var.second, kNumu2020ND && onlyMuOpt(0.5)));
-
-    weightSpectraMap.try_emplace(Form("FHC_MuPr_%s", var.first.c_str()), new Spectrum("Weight", wgtBins, fhcLoaders.GetLoader(caf::kNEARDET, Loaders::kMC), var.second, kNumu2020ND && kMuPrOpt(0.5, 0.5)));
-
-    weightSpectraMap.try_emplace(Form("FHC_MuPiEtc_%s", var.first.c_str()), new Spectrum("Weight", wgtBins, fhcLoaders.GetLoader(caf::kNEARDET, Loaders::kMC), var.second, kNumu2020ND && kMu1PiOpt(0.5, 0.7)));
-
-    weightSpectraMap.try_emplace(Form("FHC_MuPrEtc_%s", var.first.c_str()), new Spectrum("Weight", wgtBins, fhcLoaders.GetLoader(caf::kNEARDET, Loaders::kMC), var.second, kNumu2020ND && kMuPrEtcOpt(0.5, 0.5)));
-
-    weightSpectraMap.try_emplace(Form("FHC_EvElse_%s", var.first.c_str()), new Spectrum("Weight", wgtBins, fhcLoaders.GetLoader(caf::kNEARDET, Loaders::kMC), var.second, kNumu2020ND && kEvElseFHC));
+    weightSpectraMap.try_emplace(Form("FHC_AllNumu_%s", var.first.c_str()), new Spectrum("Weight", wgtBins, fhcLoaders.GetLoader(caf::kNEARDET, Loaders::kMC), var.second, kNumu2020ND));
 
 
   } // vars
@@ -234,7 +230,7 @@ void validate_new_parameter_weights(
 
 	if ( gSystem->AccessPathName( out_dir.c_str() ) ) gSystem->mkdir( out_dir.c_str(), true );
 
-  const std::string fileName = Form("nd_topologies_new_parameter_pm3sigma_weights.root");
+  const std::string fileName = Form("validate_DISHadronSyst_pm3sigma_weights.root");
   const std::string fileNamePath= out_dir + "/" + fileName;
   TFile ofile(fileNamePath.c_str(), "recreate");
 
