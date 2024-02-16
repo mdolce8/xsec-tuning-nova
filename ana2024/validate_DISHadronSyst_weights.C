@@ -63,7 +63,7 @@ void TitleSide(const std::string& title)
 using namespace ana;
 
 // =====================================================================================================
-void validate_new_parameter_weights(
+void validate_DISHadronSyst_weights(
                        const double threshold = 5.,              // value of weight you want to dump in the printouts
 											 const bool gridSubmission=false
 )
