@@ -34,6 +34,7 @@
 #include "CAFAna/Cuts/SpillCuts.h"
 #include "CAFAna/Cuts/TruthCuts.h"
 #include "CAFAna/Prediction/PredictionXSecTuning.h"
+#include "CAFAna/Systs/RESSysts.h"
 #include "CAFAna/Systs/DISSysts.h"
 #include "CAFAna/Weights/GenieWeights.h"
 #include "CAFAna/Weights/PPFXWeights.h"
@@ -140,6 +141,8 @@ void validate_DISHadronSyst_weights(
   std::vector<const ana::ISyst*> systs;
   systs.push_back(&kDISNuHadronQ1Syst);
   systs.push_back(&kDISNuBarHadronQ0Syst);
+  systs.push_back(&kRESvpvnRatioNuXSecSyst);
+  systs.push_back(&kRESvpvnRatioNubarXSecSyst);
 
 
   std::unordered_map<std::string, ana::Var> vars;
