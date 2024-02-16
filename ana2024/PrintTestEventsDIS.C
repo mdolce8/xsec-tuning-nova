@@ -224,17 +224,11 @@ namespace rwgt
                 continue;
               }
 
-              if (nu.isFHC == true && nu.hitnuc == 2112) {
-                std::cout << "  {novarwgt::GetSystKnobByName(\"" << name << "\"), "
-                          << "{" << sigma << ", " << wgt << "}},"
-                          << std::endl;
-              }
+              std::cout << "  {novarwgt::GetSystKnobByName(\"" << name << "\"), "
+                        << "{" << sigma << ", " << wgt << "}},"
+                        << std::endl;
 
-              if (nu.isRHC == true && nu.hitnuc == 2212){
-                std::cout << "  {novarwgt::GetSystKnobByName(\"" << name << "\"), "
-                          << "{" << sigma << ", " << wgt << "}},"
-                          << std::endl;
-              }
+
 
             } // sigma shifts
           } // DIS systs
