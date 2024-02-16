@@ -141,11 +141,15 @@ namespace rwgt
       systsDIS.push_back(&ana::kDISNuHadronQ1Syst);
       systsDIS.push_back(&ana::kDISNuBarHadronQ0Syst);
 
-      int totalHadrons = nu.npiplus + nu.npiminus + nu.nproton + nu.nneutron;
-      std::cout << "totalHadrons = " << totalHadrons << std::endl;
+      // these are BEFORE FSI.
+      int totalHadrons_PREFSI = nu.npiplus + nu.npiminus + nu.nproton + nu.nneutron;
+//      std::cout << "totalHadrons = " << totalHadrons_PREFSI << std::endl;
+
+    // after FSI
+    int totalHadrons_POSTFSI = nu.prim.size() - 1; // minus 1 for lepton.
 
 
-      if (nu.mode == caf::kDIS && nu.iscc && totalHadrons == 2) {
+      if (nu.mode == caf::kDIS && nu.iscc && totalHadrons_POSTFSI == 2) {
         if (nu.hitnuc == 2112 || nu.hitnuc == 2212) {
           std::cout << "ev.nupdg = " << nu.pdg << ";" << std::endl;
           std::cout << "ev.isCC = " << (nu.iscc ? "true" : "false") << ";" << std::endl;
@@ -158,8 +162,8 @@ namespace rwgt
                     << std::endl;  // note: TLorentzVector initializer is (x, y, z, t)
           std::cout << "ev.y = " << nu.y << ";" << std::endl;
           std::cout << "ev.W = " << W << ";" << std::endl;
-          std::cout << "ev.fsPartMult (prefis) = " << nu.prefsi.size() << std::endl;
-          std::cout << "ev.fsPartMult (ttlHad) = " << totalHadrons << std::endl;
+//          std::cout << "ev.fsPartMult (prefis) = " << nu.prefsi.size() << std::endl;
+          std::cout << "ev.fsPartMult (totalHadrons_POSTFSI) = " << totalHadrons_POSTFSI << std::endl;
           std::cout << "---------------−" << std::endl;
           std::cout << "ev.npiplus = " << nu.npiplus << ";" << std::endl;
           std::cout << "ev.npizero = " << nu.npizero << ";" << std::endl;
