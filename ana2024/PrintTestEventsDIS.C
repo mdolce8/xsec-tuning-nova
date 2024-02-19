@@ -138,8 +138,8 @@ namespace rwgt
 
       // Mike & Maria's new RES systematics
       std::vector<const ana::ISyst *> systsDIS;
-      systsDIS.push_back(&ana::kDISNuHadroQ1Syst);
-      systsDIS.push_back(&ana::kDISNuBarHadroQ0Syst);
+      systsDIS.push_back(&ana::kDISNuHadronQ1Syst);
+      systsDIS.push_back(&ana::kDISNuBarHadronQ0Syst);
 
       // these are BEFORE FSI.
       int totalHadrons_PREFSI = nu.npiplus + nu.npiminus + nu.nproton + nu.nneutron;
