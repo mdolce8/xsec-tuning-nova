@@ -68,7 +68,7 @@ namespace rwgt
                                         const caf::SRNeutrinoProxy *nu)
         {
              unsigned int nPart = 0;
-             for (const auto &part : nu->prim)
+             for (const auto &part : nu->prefsi)
              {
                if (std::find(pdgs.begin(), pdgs.end(), part.pdg) != pdgs.end())
                  nPart++;
@@ -76,12 +76,12 @@ namespace rwgt
              return nPart;
         };
 
-
+        // I don't think this is strictly necessary.
         double KEVar(const std::vector<int>& pdgs,
                      const caf::SRNeutrinoProxy *nu){
 
                double KE = 0;
-               for (const auto &part : nu->prim)
+               for (const auto &part : nu->prefsi)
                {
                  if (std::find(pdgs.begin(), pdgs.end(), part.pdg) != pdgs.end())
                    KE += (1. - 1./part.p.Gamma()) * part.p.E;
@@ -149,7 +149,7 @@ namespace rwgt
     int totalHadrons_POSTFSI = nu.prim.size() - 1; // minus 1 for lepton.
 
 
-      if (nu.mode == caf::kDIS && nu.iscc && totalHadrons_POSTFSI == 2) {
+      if (nu.mode == caf::kDIS && nu.iscc && nu.prefsi.size() == 2) {
         if (nu.hitnuc == 2112 || nu.hitnuc == 2212) {
           std::cout << "ev.nupdg = " << nu.pdg << ";" << std::endl;
           std::cout << "ev.isCC = " << (nu.iscc ? "true" : "false") << ";" << std::endl;
@@ -162,8 +162,9 @@ namespace rwgt
                     << std::endl;  // note: TLorentzVector initializer is (x, y, z, t)
           std::cout << "ev.y = " << nu.y << ";" << std::endl;
           std::cout << "ev.W = " << W << ";" << std::endl;
-//          std::cout << "ev.fsPartMult (prefis) = " << nu.prefsi.size() << std::endl;
-          std::cout << "ev.fsPartMult (totalHadrons_POSTFSI) = " << totalHadrons_POSTFSI << std::endl;
+//          std::cout << "ev.fsPartMult (pre-FSI) = " << nu.prim.size() - 1 << std::endl; // minus for the lepton
+          std::cout << "ev.preFSIPartMult.size() = " << nu.prefsi.size() << std::endl;
+          std::cout << "ev.fsPartMult.size() (totalHadrons_POSTFSI) = " << totalHadrons_POSTFSI << std::endl;
           std::cout << "---------------−" << std::endl;
           std::cout << "ev.npiplus = " << nu.npiplus << ";" << std::endl;
           std::cout << "ev.npizero = " << nu.npizero << ";" << std::endl;
@@ -178,6 +179,7 @@ namespace rwgt
 
 
           // printout the particle mult. and energy.
+          std::cout << "Pre-FSI information to follow: " << std::endl;
           std::map<std::string, double> nutruthVars
                   {
 //                    {"chgpi_mult", fsi_unc::MultiplicityVar({211, -211})},
@@ -192,11 +194,6 @@ namespace rwgt
                           {"pi-_mult", fsi_unc::MultiplicityVar({-211}, &nu)},
                           {"n_mult",   fsi_unc::MultiplicityVar({2112}, &nu)},
                           {"p_mult",   fsi_unc::MultiplicityVar({2212}, &nu)},
-//                      {"Enu", ana::kTrueE_NT},
-//                      {"Q2", ana::kTrueQ2_NT},
-//                      {"W", ana::kTrueW_NT},
-//                      {"z", ana::kTruePartonZ_NT},
-//                      {"wgt", ana::NuTruthVarFromNuTruthWeight(ana::kXSecCVWgt2020GSF_NT)},
                   }; // nutruthVars
 
           for (const auto &partPair: nutruthVars) {
