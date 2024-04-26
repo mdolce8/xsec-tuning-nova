@@ -1,20 +1,18 @@
 /*
- * initialize_nd_reco_enu_quantiles_data.C:
+ * generate_fd_prod5.1_p1p10_reco_enu_2020info_data.C:
  *    Create Spectrum objects from Prod5.1 data
- *    in Reco Enu in the FD 2020 Quantiles
- *    to be used for the "residual difference" fit.
+ *    in Reco Enu in the FD 2020 Quantiles.
+ *    Use the 2020 cuts and vars to compare with the 2024 ones.
  *    No systematics are involved here.
  *
  *    Author: M. Dolce
- *    Date:  March 2023
+ *    Date:  April 2024
  *
  */
 
 #include "3FlavorAna/Cuts/QuantileCuts2020.h"
 #include "3FlavorAna/Cuts/NumuCuts2020.h"
-#include "3FlavorAna/NDFit/Samples/CutsPngCVNOpt.h"
 #include "3FlavorAna/NDFit/Samples/UsefulCutsVars.h"
-#include "3FlavorAna/NDFit/Samples/FillPredictionHelper.h"
 #include "3FlavorAna/Vars/HistAxes.h"
 #include "3FlavorAna/Vars/NumuVars.h"
 
@@ -33,18 +31,22 @@
 using namespace ana;
 
 // =====================================================================================================
-void initialize_nd_reco_enu_quantiles_data(const std::string& beam,        // fhc or rhc
-                                           const std::string& outDir,      // $ana/mcmc/data ("." for grid: -o $scratch/data )
-                                           const bool gridSubmission = false
+void generate_fd_prod51_p1p10_reco_enu_2020info_data(const std::string& beam,        // fhc or rhc
+                                                     const std::string& outDir,      // $ana/mcmc/data ("." for grid: -o $scratch/data )
+                                                     const bool gridSubmission = false
 )
 // =====================================================================================================
 {
 
-  std::cout << "Producing Prod5.1 ND Data Spectra with FD Numu 2020 Quantile cuts on Reco Enu........" << std::endl;
+  std::cout << "Ana2024 Box Opening........" << std::endl;
+  std::cout << "Plotting Prod5.1 FD Numu Quantile(s) Data with 2020 cuts in Reco Enu........" << std::endl;
+
+
+  // we are only looking at p1-10 data right now -- no new data.
 
   std::string defData;
-  if (beam == "fhc") defData = "prod_sumdecaf_R20-11-25-prod5.1reco.d_nd_numi_fhc_full_v1_goodruns_numu2020"; // 3F concat
-  else if (beam == "rhc") defData = "prod_sumdecaf_development_nd_numi_rhc_full_v1_goodruns_numu2020"; // 3F concat
+  if (beam == "fhc") defData = "tbezerra_prod_sumrestricteddecaf_R20-11-25-prod5.1reco_fd_numi_fhc_p1-10_v1_goodruns_numu2024"; // 3F concat
+  else if (beam == "rhc") defData = ""; // 3F concat
   else {std::cerr << "Unknown 'beam'. exit..." << std::endl; exit(1);}
 
   SpectrumLoader dataLoader(defData);
@@ -73,7 +75,7 @@ void initialize_nd_reco_enu_quantiles_data(const std::string& beam,        // fh
   // save the spectra to each Quantile ROOT file
   int quantileCount = 1;
   for (const auto &specPair : spectrumMap){
-    std::string fileName = Form("nd_reco_enu_prod5.1_data_%s_numu_Q%i.root",  beam.c_str(), quantileCount);
+    std::string fileName = Form("spectra_fd_prod5.1_p1p10_reco_enu_2020info_data_%s_numu_Q%i.root",  beam.c_str(), quantileCount);
     const std::string& finalOutDir = out_dir + "/" + fileName;
     TFile ofile(Form("%s", finalOutDir.c_str()), "recreate");
 
