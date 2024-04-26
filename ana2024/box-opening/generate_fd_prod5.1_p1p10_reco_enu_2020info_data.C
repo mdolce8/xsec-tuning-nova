@@ -32,7 +32,7 @@ using namespace ana;
 
 // =====================================================================================================
 void generate_fd_prod51_p1p10_reco_enu_2020info_data(const std::string& beam,        // fhc or rhc
-                                                     const std::string& outDir,      // $ana/mcmc/data ("." for grid: -o $scratch/data )
+                                                     const std::string& outDir,      // $data/xsec-tuning-nova/ana2024/box-opening ("." for grid: -o $scratch/data )
                                                      const bool gridSubmission = false
 )
 // =====================================================================================================
