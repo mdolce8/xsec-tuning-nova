@@ -59,8 +59,10 @@ void generate_fd_prod51_p1p10_reco_enu_2020info_data(const std::string& beam,   
   // quantiles
   for (unsigned int quantileIdx = 0; quantileIdx < cutQuantiles.size(); quantileIdx++) {
     spectrumMap.try_emplace(Form("pred_interp_Q%d", quantileIdx + 1),
-                        new Spectrum(dataLoader, kNumuCCOptimisedAxis2020, kNumu2020ND && cutQuantiles[quantileIdx]));
+                        new Spectrum(dataLoader, kNumuCCOptimisedAxis2020, kNumu2020FD && cutQuantiles[quantileIdx]));
   }
+
+  spectrumMap.try_emplace("pred_interp_Q5", new Spectrum(dataLoader, kNumuCCOptimisedAxis2020, kNumu2020FD));
 
   dataLoader.Go();
 
