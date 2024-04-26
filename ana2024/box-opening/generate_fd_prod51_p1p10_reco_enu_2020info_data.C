@@ -45,7 +45,7 @@ void generate_fd_prod51_p1p10_reco_enu_2020info_data(const std::string& beam,   
   // we are only looking at p1-10 data right now -- no new data.
 
   std::string defData;
-  if (beam == "fhc") defData = "tbezerra_prod_sumrestricteddecaf_R20-11-25-prod5.1reco_fd_numi_fhc_p1-10_v1_goodruns_numu2024"; // 3F concat
+  if (beam == "fhc") defData = "tbezerra_prod_sumrestricteddecaf_R20-11-25-prod5.1reco_fd_numi_fhc_p1-10_v1_goodruns_numu2024"; // 3F concat -- 600 files
   else if (beam == "rhc") defData = ""; // 3F concat
   else {std::cerr << "Unknown 'beam'. exit..." << std::endl; exit(1);}
 
