@@ -61,7 +61,7 @@ void plot_fd_fhc_numu(
 
 
   for (int qCount = 1; qCount <= 5; qCount++){
-    const std::string filePath = inputDir + "/spectra_fd_prod5.1_p1p10_reco_enu_2020info_data_fhc_numu_Q " + std::to_string(qCount) + ".root";
+    const std::string filePath = inputDir + "/spectra_fd_prod5.1_p1p10_reco_enu_2020info_data_fhc_numu_Q" + std::to_string(qCount) + ".root";
     const std::string specName = Form("pred_interp_Q%i", qCount);
     TFile * f = TFile::Open(filePath.c_str());
     Spectrum spec = *ana::Spectrum::LoadFrom(f, specName);
