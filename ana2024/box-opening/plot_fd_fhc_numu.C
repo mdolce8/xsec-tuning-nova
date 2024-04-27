@@ -71,19 +71,23 @@ void plot_fd_fhc_numu(
 
     TH1D * h = spec.ToTH1(spec.POT());
     h->Draw("e");
-    histogram::NormalizeBinContent(h);
     h->SetMaximum(h->GetMaximum() * 1.3);
 
     TLatex latex;
     latex.DrawLatexNDC(0.15, 0.8, Form("Neutrino Beam"));
     const std::string qStr = "Q" + std::to_string(qCount);
     TLatex latex2;
-    latex2.DrawLatexNDC(.15,.85,(Form("Quantile %i", qCount)));
+    if (qCount < 5) latex2.DrawLatexNDC(.15,.85,(Form("Quantile %i", qCount)));
 
     h->SetXTitle("Reconstructed Neutrino Energy (GeV)");
     h->SetYTitle("Events / GeV");
 
-    c.SaveAs(Form("%s/plot_fd_fhc_prod5.1_p1p10_reco_enu_2020info_data_fhc_numu_%s.png", outDir.c_str(), qStr.c_str()));
+    c.SaveAs(Form("%s/plot_fd_fhc_prod5.1_p1p10_reco_enu_2020info_data_fhc_numu_%s_unnormalized.png", outDir.c_str(), qStr.c_str()));
+
+    histogram::NormalizeBinContent(h);
+    h->SetMaximum(h->GetMaximum() * 1.3);
+
+    c.SaveAs(Form("%s/plot_fd_fhc_prod5.1_p1p10_reco_enu_2020info_data_fhc_numu_%s_normalized.png", outDir.c_str(), qStr.c_str()));
 
   }
 
