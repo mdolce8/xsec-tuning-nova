@@ -72,10 +72,11 @@ void plot_fd_fhc_numu(
     TH1D * h = spec.ToTH1(spec.POT());
     h->Draw("e");
 
-    ndfit::visuals::GetHornCurrent("fhc");
+    TLatex latex;
+    latex.DrawLatexNDC(0.15, 0.8, Form("Neutrino Beam"));
     const std::string qStr = "Q" + std::to_string(qCount);
-    auto q = ndfit::visuals::GetQuantileEnum(qStr);
-    ndfit::visuals::GetQuantileString(q);
+    TLatex latex2;
+    latex2.DrawLatexNDC(.15,.85,(Form("Quantile %i", qCount)));
 
     h->SetXTitle("Reconstructed Neutrino Energy (GeV)");
     h->SetYTitle("Events / GeV");
