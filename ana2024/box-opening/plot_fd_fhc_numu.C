@@ -71,6 +71,8 @@ void plot_fd_fhc_numu(
 
     TH1D * h = spec.ToTH1(spec.POT());
     h->Draw("e");
+    h->SetMaximum(h->GetMaximum() * 1.3);
+    histogram::NormalizeBinContent(h);
 
     TLatex latex;
     latex.DrawLatexNDC(0.15, 0.8, Form("Neutrino Beam"));
