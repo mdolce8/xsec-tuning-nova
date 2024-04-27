@@ -60,8 +60,7 @@ void plot_fd_fhc_numu(
   const std::string outDir = "/exp/nova/data/users/mdolce/xsec-tuning-nova/plots/ana2024/box-opening/plot_fd_fhc_numu";
 
 
-  int qCount = 1;
-  for (const std::string & fname : filenames){
+  for (int qCount = 1; qCount <= 5; qCount++){
     const std::string filePath = inputDir + "/spectra_fd_prod5.1_p1p10_reco_enu_2020info_data_fhc_numu_Q " + std::to_string(qCount) + ".root";
     const std::string specName = Form("pred_interp_Q%i", qCount);
     TFile * f = TFile::Open(filePath.c_str());
@@ -83,7 +82,6 @@ void plot_fd_fhc_numu(
 
     c.SaveAs(Form("%s/plot_fd_fhc_prod5.1_p1p10_reco_enu_2020info_data_fhc_numu_%s.png", outDir.c_str(), qStr.c_str()));
 
-    qCount++;
   }
 
 
