@@ -112,6 +112,9 @@ void plot_fd_fhc_numu_mc_sloshing()
     h20->Draw("hist e");
     h24->Draw("same hist e");
 
+    h20->Scale(0.1, "width");
+    h24->Scale(0.1, "width");
+
     h24->SetLineColor(kRed);
 
     h20->SetMaximum(h20->GetMaximum() * 1.3);
