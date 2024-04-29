@@ -141,7 +141,7 @@ void plot_fd_numu_mc_sloshing(const std::string& beam)
 
     leg.Draw("same");
 
-    c.SaveAs(Form("%s/plot_fd_%s_prod5.1_p1p10_reco_enu_numu_mc_sloshing_%s_unnormalized.png", beam.c_str(), outDir.c_str(), qStr.c_str()));
+    c.SaveAs(Form("%s/plot_fd_%s_prod5.1_p1p10_reco_enu_numu_mc_sloshing_%s_unnormalized.png", outDir.c_str(),  beam.c_str(), qStr.c_str()));
 
   } // quantiles
 
