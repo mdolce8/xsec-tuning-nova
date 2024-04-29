@@ -91,7 +91,7 @@ void plot_fd_fhc_numu_mc_sloshing()
     const std::string filePath24 = inputDir + "/pred_nxp_fd_prod5.1_p1p10_reco_enu_2024info_mc_fhc_numu_Q" + std::to_string(qCount) + ".root";
 
     // these are the "numucc_all" category
-    const std::string specName = Form("pred_nxp_Q%i_numucc_all/spec_preds", qCount); // this is a dir.
+    const std::string specName = Form("pred_nxp_Q%i_numucc_all", qCount); // this is a dir.
     TFile * f20 = TFile::Open(filePath20.c_str());
     TFile * f24 = TFile::Open(filePath24.c_str());
 
