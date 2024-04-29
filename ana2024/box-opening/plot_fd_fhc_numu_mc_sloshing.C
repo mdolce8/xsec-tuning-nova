@@ -108,7 +108,7 @@ void plot_fd_fhc_numu_mc_sloshing()
     TH1D * h24 = spec24.ToTH1(kAna2020FHCPOT);
 
     h20->Draw("e");
-    h24->Draw("e");
+    h24->Draw("same e");
 
     h24->SetLineColor(kRed);
 
@@ -130,6 +130,8 @@ void plot_fd_fhc_numu_mc_sloshing()
     TLegend leg(0.65, 0.7, 0.9, 0.9);
     leg.AddEntry(h20, Form("2020. Events = %.2f", evts20), "l");
     leg.AddEntry(h24, Form("2024. Events = %.2f", evts24), "l");
+
+    leg.Draw("same");
 
     c.SaveAs(Form("%s/plot_fd_fhc_prod5.1_p1p10_reco_enu_numu_mc_sloshing_%s_unnormalized.png", outDir.c_str(), qStr.c_str()));
 
