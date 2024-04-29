@@ -112,9 +112,6 @@ void plot_fd_fhc_numu_mc_sloshing()
     h20->Draw("hist e");
     h24->Draw("same hist e");
 
-    h20->Scale(0.1, "width");
-    h24->Scale(0.1, "width");
-
     h24->SetLineColor(kRed);
 
     h20->SetMaximum(h20->GetMaximum() * 1.3);
@@ -133,6 +130,9 @@ void plot_fd_fhc_numu_mc_sloshing()
     float evts24 = h24->Integral();
     std::cout << "2020 version events integral: " << evts20 << std::endl;
     std::cout << "2024 version events integral: " << evts24 << std::endl;
+
+    h20->Scale(0.1, "width");
+    h24->Scale(0.1, "width");
 
     TLegend leg(0.65, 0.7, 0.9, 0.9);
     leg.AddEntry(h20, Form("2020. Events = %.2f", evts20), "l");
