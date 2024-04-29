@@ -8,6 +8,9 @@
  *
  */
 
+#include <3FlavorAna/Cuts/NumuCuts2024.h>
+#include <3FlavorAna/Cuts/NumuCuts2020.h>
+#include <CAFAna/Core/Loaders.h>
 #include "3FlavorAna/Cuts/QuantileCuts2020.h"
 #include "3FlavorAna/Cuts/NumuCuts2020.h"
 #include "3FlavorAna/NDFit/Samples/UsefulCutsVars.h"
@@ -17,6 +20,8 @@
 #include "CAFAna/Core/Spectrum.h"
 #include "CAFAna/Core/SpectrumLoader.h"
 #include "CAFAna/Cuts/SpillCuts.h"
+#include "CAFAna/Weights/PPFXWeights.h"
+#include "CAFAna/Weights/XsecTunes.h"
 
 #include "TFile.h"
 #include "TH1.h"
@@ -41,36 +46,84 @@ void compare_numu_event_cuts_2020_vs_2024(const std::string& beam,        // fhc
 
   // we are only looking at p1-10 data right now -- no new data.
 
-  std::string defData;
-  if (beam == "fhc") defData = "tbezerra_prod_sumrestricteddecaf_R20-11-25-prod5.1reco_fd_numi_fhc_p1-10_v1_goodruns_numu2024"; // 3F concat -- 600 files
-  else if (beam == "rhc") defData = ""; // 3F concat
+  std::string defMC_Non, defMC_Flux, defMC_Tau;
+  if (beam == "fhc") {
+    defMC_Non = "prod_sumdecaf_R20-11-25-prod5.1reco.j.l_fd_genie_N1810j0211a_nonswap_fhc_nova_v08_full_v1_numu2020"; // 3F concat -- 150 files
+    defMC_Flux = "prod_sumdecaf_R20-11-25-prod5.1reco.j.l_fd_genie_N1810j0211a_fluxswap_fhc_nova_v08_full_v1_numu2020";
+    defMC_Tau = "prod_sumdecaf_R20-11-25-prod5.1reco.j_fd_genie_N1810j0211a_tauswap_fhc_nova_v08_full_v1_numu2020";
+  }
+  else if (beam == "rhc") {
+    defMC_Non = "prod_sumdecaf_R20-11-25-prod5.1reco.j.l_fd_genie_N1810j0211a_nonswap_rhc_nova_v08_full_v1_numu2020"; // 3F concat -- 150 files
+    defMC_Flux = "prod_sumdecaf_R20-11-25-prod5.1reco.j.l_fd_genie_N1810j0211a_fluxswap_rhc_nova_v08_full_v1_numu2020";
+    defMC_Tau = "prod_sumdecaf_R20-11-25-prod5.1reco.j_fd_genie_N1810j0211a_tauswap_rhc_nova_v08_full_v1_numu2020";
+  }
   else {std::cerr << "Unknown 'beam'. exit..." << std::endl; exit(1);}
 
-  SpectrumLoader dataLoader(defData);
-  dataLoader.SetSpillCut(kStandardSpillCuts);
+  Loaders loader;
+  loader.SetSpillCut(kStandardSpillCuts);
+  loader.SetLoaderPath(defMC_Non, caf::kFARDET, ana::Loaders::kMC);
+  loader.SetLoaderPath(defMC_Flux, caf::kFARDET, ana::Loaders::kMC, DataSource::kBeam, ana::Loaders::kFluxSwap);
 
-  std::vector<Cut> cutQuantiles = GetNumuEhadFracQuantCuts2020(beam != "fhc");
+  std::vector < Cut > cutQuantiles = GetNumuEhadFracQuantCuts2020(beam != "fhc");
 
+  // todo: do we need spill cuts too?
   std::unordered_map<std::string, ana::Var> vars;
+  std::unordered_map<std::string, ana::Cut> map_cut_names
+          {
+//                  {"kNumu", kStandardSpillCuts},
+                  {"kNumu2020DecafCut", kNumu2020FDDecafCut},
+                  {"kNumu2024DecafCut", kNumu2024FDDecafCut},
+          };
   std::unordered_map<std::string, int> map_cut_status{};
 
+  int cut_decaf_24_only, cut_decaf20_only = 0;
+
+  const Cut kMyNumu2020CosRejLoose(
+          [](const caf::SRProxy* sr)
+          {
+              return kNumuContPID(sr) > 0.4 && kCVNm_looseptp(sr) > 0.;
+          });
 
   // Create Vars of the weights that include print statements
-  vars.try_emplace(syst->ShortName() + "_" + shift.second,
-                   ([threshold, syst, shift](const caf::SRProxy *sr) {
-                       double weight = 1.0;
-                       auto mutableSR = const_cast<caf::SRProxy *>(sr);
-                       syst->Shift(shift.first, mutableSR, weight);
-                       if (weight > threshold || weight < 0.0) {
-                         std::cout << shift.second << "-sigma shift is bananas from systematic shift: " << syst->ShortName() << std::endl;
-                         std::cout << "The Weight is == " << weight << std::endl;
-                         std::cout << "Event = " << sr->hdr.run << "/" << sr->hdr.subrun << "/" << sr->hdr.evt
-                                   << std::endl;
-                         // if you want you can dump out truth information from sr->mc.nu[0] as well
-                       }
-                       return weight;
-                   }) // Var lambda
+//  vars.try_emplace("DecafCut",
+//                   ([cut_decaf20_only, cut_decaf_24_only](const caf::SRProxy *sr) {
+//                       int good_events = 0;
+//                       if (kNumu2024FDDecafCut) {
+//                         good_events++;
+//                       }
+//                       else if (kNumu2024DecafCut && !kNumu2020DecafCut)
+//                       {
+//                         std::cout << "2024 Decaf cut, only passed: " << sr->hdr.run << "/" << sr->hdr.subrun << "/" << sr->hdr.evt << std::endl;
+//                         cut_decaf24_only++;
+//                       }
+//                       else if (!kNumu20204DecafCut && kNumu2020DecafCut)
+//                       {
+//                         std::cout << "2020 Decaf cut, only passed: " << sr->hdr.run << "/" << sr->hdr.subrun << "/" << sr->hdr.evt << std::endl;
+//                         cut_decaf20_only++;
+//                       }
+//                       else {
+//                         std::cerr << "IDK what happened." << std::endl;
+//                       }
+//                       return good_events;
+//                   }) // Var lambda
 
-  ); // map emplace
+  ); // map try_emplace
+
+//  int good_events = 0;
+//  Cut kMyCut(
+//          [&good_events](const caf::SRProxy *sr)
+//          {
+//            if (kNumu2024FDDecafCut)
+//                good_events++;
+//      });
+
+
+
+  Spectrum s(loader.GetLoader() , kNumuCCOptimisedAxis2024, kNumu2024FDDecafCut && kNumu2020FDDecafCut, kNoShift, kPPFXFluxCVWgt * kXSecCVWgt2024);
+  Spectrum sa(loader , kNumuCCOptimisedAxis2024, kNumu2024FDDecafCut && !kNumu2020FDDecafCut, kNoShift, kPPFXFluxCVWgt * kXSecCVWgt2024);
+  Spectrum sb(loader , kNumuCCOptimisedAxis2024, !kNumu2024FDDecafCut && kNumu2020FDDecafCut, kNoShift, kPPFXFluxCVWgt * kXSecCVWgt2024);
+
+
+
 
 }
