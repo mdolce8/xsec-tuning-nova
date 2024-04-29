@@ -114,8 +114,8 @@ void plot_fd_fhc_numu_mc_sloshing()
 
     h24->SetLineColor(kRed);
 
-    h20->SetMaximum(h20->GetMaximum() * 1.3);
-    h24->SetMaximum(h20->GetMaximum() * 1.3);
+    h20->SetMaximum(h20->GetMaximum() * 1.5);
+    h24->SetMaximum(h20->GetMaximum() * 1.5);
 
     TLatex latex;
     latex.DrawLatexNDC(0.15, 0.8, Form("Neutrino Beam"));
