@@ -47,7 +47,7 @@ namespace histogram
 using namespace ana;
 
 // =====================================================================================================
-void plot_fd_fhc_numu(
+void plot_fd_fhc_numu_data(
                       const std::string& outDirSuffix = "" // description of the preds used.
 )
 // =====================================================================================================
