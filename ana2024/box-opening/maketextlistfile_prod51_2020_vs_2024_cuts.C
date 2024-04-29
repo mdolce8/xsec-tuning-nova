@@ -105,8 +105,8 @@ void maketextlistfile_prod51_2020_vs_2024_cuts(
 
   std::unordered_map<std::string, ana::Cut> map_cuts
           {
-                  {"kNumu2020DecafCut", kNumu2020FDDecafCut},
-                  {"kNumu2024DecafCut", kNumu2024FDDecafCut},
+                  {"kNumu2020DecafCut", kNumu2020FD},
+                  {"kNumu2024DecafCut", kNumu2024FD},
           };
 
 
@@ -114,29 +114,17 @@ void maketextlistfile_prod51_2020_vs_2024_cuts(
   std::cout << finalFileP5p1RHC << std::endl;
 
   // loop through the cuts and add the EHadVis slices...
-  for (const auto &edition : {"2020", "2024"}){
-    const auto cutName = edition;
+  for (const auto &cutPair : map_cuts){
+    const auto cutName = cutPair.first;
+    const auto cut = cutPair.second;
     std::cout << "Looping through cut....." << cutName;
 
-    // make the text files for each production and for each topology -- record the EHadVis -- Run -- Subrun -- Event -- Slice
+    // make the text files for each production and for Inclusive sample -- record the -- Run -- Subrun -- Event -- Slice
 
-    // July 22. Swap out kNUmuHadVisE for the SR objects that make up kNumuHadVisE = kNumuHadCalE + kNumuHadTrkE
-    MakeTextListFile({finalFileP5p1FHC}, {kNumu2020ND && cutName}, {Form("%s/fhc_Prod5p1_revert_CleanUpTrackAlg_%i_%s.txt", outDir.c_str(), fhcRunNo, cutName.c_str())}, {&kNumuHadVisE, &kNumuHadCalE, &kNumuHadTrkE}, {&kEvt}); // {&kRun, &kSubrun, &kEvt, &kSlc}
+    MakeTextListFile({finalFileP5p1FHC}, {cut}, {Form("%s/fhc_Prod5p1_compare_events_2020_vs_2024_cuts_%i_%s.txt", outDir.c_str(), fhcRunNo, cutName.c_str())}, {&kRun, &kSubrun, &kEvt, &kSlc});
 
-  } // fhc topologies
+  } // 2020 & 2024 cuts.
 
-
-  for (const auto &rhcTopoCut : rhcTopologicalCuts){
-    const auto topoCut = rhcTopoCut.first;
-    const auto topoCutName = rhcTopoCut.second;
-    std::cout << "Looping through cut....." << topoCutName;
-
-    // make the text files for each production and for each topology
-
-    // July 22. Swap out kNUmuHadVisE for the SR objects that make up kNumuHadVisE = kNumuHadCalE + kNumuHadTrkE
-    MakeTextListFile({finalFileP5p1RHC}, {kNumu2020ND && topoCut}, {Form("%s/rhc_Prod5p1_revert_CleanUpTrackAlg_%i_%s.txt", outDir.c_str(), rhcRunNo, topoCutName.c_str())}, {&kNumuHadVisE, &kNumuHadCalE, &kNumuHadTrkE}, {&kEvt});
-
-  } // rhc topologies
-
+  // todo: abandoned because need to run this over every, single file.
 
 }
