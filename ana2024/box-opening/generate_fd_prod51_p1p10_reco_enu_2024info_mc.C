@@ -135,7 +135,7 @@ void generate_fd_prod51_p1p10_reco_enu_2024info_mc(const std::string& beam,     
     } // flavors
 
     for(auto spec: specs_preds)
-      spec.second.SaveTo(ofile, spec.first.c_str());
+      spec.second.SaveTo(&ofile, spec.first.c_str());
 
     std::cout << "saving PredNxp: " << std::endl;
 
