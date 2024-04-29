@@ -96,9 +96,9 @@ void plot_fd_fhc_numu_mc_sloshing()
     TFile * f24 = TFile::Open(filePath24.c_str());
 
 
-    auto s20 = ana::LoadFrom<ana::Spectrum>(f20, specName);
-    Spectrum spec20 = *ana::Spectrum::LoadFrom(f20, specName);
+//    auto s20 = ana::LoadFrom<ana::Spectrum>(f20, specName);
     Spectrum spec24 = *ana::Spectrum::LoadFrom(f24, specName);
+    Spectrum spec20 = *ana::Spectrum::LoadFrom(f20, specName);
 
     // do plotting
     TCanvas c;
