@@ -90,7 +90,21 @@ void generate_fd_prod51_p1p10_reco_enu_2020info_mc(const std::string& beam,     
     const std::string& finalOutDir = out_dir + "/" + fileName;
     TFile ofile(Form("%s", finalOutDir.c_str()), "recreate");
 
+    // save the PredNoExtrap info
+    std::cout << "saving PredNxp: " << std::endl;
     prednxp.second->SaveTo(&ofile, prednxp.first);
+
+    // save the Spectrum info.
+    std::cout << "saving Spectrum: " << std::endl;
+    std::map<std::string, Spectrum> specs_preds;
+    for (auto flavor : flavors){
+      auto tmp_spec = prednxp.second->PredictComponent(calc, flavor.second.flav, flavor.second.curr, flavor.second.sign);
+      std::string key = prednxp.first+"_"+flavor.first+"_all";
+      specs_preds.insert({key, tmp_spec});
+    } // flavors
+
+    for(auto spec: specs_preds)
+      spec.second.SaveTo(ofile.mkdir(spec.first.c_str()),"specs_preds");
 
     std::cout << "saving PredNxp: " << std::endl;
 
