@@ -110,7 +110,7 @@ void plot_fd_fhc_numu_mc_sloshing()
     TH1D * h24 = spec24.ToTH1(kAna2020FHCPOT);
 
     h24->Draw("same hist e");
-    h20->Draw("hist e");
+    h20->Draw("same hist e");
 
     h24->SetLineColor(kRed);
 
