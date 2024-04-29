@@ -75,9 +75,9 @@ void plot_fd_fhc_numu(
     // do plotting
     TCanvas c;
 
-    // TODO: need to address the POT here, need p1-10...
-    TH1D * h20 = spec20.ToTH1(spec20.POT());
-    TH1D * h24 = spec24.ToTH1(spec24.POT());
+    // we are looking at only p1-10 results. So use 2020 POT.
+    TH1D * h20 = spec20.ToTH1(kAna2020FHCPOT);
+    TH1D * h24 = spec24.ToTH1(kAna2020FHCPOT);
 
     h20->Draw("e");
     h24->Draw("e");
