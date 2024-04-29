@@ -12,6 +12,7 @@
 
 #include <CAFAna/Prediction/PredictionNoExtrap.h>
 #include <CAFAna/Core/Loaders.h>
+#include <OscLib/OscCalcPMNSOpt.h>
 #include "3FlavorAna/Cuts/QuantileCuts2024.h"
 #include "3FlavorAna/Cuts/NumuCuts2024.h"
 #include "3FlavorAna/NDFit/Samples/UsefulCutsVars.h"
