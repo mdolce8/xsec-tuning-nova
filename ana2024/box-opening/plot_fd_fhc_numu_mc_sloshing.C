@@ -48,9 +48,7 @@ namespace histogram
 using namespace ana;
 
 // =====================================================================================================
-void plot_fd_fhc_numu(
-                      const std::string& outDirSuffix = "" // description of the preds used.
-)
+void plot_fd_fhc_numu_mc_sloshing()
 // =====================================================================================================
 {
 
