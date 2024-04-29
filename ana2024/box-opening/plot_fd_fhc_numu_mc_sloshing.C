@@ -126,6 +126,8 @@ void plot_fd_fhc_numu_mc_sloshing()
 
     float evts20 = h20->Integral();
     float evts24 = h24->Integral();
+    std::cout << "2020 version events integral: " << evts20 << std::endl;
+    std::cout << "2024 version events integral: " << evts24 << std::endl;
 
     TLegend leg(0.65, 0.7, 0.9, 0.9);
     leg.AddEntry(h20, Form("2020. Events = %.2f", evts20), "l");
