@@ -10,13 +10,13 @@
  *
  */
 
+#include <CAFAna/Prediction/PredictionNoExtrap.h>
+#include <CAFAna/Core/Loaders.h>
 #include "3FlavorAna/Cuts/QuantileCuts2020.h"
 #include "3FlavorAna/Cuts/NumuCuts2020.h"
 #include "3FlavorAna/NDFit/Samples/UsefulCutsVars.h"
 #include "3FlavorAna/Vars/HistAxes.h"
-#include "3FlavorAna/Vars/NumuVars.h"
 
-#include "CAFAna/Core/Spectrum.h"
 #include "CAFAna/Core/SpectrumLoader.h"
 #include "CAFAna/Cuts/SpillCuts.h"
 #include "CAFAna/Weights/XsecTunes.h"
@@ -46,25 +46,32 @@ void generate_fd_prod51_p1p10_reco_enu_2020info_mc(const std::string& beam,     
 
   // we are only looking at p1-10. no new periods
 
-  std::string defMC;
-  if (beam == "fhc") defMC = "prod_sumdecaf_R20-11-25-prod5.1reco.j.l_fd_genie_N1810j0211a_nonswap_fhc_nova_v08_full_v1_numu2020"; // 3F concat -- 150 files
-  else if (beam == "rhc") defMC = ""; // 3F concat
+  std::string defMC_Non, defMC_Flux, defMC_Tau;
+  if (beam == "fhc") {
+    defMC_Non = "prod_sumdecaf_R20-11-25-prod5.1reco.j.l_fd_genie_N1810j0211a_nonswap_fhc_nova_v08_full_v1_numu2020"; // 3F concat -- 150 files
+    defMC_Flux = "prod_sumdecaf_R20-11-25-prod5.1reco.j.l_fd_genie_N1810j0211a_fluxswap_fhc_nova_v08_full_v1_numu2020";
+    defMC_Tau = "prod_sumdecaf_R20-11-25-prod5.1reco.j_fd_genie_N1810j0211a_tauswap_fhc_nova_v08_full_v1_numu2020";
+  }
+  else if (beam == "rhc") defMC_Non = ""; // 3F concat
   else {std::cerr << "Unknown 'beam'. exit..." << std::endl; exit(1);}
 
-  SpectrumLoader loader(defMC);
+  Loaders loader;
+  loader.SetLoaderPath(defMC_Non, caf::kFARDET, ana::Loaders::kMC);
+  loader.SetLoaderPath(defMC_Flux, caf::kFARDET, ana::Loaders::kMC, DataSource::kBeam, ana::Loaders::kFluxSwap);
+//  loader.SetLoaderPath(defMC_Tau, caf::kFARDET, ana::Loaders::kMC, DataSource::kBeam, ana::Loaders::kTauSwap);
+
   loader.SetSpillCut(kStandardSpillCuts);
 
   std::vector<Cut> cutQuantiles = GetNumuEhadFracQuantCuts2020(beam != "fhc");
 
-  std::map<std::string, Spectrum*> spectrumMap;
 
-  // quantiles
+  std::map<std::string, const PredictionNoExtrap*> predNxp;
+
   for (unsigned int quantileIdx = 0; quantileIdx < cutQuantiles.size(); quantileIdx++) {
-    spectrumMap.try_emplace(Form("pred_interp_Q%d", quantileIdx + 1),
-                        new Spectrum(loader, kNumuCCOptimisedAxis2020, kNumu2020FD && cutQuantiles[quantileIdx], kNoShift, kXSecCVWgt2024 * kPPFXFluxCVWgt));
+    predNxp.try_emplace(Form("pred_nxp_Q%i", quantileIdx+1), new PredictionNoExtrap(loader, kNumuCCOptimisedAxis2020, kNumu2020FD && cutQuantiles[quantileIdx], kNoShift, kXSecCVWgt2024 * kPPFXFluxCVWgt));
   }
 
-  spectrumMap.try_emplace("pred_interp_Q5", new Spectrum(loader, kNumuCCOptimisedAxis2020, kNumu2020FD, kNoShift, kXSecCVWgt2024 * kPPFXFluxCVWgt));
+  predNxp.try_emplace("pred_nxp_Q5", new PredictionNoExtrap(loader, kNumuCCOptimisedAxis2020, kNumu2020FD, kNoShift, kXSecCVWgt2024 * kPPFXFluxCVWgt));
 
   loader.Go();
 
@@ -78,16 +85,14 @@ void generate_fd_prod51_p1p10_reco_enu_2020info_mc(const std::string& beam,     
 
   // save the spectra to each Quantile ROOT file
   int quantileCount = 1;
-  for (const auto &specPair : spectrumMap){
-    std::string fileName = Form("spectra_fd_prod5.1_p1p10_reco_enu_2020info_mc_%s_numu_Q%i.root",  beam.c_str(), quantileCount);
+  for (const auto &prednxp : predNxp){
+    std::string fileName = Form("pred_nxp_fd_prod5.1_p1p10_reco_enu_2020info_mc_%s_numu_Q%i.root",  beam.c_str(), quantileCount);
     const std::string& finalOutDir = out_dir + "/" + fileName;
     TFile ofile(Form("%s", finalOutDir.c_str()), "recreate");
 
-    specPair.second->SaveTo(&ofile, specPair.first);
+    prednxp.second->SaveTo(&ofile, prednxp.first);
 
-    const double pot = specPair.second->POT();
-    specPair.second->ToTH1(pot)->Write(Form("h1_%s", specPair.first.c_str()));
-    std::cout << "saving TH1 with intrinsic POT: " << pot << std::endl;
+    std::cout << "saving PredNxp: " << std::endl;
 
     ofile.Close();
     std::cout << "Wrote file: " << finalOutDir << std::endl;
