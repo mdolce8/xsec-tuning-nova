@@ -48,7 +48,7 @@ namespace histogram
 using namespace ana;
 
 // =====================================================================================================
-void plot_fd_fhc_numu_mc_sloshing()
+void plot_fd_numu_mc_sloshing(const std::string& beam)
 // =====================================================================================================
 {
 
@@ -83,12 +83,12 @@ void plot_fd_fhc_numu_mc_sloshing()
 
   // dir of the FD Numu Data ROOT files
   const std::string inputDir = "/exp/nova/data/users/mdolce/preds+spectra/ana2024/box-opening";
-  const std::string outDir = "/exp/nova/data/users/mdolce/xsec-tuning-nova/plots/ana2024/box-opening/plot_fd_fhc_numu_mc_sloshing";
+  const std::string outDir = "/exp/nova/data/users/mdolce/xsec-tuning-nova/plots/ana2024/box-opening/plot_fd_" + beam + "_numu_mc_sloshing";
 
 
   for (int qCount = 1; qCount <= 5; qCount++){
-    const std::string filePath20 = inputDir + "/pred_nxp_fd_prod5.1_p1p10_reco_enu_2020info_mc_fhc_numu_Q" + std::to_string(qCount) + ".root";
-    const std::string filePath24 = inputDir + "/pred_nxp_fd_prod5.1_p1p10_reco_enu_2024info_mc_fhc_numu_Q" + std::to_string(qCount) + ".root";
+    const std::string filePath20 = inputDir + "/pred_nxp_fd_prod5.1_p1p10_reco_enu_2020info_mc_"+beam+"_numu_Q" + std::to_string(qCount) + ".root";
+    const std::string filePath24 = inputDir + "/pred_nxp_fd_prod5.1_p1p10_reco_enu_2024info_mc_"+beam+"_numu_Q" + std::to_string(qCount) + ".root";
 
     std::cout << "Quantile " << qCount << "........" << std::endl;
 
@@ -118,7 +118,7 @@ void plot_fd_fhc_numu_mc_sloshing()
     h24->SetMaximum(h20->GetMaximum() * 1.5);
 
     TLatex latex;
-    latex.DrawLatexNDC(0.15, 0.8, Form("Neutrino Beam"));
+    latex.DrawLatexNDC(0.15, 0.8, Form(beam == "fhc" ? "Neutrino Beam" : "AntiNeutrino Beam"));
     const std::string qStr = "Q" + std::to_string(qCount);
     TLatex latex2;
     if (qCount < 5) latex2.DrawLatexNDC(.15,.85,(Form("Quantile %i", qCount)));
@@ -141,7 +141,7 @@ void plot_fd_fhc_numu_mc_sloshing()
 
     leg.Draw("same");
 
-    c.SaveAs(Form("%s/plot_fd_fhc_prod5.1_p1p10_reco_enu_numu_mc_sloshing_%s_unnormalized.png", outDir.c_str(), qStr.c_str()));
+    c.SaveAs(Form("%s/plot_fd_%s_prod5.1_p1p10_reco_enu_numu_mc_sloshing_%s_unnormalized.png", beam.c_str(), outDir.c_str(), qStr.c_str()));
 
   } // quantiles
 
