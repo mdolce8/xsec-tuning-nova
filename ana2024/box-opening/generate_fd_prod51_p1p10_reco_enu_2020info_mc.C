@@ -33,7 +33,7 @@
 using namespace ana;
 
 // =====================================================================================================
-void generate_fd_prod51_p1p10_reco_enu_2020info_data(const std::string& beam,        // fhc or rhc
+void generate_fd_prod51_p1p10_reco_enu_2020info_mc(const std::string& beam,        // fhc or rhc
                                                      const std::string& outDir,      // $data/preds+spectra/ana2024/box-opening ("." for grid: -o $scratch/data )
                                                      const bool gridSubmission = false
 )
