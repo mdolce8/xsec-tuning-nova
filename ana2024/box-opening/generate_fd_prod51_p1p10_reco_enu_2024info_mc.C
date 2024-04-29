@@ -43,6 +43,34 @@ void generate_fd_prod51_p1p10_reco_enu_2024info_mc(const std::string& beam,     
 // =====================================================================================================
 {
 
+  // Asimov A. The 2020 best fit.
+  auto calc = new osc::OscCalcPMNSOpt();
+  calc->SetL(810);
+  calc->SetRho(2.84);
+  calc->SetDmsq21(7.53e-5);
+  calc->SetTh12(asin(sqrt(0.307)));
+  calc->SetDmsq32(2.41e-3);
+  calc->SetTh23(asin(sqrt(0.57)));
+  calc->SetdCP(0.82*M_PI);
+  calc->SetTh13(asin(sqrt(2.18e-2)));
+
+  struct Component
+  {
+      Flavors::Flavors_t flav;
+      Current::Current_t curr;
+      Sign::Sign_t sign;
+  };
+
+  std::map<std::string, Component> flavors = {
+          //{"nuecc", {Flavors::kAllNuE, Current::kCC, Sign::kBoth}},
+          {"beam_nuecc", {Flavors::kNuEToNuE, Current::kCC, Sign::kBoth}},
+          {"app_nuecc", {Flavors::kNuMuToNuE, Current::kCC, Sign::kNu}},
+          {"app_nuebarcc", {Flavors::kNuMuToNuE, Current::kCC, Sign::kAntiNu}},
+          {"numucc", {Flavors::kAllNuMu, Current::kCC, Sign::kBoth}},
+          {"nc", {Flavors::kAll, Current::kNC, Sign::kBoth}}
+  };
+
+
   std::cout << "Ana2024 Box Opening........" << std::endl;
   std::cout << "Plotting Prod5.1 FD Numu Quantile(s) MC with 2024 cuts in Reco Enu........" << std::endl;
 
@@ -93,7 +121,21 @@ void generate_fd_prod51_p1p10_reco_enu_2024info_mc(const std::string& beam,     
     const std::string& finalOutDir = out_dir + "/" + fileName;
     TFile ofile(Form("%s", finalOutDir.c_str()), "recreate");
 
+    // save the PredNoExtrap info
+    std::cout << "saving PredNxp: " << std::endl;
     prednxp.second->SaveTo(&ofile, prednxp.first);
+
+    // save the Spectrum info.
+    std::cout << "saving Spectrum: " << std::endl;
+    std::map<std::string, Spectrum> specs_preds;
+    for (auto flavor : flavors){
+      auto tmp_spec = prednxp.second->PredictComponent(calc, flavor.second.flav, flavor.second.curr, flavor.second.sign);
+      std::string key = prednxp.first+"_"+flavor.first+"_all";
+      specs_preds.insert({key, tmp_spec});
+    } // flavors
+
+    for(auto spec: specs_preds)
+      spec.second.SaveTo(ofile.mkdir(spec.first.c_str()),"specs_preds");
 
     std::cout << "saving PredNxp: " << std::endl;
 
