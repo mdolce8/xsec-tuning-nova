@@ -54,6 +54,33 @@ void plot_fd_fhc_numu(
 // =====================================================================================================
 {
 
+  // Asimov A. The 2020 best fit.
+  auto calc = new osc::OscCalcPMNSOpt();
+  calc->SetL(810);
+  calc->SetRho(2.84);
+  calc->SetDmsq21(7.53e-5);
+  calc->SetTh12(asin(sqrt(0.307)));
+  calc->SetDmsq32(2.41e-3);
+  calc->SetTh23(asin(sqrt(0.57)));
+  calc->SetdCP(0.82*M_PI);
+  calc->SetTh13(asin(sqrt(2.18e-2)));
+
+  struct Component
+  {
+      Flavors::Flavors_t flav;
+      Current::Current_t curr;
+      Sign::Sign_t sign;
+  };
+
+  std::map<std::string, Component> flavors = {
+          //{"nuecc", {Flavors::kAllNuE, Current::kCC, Sign::kBoth}},
+          {"beam_nuecc", {Flavors::kNuEToNuE, Current::kCC, Sign::kBoth}},
+          {"app_nuecc", {Flavors::kNuMuToNuE, Current::kCC, Sign::kNu}},
+          {"app_nuebarcc", {Flavors::kNuMuToNuE, Current::kCC, Sign::kAntiNu}},
+          {"numucc", {Flavors::kAllNuMu, Current::kCC, Sign::kBoth}},
+          {"nc", {Flavors::kAll, Current::kNC, Sign::kBoth}}
+  };
+
   const double POT = 4;
 
   // dir of the FD Numu Data ROOT files
@@ -62,10 +89,11 @@ void plot_fd_fhc_numu(
 
 
   for (int qCount = 1; qCount <= 5; qCount++){
-    const std::string filePath20 = inputDir + "/spectra_fd_prod5.1_p1p10_reco_enu_2020info_mc_fhc_numu_Q" + std::to_string(qCount) + ".root";
-    const std::string filePath24 = inputDir + "/spectra_fd_prod5.1_p1p10_reco_enu_2024info_mc_fhc_numu_Q" + std::to_string(qCount) + ".root";
+    const std::string filePath20 = inputDir + "/pred_nxp_fd_prod5.1_p1p10_reco_enu_2020info_mc_fhc_numu_Q" + std::to_string(qCount) + ".root";
+    const std::string filePath24 = inputDir + "/pred_nxp_fd_prod5.1_p1p10_reco_enu_2024info_mc_fhc_numu_Q" + std::to_string(qCount) + ".root";
 
-    const std::string specName = Form("pred_interp_Q%i", qCount);
+    // these are the "numucc_all" category
+    const std::string specName = Form("pred_nxp_Q%i_numucc_all/spec_preds", qCount); // this is a dir.
     TFile * f20 = TFile::Open(filePath20.c_str());
     TFile * f24 = TFile::Open(filePath24.c_str());
 
