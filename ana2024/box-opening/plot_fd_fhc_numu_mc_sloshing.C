@@ -90,6 +90,8 @@ void plot_fd_fhc_numu_mc_sloshing()
     const std::string filePath20 = inputDir + "/pred_nxp_fd_prod5.1_p1p10_reco_enu_2020info_mc_fhc_numu_Q" + std::to_string(qCount) + ".root";
     const std::string filePath24 = inputDir + "/pred_nxp_fd_prod5.1_p1p10_reco_enu_2024info_mc_fhc_numu_Q" + std::to_string(qCount) + ".root";
 
+    std::cout << "Quantile " << qCount << "........" << std::endl;
+
     // these are the "numucc_all" category
     const std::string specName = Form("pred_nxp_Q%i_numucc_all", qCount); // this is a dir.
     TFile * f20 = TFile::Open(filePath20.c_str());
@@ -107,8 +109,8 @@ void plot_fd_fhc_numu_mc_sloshing()
     TH1D * h20 = spec20.ToTH1(kAna2020FHCPOT);
     TH1D * h24 = spec24.ToTH1(kAna2020FHCPOT);
 
-    h20->Draw("e");
-    h24->Draw("same e");
+    h20->Draw("hist e");
+    h24->Draw("same hist e");
 
     h24->SetLineColor(kRed);
 
