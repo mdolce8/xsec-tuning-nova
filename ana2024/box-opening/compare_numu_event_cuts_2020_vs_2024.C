@@ -145,7 +145,7 @@ void compare_numu_event_cuts_2020_vs_2024(const std::string& beam,        // fhc
 
   TFile ofile(Form("%s/compare_%s_numu_event_cuts_2020_vs_2024.root", outDir.c_str(), beam.c_str()), "recreate");
   for (const auto& pnxpPair : map_pnxp) {
-    Spectrum s = pnxpPair.second.PredictComponent(calc, Flavors::kAllNuMu, Current::kCC, Sign::kBoth);
+    Spectrum s = pnxpPair.second->PredictComponent(calc, Flavors::kAllNuMu, Current::kCC, Sign::kBoth);
     s.SaveTo(&ofile, Form("%s_numucc_all", pnxpPair.first.c_str()));
 
     TH1D * h = s.ToTH1(beam == "fhc" ? kAna2020FHCPOT : kAna2020RHCPOT);
