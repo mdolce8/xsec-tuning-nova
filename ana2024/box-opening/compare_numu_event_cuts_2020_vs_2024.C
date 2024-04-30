@@ -14,6 +14,7 @@
 #include <CAFAna/Prediction/PredictionNoExtrap.h>
 #include <TCanvas.h>
 #include <OscLib/OscCalcPMNSOpt.h>
+#include <CAFAna/Analysis/Exposures.h>
 #include "3FlavorAna/Cuts/QuantileCuts2020.h"
 #include "3FlavorAna/NDFit/Samples/UsefulCutsVars.h"
 #include "3FlavorAna/Vars/HistAxes.h"
@@ -88,23 +89,26 @@ void compare_numu_event_cuts_2020_vs_2024(const std::string& beam,        // fhc
   f24.open(Form("%s/pass_%s_kNumu2024FD.txt", outDir.c_str(), beam.c_str()));
   f20.open(Form("%s/pass_%s_kNumu2020FD.txt", outDir.c_str(), beam.c_str()));
 
-  int cut_FD24, cut_FD20, pass_both, fail_both, unclear = 0;
+  // these are for checks later...
+  int cut_FD24 = 0, cut_FD20 = 0, pass_both = 0, fail_both = 0, unclear = 0;
 
-  vars.try_emplace("kNumu2020FD Pass",
-                   ([&f20](const caf::SRProxy *sr) {
-                     int cutFD20 = 0;
+  vars.try_emplace("kNumu2020FD_Pass",
+                   ([&f20, &cut_FD20](const caf::SRProxy *sr) {
+                     int pass = 0;
                      if (!kNumu2024FD(sr) && kNumu2020FD(sr)) {
-                       cutFD20 = 1;
+                       cut_FD20++;
+                       pass = 1;
                        f20 << sr->hdr.run << "/" << sr->hdr.subrun << "/" << sr->hdr.evt << std::endl;
                      }
-                     return cutFD20;
+                     return pass;
                     }
   ));
 
-  vars.try_emplace("kNumu2024FD Pass",
-                   ([&f24](const caf::SRProxy *sr) {
-                     int pass = 0;
+  vars.try_emplace("kNumu2024FD_Pass",
+                   ([&f24, &cut_FD24](const caf::SRProxy *sr) {
+                     int pass =0;
                      if (kNumu2024FD(sr) && !kNumu2020FD(sr)){
+                       cut_FD24++;
                        pass = 1;
                        f24 << sr->hdr.run << "/" << sr->hdr.subrun << "/" << sr->hdr.evt << std::endl;
                      }
@@ -112,12 +116,13 @@ void compare_numu_event_cuts_2020_vs_2024(const std::string& beam,        // fhc
                    }
   ));
 
-  vars.try_emplace("Pass Both",
-                   ([&fboth](const caf::SRProxy *sr) {
+  vars.try_emplace("Pass_Both",
+                   ([&fboth, &pass_both](const caf::SRProxy *sr) {
                        int pass = 0;
                        if (kNumu2024FD(sr) && kNumu2020FD(sr)){
-                         pass = 1;
-                         fboth << sr->hdr.run << "/" << sr->hdr.subrun << "/" << sr->hdr.evt << std::endl;
+                          pass_both++;
+                          pass = 1;
+                          fboth << sr->hdr.run << "/" << sr->hdr.subrun << "/" << sr->hdr.evt << std::endl;
                        }
                        return pass;
                    }
@@ -126,9 +131,9 @@ void compare_numu_event_cuts_2020_vs_2024(const std::string& beam,        // fhc
   std::unordered_map<std::string, HistAxis> map_haxis;
   std::unordered_map<std::string, PredictionNoExtrap> map_pnxp;
 
-  // just one bin for each var. Just getting the total.
+  // two bins: pass or not.
   for (const auto& varPair : vars)
-    map_haxis.try_emplace(varPair.first, varPair.first, ana::Binning::Simple(1, 0, 1), varPair.second);
+    map_haxis.try_emplace(varPair.first, varPair.first, ana::Binning::Simple(2, 0, 2), varPair.second);
 
   for (const auto& haxisPair : map_haxis)
     map_pnxp.try_emplace(haxisPair.first, new PredictionNoExtrap(loader, haxisPair.second, kNoCut, kNoShift, kPPFXFluxCVWgt * kXSecCVWgt2024));
