@@ -111,16 +111,16 @@ void compare_numu_event_cuts_2020_vs_2024(const std::string& beam,        // fhc
   HistAxis haxis("Cut outcome combinations", ana::Binning::Simple(10, 1,10), vars.at("FD Cut"));
 
 
-  loader.Go();
-
 //  Spectrum s(loader.GetLoader(caf::kFARDET, ana::Loaders::kMC, ana::DataSource::kBeam, ana::Loaders::kNonSwap), haxis, kNoCut, kNoShift, kPPFXFluxCVWgt * kXSecCVWgt2024);
 
 //  Spectrum sflux(loader.GetLoader(caf::kFARDET, ana::Loaders::kMC, ana::DataSource::kBeam, ana::Loaders::kFluxSwap), haxis, kNoCut, kNoShift, kPPFXFluxCVWgt * kXSecCVWgt2024);
 
   auto * pnxp = new PredictionNoExtrap(loader, haxis, kNoCut, kNoShift, kPPFXFluxCVWgt * kXSecCVWgt2024);
 
+  loader.Go();
+
   TFile ofile(Form("%s/compare_numu_event_cuts_2020_vs_2024.root", outDir.c_str()), "recreate");
-  Spectrum s = pnxp->PredictComponent(calc, Flavors::kAllNuMu, Current::kCC, Sign::kNu);
+  Spectrum s = pnxp->PredictComponent(calc, Flavors::kAllNuMu, Current::kCC, Sign::kBoth);
   s.SaveTo(&ofile, "numucc_all");
 
 
