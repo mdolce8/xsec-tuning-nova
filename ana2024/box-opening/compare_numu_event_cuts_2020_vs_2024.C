@@ -152,18 +152,18 @@ void compare_numu_event_cuts_2020_vs_2024(const std::string& beam,        // fhc
   std::cout << "fail_both: " << fail_both << std::endl;
   std::cout << "unclear: " << unclear << std::endl;
 
-  TH1D h = TH1D("h", beam.c_str(), 5, 0, 5);
-  h.SetBinContent(0, pass_both);
-  h.SetBinContent(1, cut_FD20);
-  h.SetBinContent(2, cut_FD24);
-  h.SetBinContent(3, fail_both);
+  TH1D h = TH1D("h", Form("%s kNumu2020FD vs kNumu2024FD", beam.c_str()), 5, 0, 5);
+  h.SetBinContent(1, pass_both);
+  h.SetBinContent(2, cut_FD20);
+  h.SetBinContent(3, cut_FD24);
   h.SetBinContent(4, unclear);
+  h.SetBinContent(100, fail_both);
 
-  h.GetXaxis()->SetBinLabel(0, "pass both");
-  h.GetXaxis()->SetBinLabel(1, "pass 2020");
-  h.GetXaxis()->SetBinLabel(2, "pass 2024");
-  h.GetXaxis()->SetBinLabel(3, "fail both");
+  h.GetXaxis()->SetBinLabel(1, "pass both");
+  h.GetXaxis()->SetBinLabel(2, "pass 2020");
+  h.GetXaxis()->SetBinLabel(3, "pass 2024");
   h.GetXaxis()->SetBinLabel(4, "unclear");
+  h.GetXaxis()->SetBinLabel(100, "fail both"); // overflow
 
   TCanvas c;
   c.SetBottomMargin(0.15);
