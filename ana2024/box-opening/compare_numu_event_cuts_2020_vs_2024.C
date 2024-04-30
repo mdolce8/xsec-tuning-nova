@@ -96,7 +96,7 @@ void compare_numu_event_cuts_2020_vs_2024(const std::string& beam,        // fhc
 
   ); // map try_emplace
 
-  HistAxis haxis("label", ana::Binning::Simple(10, 1,10), vars.at("FD Cut"));
+  HistAxis haxis("Cut outcome combinations", ana::Binning::Simple(10, 1,10), vars.at("FD Cut"));
 
 
   loader.Go();
