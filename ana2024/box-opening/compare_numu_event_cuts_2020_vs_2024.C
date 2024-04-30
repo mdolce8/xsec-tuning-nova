@@ -122,8 +122,9 @@ void compare_numu_event_cuts_2020_vs_2024(const std::string& beam,        // fhc
   h.SetBinContent(2, cut_FD20);
   h.SetBinContent(3, cut_FD24);
 
-  new TCanvas;
+  TCanvas c;
   h.Draw("hist e");
+  c.SaveAs(Form("%s/cuts.png", outDir.c_str()));
 
 
 
