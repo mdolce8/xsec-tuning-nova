@@ -13,6 +13,7 @@
 #include <CAFAna/Core/Loaders.h>
 #include <CAFAna/Prediction/PredictionNoExtrap.h>
 #include <TCanvas.h>
+#include <OscLib/OscCalcPMNSOpt.h>
 #include "3FlavorAna/Cuts/QuantileCuts2020.h"
 #include "3FlavorAna/NDFit/Samples/UsefulCutsVars.h"
 #include "3FlavorAna/Vars/HistAxes.h"
@@ -40,6 +41,17 @@ void compare_numu_event_cuts_2020_vs_2024(const std::string& beam,        // fhc
 )
 // =====================================================================================================
 {
+
+  // Asimov A. The 2020 best fit.
+  auto calc = new osc::OscCalcPMNSOpt();
+  calc->SetL(810);
+  calc->SetRho(2.84);
+  calc->SetDmsq21(7.53e-5);
+  calc->SetTh12(asin(sqrt(0.307)));
+  calc->SetDmsq32(2.41e-3);
+  calc->SetTh23(asin(sqrt(0.57)));
+  calc->SetdCP(0.82*M_PI);
+  calc->SetTh13(asin(sqrt(2.18e-2)));
 
   std::cout << "Ana2024 Box Opening........" << std::endl;
   std::cout << "Plotting Prod5.1 FD Numu Quantile(s) Data with 2020 cuts in Reco Enu........" << std::endl;
@@ -107,6 +119,9 @@ void compare_numu_event_cuts_2020_vs_2024(const std::string& beam,        // fhc
 
   auto * pnxp = new PredictionNoExtrap(loader, haxis, kNoCut, kNoShift, kPPFXFluxCVWgt * kXSecCVWgt2024);
 
+  TFile ofile(Form("%s/compare_numu_event_cuts_2020_vs_2020.root", outDir.c_str()), "recreate");
+  Spectrum s = pnxp->PredictComponent(calc, Flavors::kAllNuMu, Current::kCC, Sign::kBoth);
+  s.SaveTo(&ofile, "numucc_all");
 
 
 
@@ -121,8 +136,11 @@ void compare_numu_event_cuts_2020_vs_2024(const std::string& beam,        // fhc
 
   TCanvas c;
   h.Draw("hist e");
+
+  h.Write("h_cuts_outcome");
+
   c.SaveAs(Form("%s/%s_cuts.png", outDir.c_str(), beam.c_str()));
 
-
+  ofile.Close();
 
 }
