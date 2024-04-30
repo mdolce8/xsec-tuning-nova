@@ -85,9 +85,9 @@ void compare_numu_event_cuts_2020_vs_2024(const std::string& beam,        // fhc
 
   std::unordered_map<std::string, ana::Var> vars;
 
-  fboth.open(Form("%s/pass_both.txt", outDir.c_str()));
-  f24.open(Form("%s/pass_kNumu2024FD.txt", outDir.c_str()));
-  f20.open(Form("%s/pass_kNumu2020FD.txt", outDir.c_str()));
+  fboth.open(Form("%s/pass_both_%s.txt", outDir.c_str(), beam.c_str()));
+  f24.open(Form("%s/pass_%s_kNumu2024FD.txt", outDir.c_str(), beam.c_str()));
+  f20.open(Form("%s/pass_%s_kNumu2020FD.txt", outDir.c_str(), beam.c_str()));
 
   int cut_FD24, cut_FD20, pass_both, fail_both, unclear = 0;
 
@@ -157,13 +157,11 @@ void compare_numu_event_cuts_2020_vs_2024(const std::string& beam,        // fhc
   h.SetBinContent(2, cut_FD20);
   h.SetBinContent(3, cut_FD24);
   h.SetBinContent(4, unclear);
-  h.SetBinContent(100, fail_both);
 
   h.GetXaxis()->SetBinLabel(1, "pass both");
   h.GetXaxis()->SetBinLabel(2, "pass 2020");
   h.GetXaxis()->SetBinLabel(3, "pass 2024");
   h.GetXaxis()->SetBinLabel(4, "unclear");
-  h.GetXaxis()->SetBinLabel(100, "fail both"); // overflow
 
   TCanvas c;
   c.SetBottomMargin(0.15);
