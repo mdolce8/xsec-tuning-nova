@@ -105,9 +105,9 @@ void compare_numu_event_cuts_2020_vs_2024(const std::string& beam,        // fhc
   auto * pnxp = new PredictionNoExtrap(loader, haxis, kNoCut, kNoShift, kPPFXFluxCVWgt * kXSecCVWgt2024);
 
   TH1D h = TH1D("h", beam.c_str(), 10, 0, 9);
-  h.SetBinContent(1, good_events);
-  h.SetBinContent(2, cut_FD20);
-  h.SetBinContent(3, cut_FD24);
+  h.SetBinContent(0, good_events);
+  h.SetBinContent(1, cut_FD20);
+  h.SetBinContent(2, cut_FD24);
 
   TCanvas c;
   h.Draw("hist e");
