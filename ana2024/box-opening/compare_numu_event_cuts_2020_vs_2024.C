@@ -129,7 +129,7 @@ void compare_numu_event_cuts_2020_vs_2024(const std::string& beam,        // fhc
                    ));
 
   std::unordered_map<std::string, HistAxis> map_haxis;
-  std::unordered_map<std::string, PredictionNoExtrap> map_pnxp;
+  std::unordered_map<std::string, PredictionNoExtrap*> map_pnxp;
 
   // two bins: pass or not.
   for (const auto& varPair : vars)
