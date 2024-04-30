@@ -120,7 +120,7 @@ void compare_numu_event_cuts_2020_vs_2024(const std::string& beam,        // fhc
   auto * pnxp = new PredictionNoExtrap(loader, haxis, kNoCut, kNoShift, kPPFXFluxCVWgt * kXSecCVWgt2024);
 
   TFile ofile(Form("%s/compare_numu_event_cuts_2020_vs_2024.root", outDir.c_str()), "recreate");
-  Spectrum s = pnxp->PredictComponent(calc, Flavors::kAllNuMu, Current::kCC, Sign::kBoth);
+  Spectrum s = pnxp->PredictComponent(calc, Flavors::kAllNuMu, Current::kCC, Sign::kNu);
   s.SaveTo(&ofile, "numucc_all");
 
 
