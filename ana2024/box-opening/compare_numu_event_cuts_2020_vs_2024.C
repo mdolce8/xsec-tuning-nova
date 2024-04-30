@@ -11,8 +11,8 @@
 #include <3FlavorAna/Cuts/NumuCuts2024.h>
 #include <3FlavorAna/Cuts/NumuCuts2020.h>
 #include <CAFAna/Core/Loaders.h>
+#include <CAFAna/Prediction/PredictionNoExtrap.h>
 #include "3FlavorAna/Cuts/QuantileCuts2020.h"
-#include "3FlavorAna/Cuts/NumuCuts2020.h"
 #include "3FlavorAna/NDFit/Samples/UsefulCutsVars.h"
 #include "3FlavorAna/Vars/HistAxes.h"
 #include "3FlavorAna/Vars/NumuVars.h"
@@ -76,7 +76,7 @@ void compare_numu_event_cuts_2020_vs_2024(const std::string& beam,        // fhc
           };
   std::unordered_map<std::string, int> map_cut_status{};
 
-  int cut_decaf_24_only, cut_decaf20_only = 0;
+  int cut_FD24, cut_FD20, good_events = 0;
 
   const Cut kMyNumu2020CosRejLoose(
           [](const caf::SRProxy* sr)
@@ -85,44 +85,43 @@ void compare_numu_event_cuts_2020_vs_2024(const std::string& beam,        // fhc
           });
 
   // Create Vars of the weights that include print statements
-//  vars.try_emplace("DecafCut",
-//                   ([cut_decaf20_only, cut_decaf_24_only](const caf::SRProxy *sr) {
-//                       int good_events = 0;
-//                       if (kNumu2024FDDecafCut) {
-//                         good_events++;
-//                       }
-//                       else if (kNumu2024DecafCut && !kNumu2020DecafCut)
-//                       {
-//                         std::cout << "2024 Decaf cut, only passed: " << sr->hdr.run << "/" << sr->hdr.subrun << "/" << sr->hdr.evt << std::endl;
-//                         cut_decaf24_only++;
-//                       }
-//                       else if (!kNumu20204DecafCut && kNumu2020DecafCut)
-//                       {
-//                         std::cout << "2020 Decaf cut, only passed: " << sr->hdr.run << "/" << sr->hdr.subrun << "/" << sr->hdr.evt << std::endl;
-//                         cut_decaf20_only++;
-//                       }
-//                       else {
-//                         std::cerr << "IDK what happened." << std::endl;
-//                       }
-//                       return good_events;
-//                   }) // Var lambda
+  vars.try_emplace("FD Cut",
+                   ([&cut_FD20, &cut_FD24, &good_events](const caf::SRProxy *sr) {
+                       if (kNumu2024FD(sr)) {
+                         good_events++;
+                       }
+                       else if (kNumu2024FD(sr) && !kNumu2020FD(sr))
+                       {
+                         std::cout << "2024 passed, 2020 failed: " << sr->hdr.run << "/" << sr->hdr.subrun << "/" << sr->hdr.evt << std::endl;
+                         cut_FD24++;
+                       }
+                       else if (!kNumu2024FD(sr) && kNumu2020FD(sr))
+                       {
+                         std::cout << "2024 failed, 2020 passed: " << sr->hdr.run << "/" << sr->hdr.subrun << "/" << sr->hdr.evt << std::endl;
+                         cut_FD20++;
+                       }
+                       else {
+                         std::cerr << "IDK what happened." << std::endl;
+                       }
+                       return -5.;
+                   }) // Var lambda
 
   ); // map try_emplace
 
-//  int good_events = 0;
-//  Cut kMyCut(
-//          [&good_events](const caf::SRProxy *sr)
-//          {
-//            if (kNumu2024FDDecafCut)
-//                good_events++;
-//      });
+  HistAxis haxis("label", ana::Binning::Simple(10, 1,10), vars.at("FD Cut"));
 
+//  Spectrum s(loader.GetLoader(caf::kFARDET, ana::Loaders::kMC, ana::DataSource::kBeam, ana::Loaders::kNonSwap), haxis, kNoCut, kNoShift, kPPFXFluxCVWgt * kXSecCVWgt2024);
 
+//  Spectrum sflux(loader.GetLoader(caf::kFARDET, ana::Loaders::kMC, ana::DataSource::kBeam, ana::Loaders::kFluxSwap), haxis, kNoCut, kNoShift, kPPFXFluxCVWgt * kXSecCVWgt2024);
 
-  Spectrum s(loader.GetLoader() , kNumuCCOptimisedAxis2024, kNumu2024FDDecafCut && kNumu2020FDDecafCut, kNoShift, kPPFXFluxCVWgt * kXSecCVWgt2024);
-  Spectrum sa(loader , kNumuCCOptimisedAxis2024, kNumu2024FDDecafCut && !kNumu2020FDDecafCut, kNoShift, kPPFXFluxCVWgt * kXSecCVWgt2024);
-  Spectrum sb(loader , kNumuCCOptimisedAxis2024, !kNumu2024FDDecafCut && kNumu2020FDDecafCut, kNoShift, kPPFXFluxCVWgt * kXSecCVWgt2024);
+  auto * pnxp = new PredictionNoExtrap(loader, haxis, kNoCut, kNoShift, kPPFXFluxCVWgt * kXSecCVWgt2024);
 
+  TH1D h = TH1D("h", "h", 10, 1, 10);
+  h.SetBinContent(1, good_events);
+  h.SetBinContent(2, cut_FD20);
+  h.SetBinContent(3, cut_FD24);
+
+  h.Draw("hist e");
 
 
 
