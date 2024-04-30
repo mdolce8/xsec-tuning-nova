@@ -81,7 +81,6 @@ void compare_numu_event_cuts_2020_vs_2024(const std::string& beam,        // fhc
   loader.SetLoaderPath(defMC_Flux, caf::kFARDET, ana::Loaders::kMC, DataSource::kBeam, ana::Loaders::kFluxSwap);
   loader.SetSpillCut(kStandardSpillCuts);
 
-//  std::vector < Cut > cutQuantiles = GetNumuEhadFracQuantCuts2020(beam != "fhc");
 
   std::unordered_map<std::string, ana::Var> vars;
 
@@ -91,50 +90,48 @@ void compare_numu_event_cuts_2020_vs_2024(const std::string& beam,        // fhc
 
   int cut_FD24, cut_FD20, pass_both, fail_both, unclear = 0;
 
-  // Create Vars of the weights that include print statements
-  vars.try_emplace("FD Cut",
-                   ([&cut_FD20, &cut_FD24, &pass_both, &fail_both, &unclear, &f20, &f24, &fboth](const caf::SRProxy *sr) {
-                       // PASS 2024 only
-                       if (kNumu2024FD(sr) && !kNumu2020FD(sr))
-                       {
-                         f24 << "2024 passed = " << kNumu2024FD(sr) << ", 2020 failed = " << kNumu2020FD(sr) << ": " << sr->hdr.run << "/" << sr->hdr.subrun << "/" << sr->hdr.evt << std::endl;
-                         cut_FD24++;
+  vars.try_emplace("kNumu2020FD Pass",
+                   ([&f20](const caf::SRProxy *sr) {
+                     int cutFD20 = 0;
+                     if (!kNumu2024FD(sr) && kNumu2020FD(sr)) {
+                       cutFD20 = 1;
+                       f20 << sr->hdr.run << "/" << sr->hdr.subrun << "/" << sr->hdr.evt << std::endl;
+                     }
+                     return cutFD20;
+                    }
+  ));
+
+  vars.try_emplace("kNumu2024FD Pass",
+                   ([&f24](const caf::SRProxy *sr) {
+                     int pass = 0;
+                     if (kNumu2024FD(sr) && !kNumu2020FD(sr)){
+                       pass = 1;
+                       f24 << sr->hdr.run << "/" << sr->hdr.subrun << "/" << sr->hdr.evt << std::endl;
+                     }
+                     return pass;
+                   }
+  ));
+
+  vars.try_emplace("Pass Both",
+                   ([&fboth](const caf::SRProxy *sr) {
+                       int pass = 0;
+                       if (kNumu2024FD(sr) && kNumu2020FD(sr)){
+                         pass = 1;
+                         fboth << sr->hdr.run << "/" << sr->hdr.subrun << "/" << sr->hdr.evt << std::endl;
                        }
-                       // PASS 2020 only
-                       else if (!kNumu2024FD(sr) && kNumu2020FD(sr))
-                       {
-                         f20 << "2024 failed = " << kNumu2024FD(sr) << ", 2020 passed = " << kNumu2020FD(sr) << ": "  << sr->hdr.run << "/" << sr->hdr.subrun << "/" << sr->hdr.evt << std::endl;
-                         cut_FD20++;
-                       }
-                       // PASS BOTH
-                       else if (kNumu2024FD(sr) && kNumu2020FD(sr))
-                       {
-                         fboth << "2024 passed = " << kNumu2024FD(sr) << ", 2020 passed = " << kNumu2020FD(sr) << ": "  << sr->hdr.run << "/" << sr->hdr.subrun << "/" << sr->hdr.evt << std::endl;
-                         pass_both++;
-                       }
-                       // failing BOTH is not so interesting...
-                       else if (!kNumu2024FD(sr) && !kNumu2020FD(sr))
-                       {
-//                         std::cout << "2024 failed = " << kNumu2024FD(sr) << ", 2020 failed = " << kNumu2020FD(sr) << ": "  << sr->hdr.run << "/" << sr->hdr.subrun << "/" << sr->hdr.evt << std::endl;
-                         fail_both++;
-                       }
-                       else {
-                         std::cerr << "IDK what happened. 2020 == " << kNumu2024FD(sr) << ". 2024 == " << kNumu2020FD(sr) << ": "  << sr->hdr.run << "/" << sr->hdr.subrun << "/" << sr->hdr.evt << std::endl;
-                         unclear++;
-                       }
-                       return -5.;
-                   }) // Var lambda
+                       return pass;
+                   }
+                   ));
 
-  ); // map try_emplace
+  std::unordered_map<std::string, HistAxis> map_haxis;
+  std::unordered_map<std::string, PredictionNoExtrap> map_pnxp;
 
-  HistAxis haxis("Cut outcome combinations", ana::Binning::Simple(5, 0, 5), vars.at("FD Cut"));
+  // just one bin for each var. Just getting the total.
+  for (const auto& varPair : vars)
+    map_haxis.try_emplace(varPair.first, varPair.first, ana::Binning::Simple(1, 0, 1), varPair.second);
 
-
-//  Spectrum s(loader.GetLoader(caf::kFARDET, ana::Loaders::kMC, ana::DataSource::kBeam, ana::Loaders::kNonSwap), haxis, kNoCut, kNoShift, kPPFXFluxCVWgt * kXSecCVWgt2024);
-
-//  Spectrum sflux(loader.GetLoader(caf::kFARDET, ana::Loaders::kMC, ana::DataSource::kBeam, ana::Loaders::kFluxSwap), haxis, kNoCut, kNoShift, kPPFXFluxCVWgt * kXSecCVWgt2024);
-
-  auto * pnxp = new PredictionNoExtrap(loader, haxis, kNoCut, kNoShift, kPPFXFluxCVWgt * kXSecCVWgt2024);
+  for (const auto& haxisPair : map_haxis)
+    map_pnxp.try_emplace(haxisPair.first, new PredictionNoExtrap(loader, haxisPair.second, kNoCut, kNoShift, kPPFXFluxCVWgt * kXSecCVWgt2024));
 
   loader.Go();
 
@@ -152,6 +149,8 @@ void compare_numu_event_cuts_2020_vs_2024(const std::string& beam,        // fhc
   std::cout << "fail_both: " << fail_both << std::endl;
   std::cout << "unclear: " << unclear << std::endl;
 
+
+  // ---- save information into a simple TH1 and ROOT file. ----
   TH1D h = TH1D("h", Form("%s kNumu2020FD vs kNumu2024FD", beam.c_str()), 5, 0, 5);
   h.SetBinContent(1, pass_both);
   h.SetBinContent(2, cut_FD20);
