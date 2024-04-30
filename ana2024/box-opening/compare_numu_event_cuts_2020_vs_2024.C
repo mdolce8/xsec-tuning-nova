@@ -143,7 +143,7 @@ void compare_numu_event_cuts_2020_vs_2024(const std::string& beam,        // fhc
 
   std::unordered_map<std::string, double> map_integrals;
 
-  TFile ofile(Form("%s/compare_numu_event_cuts_2020_vs_2024.root", outDir.c_str()), "recreate");
+  TFile ofile(Form("%s/compare_%s_numu_event_cuts_2020_vs_2024.root", outDir.c_str(), beam.c_str()), "recreate");
   for (const auto& pnxpPair : map_pnxp) {
     Spectrum s = pnxpPair.second.PredictComponent(calc, Flavors::kAllNuMu, Current::kCC, Sign::kBoth);
     s.SaveTo(&ofile, Form("%s_numucc_all", pnxpPair.first.c_str()));
