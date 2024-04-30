@@ -140,9 +140,22 @@ void compare_numu_event_cuts_2020_vs_2024(const std::string& beam,        // fhc
 
   loader.Go();
 
+
+  std::unordered_map<std::string, double> map_integrals;
+
   TFile ofile(Form("%s/compare_numu_event_cuts_2020_vs_2024.root", outDir.c_str()), "recreate");
-  Spectrum s = pnxp->PredictComponent(calc, Flavors::kAllNuMu, Current::kCC, Sign::kBoth);
-  s.SaveTo(&ofile, "numucc_all");
+  for (const auto& pnxpPair : map_pnxp) {
+    Spectrum s = pnxpPair.second.PredictComponent(calc, Flavors::kAllNuMu, Current::kCC, Sign::kBoth);
+    s.SaveTo(&ofile, Form("%s_numucc_all", pnxpPair.first.c_str()));
+
+    TH1D * h = s.ToTH1(beam == "fhc" ? kAna2020FHCPOT : kAna2020RHCPOT);
+    h->Write(Form("h_%s_numucc_all", pnxpPair.first.c_str()));
+
+    // write the integrals in here.
+    auto integral = h->Integral(1,2); // only the passing events
+    std::cout << pnxpPair.first << " integral: " << integral << std::endl;
+    map_integrals.try_emplace(pnxpPair.first, integral);
+  }
 
   fboth.close();
   f20.close();
