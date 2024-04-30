@@ -12,6 +12,7 @@
 #include <3FlavorAna/Cuts/NumuCuts2020.h>
 #include <CAFAna/Core/Loaders.h>
 #include <CAFAna/Prediction/PredictionNoExtrap.h>
+#include <TCanvas.h>
 #include "3FlavorAna/Cuts/QuantileCuts2020.h"
 #include "3FlavorAna/NDFit/Samples/UsefulCutsVars.h"
 #include "3FlavorAna/Vars/HistAxes.h"
@@ -121,6 +122,7 @@ void compare_numu_event_cuts_2020_vs_2024(const std::string& beam,        // fhc
   h.SetBinContent(2, cut_FD20);
   h.SetBinContent(3, cut_FD24);
 
+  new TCanvas;
   h.Draw("hist e");
 
 
