@@ -65,25 +65,13 @@ void compare_numu_event_cuts_2020_vs_2024(const std::string& beam,        // fhc
   loader.SetLoaderPath(defMC_Flux, caf::kFARDET, ana::Loaders::kMC, DataSource::kBeam, ana::Loaders::kFluxSwap);
   loader.SetSpillCut(kStandardSpillCuts);
 
-  std::vector < Cut > cutQuantiles = GetNumuEhadFracQuantCuts2020(beam != "fhc");
+//  std::vector < Cut > cutQuantiles = GetNumuEhadFracQuantCuts2020(beam != "fhc");
 
   // todo: do we need spill cuts too?
   std::unordered_map<std::string, ana::Var> vars;
-  std::unordered_map<std::string, ana::Cut> map_cut_names
-          {
-//                  {"kNumu", kStandardSpillCuts},
-                  {"kNumu2020DecafCut", kNumu2020FDDecafCut},
-                  {"kNumu2024DecafCut", kNumu2024FDDecafCut},
-          };
-  std::unordered_map<std::string, int> map_cut_status{};
+
 
   int cut_FD24, cut_FD20, good_events = 0;
-
-  const Cut kMyNumu2020CosRejLoose(
-          [](const caf::SRProxy* sr)
-          {
-              return kNumuContPID(sr) > 0.4 && kCVNm_looseptp(sr) > 0.;
-          });
 
   // Create Vars of the weights that include print statements
   vars.try_emplace("FD Cut",
@@ -124,7 +112,7 @@ void compare_numu_event_cuts_2020_vs_2024(const std::string& beam,        // fhc
 
   TCanvas c;
   h.Draw("hist e");
-  c.SaveAs(Form("%s/cuts.png", outDir.c_str()));
+  c.SaveAs(Form("%s/%s_cuts.png", outDir.c_str(), beam.c_str()));
 
 
 
