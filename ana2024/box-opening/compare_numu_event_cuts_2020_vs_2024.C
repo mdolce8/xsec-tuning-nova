@@ -87,21 +87,18 @@ void compare_numu_event_cuts_2020_vs_2024(const std::string& beam,        // fhc
   // Create Vars of the weights that include print statements
   vars.try_emplace("FD Cut",
                    ([&cut_FD20, &cut_FD24, &good_events](const caf::SRProxy *sr) {
-                       if (kNumu2024FD(sr)) {
-                         good_events++;
-                       }
-                       else if (kNumu2024FD(sr) && !kNumu2020FD(sr))
+                       if (kNumu2024FD(sr) && !kNumu2020FD(sr))
                        {
-                         std::cout << "2024 passed, 2020 failed: " << sr->hdr.run << "/" << sr->hdr.subrun << "/" << sr->hdr.evt << std::endl;
+                         std::cout << "2024 passed = " << kNumu2024FD(sr) << ", 2020 failed = " << kNumu2020FD(sr) << ": " << sr->hdr.run << "/" << sr->hdr.subrun << "/" << sr->hdr.evt << std::endl;
                          cut_FD24++;
                        }
                        else if (!kNumu2024FD(sr) && kNumu2020FD(sr))
                        {
-                         std::cout << "2024 failed, 2020 passed: " << sr->hdr.run << "/" << sr->hdr.subrun << "/" << sr->hdr.evt << std::endl;
+                         std::cout << "2024 failed = " << kNumu2024FD(sr) << ", 2020 passed = " << kNumu2020FD(sr) << ": "  << sr->hdr.run << "/" << sr->hdr.subrun << "/" << sr->hdr.evt << std::endl;
                          cut_FD20++;
                        }
                        else {
-                         std::cerr << "IDK what happened." << std::endl;
+                         std::cerr << "IDK what happened. 2020 == " << kNumu2024FD(sr) << ". 2024 == " << kNumu2020FD(sr) << std::endl;
                        }
                        return -5.;
                    }) // Var lambda
