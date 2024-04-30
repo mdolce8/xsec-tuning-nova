@@ -73,7 +73,7 @@ void compare_numu_event_cuts_2020_vs_2024(const std::string& beam,        // fhc
   else {std::cerr << "Unknown 'beam'. exit..." << std::endl; exit(1);}
 
   Loaders loader;
-  loader.SetLoaderPath(defMC_Non, caf::kFARDET, ana::Loaders::kMC), DataSource::kBeam, Loaders::kNonSwap);
+  loader.SetLoaderPath(defMC_Non, caf::kFARDET, ana::Loaders::kMC, DataSource::kBeam, Loaders::kNonSwap);
   loader.SetLoaderPath(defMC_Flux, caf::kFARDET, ana::Loaders::kMC, DataSource::kBeam, ana::Loaders::kFluxSwap);
   loader.SetSpillCut(kStandardSpillCuts);
 
