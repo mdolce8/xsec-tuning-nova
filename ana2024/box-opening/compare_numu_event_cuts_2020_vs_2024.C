@@ -42,6 +42,10 @@ void compare_numu_event_cuts_2020_vs_2024(const std::string& beam,        // fhc
 // =====================================================================================================
 {
 
+  std::ofstream fboth;
+  std::ofstream f24;
+  std::ofstream f20;
+
   // Asimov A. The 2020 best fit.
   auto calc = new osc::OscCalcPMNSOpt();
   calc->SetL(810);
@@ -81,30 +85,37 @@ void compare_numu_event_cuts_2020_vs_2024(const std::string& beam,        // fhc
 
   std::unordered_map<std::string, ana::Var> vars;
 
+  fboth.open(Form("%s/pass_both.txt", outDir.c_str()));
+  f24.open(Form("%s/pass_kNumu2024FD.txt", outDir.c_str()));
+  f20.open(Form("%s/pass_kNumu2020FD.txt", outDir.c_str()));
 
   int cut_FD24, cut_FD20, pass_both, fail_both, unclear = 0;
 
   // Create Vars of the weights that include print statements
   vars.try_emplace("FD Cut",
-                   ([&cut_FD20, &cut_FD24, &pass_both, &fail_both, &unclear](const caf::SRProxy *sr) {
+                   ([&cut_FD20, &cut_FD24, &pass_both, &fail_both, &unclear, &f20, &f24, &fboth](const caf::SRProxy *sr) {
+                       // PASS 2024 only
                        if (kNumu2024FD(sr) && !kNumu2020FD(sr))
                        {
-                         std::cout << "2024 passed = " << kNumu2024FD(sr) << ", 2020 failed = " << kNumu2020FD(sr) << ": " << sr->hdr.run << "/" << sr->hdr.subrun << "/" << sr->hdr.evt << std::endl;
+                         f24 << "2024 passed = " << kNumu2024FD(sr) << ", 2020 failed = " << kNumu2020FD(sr) << ": " << sr->hdr.run << "/" << sr->hdr.subrun << "/" << sr->hdr.evt << std::endl;
                          cut_FD24++;
                        }
+                       // PASS 2020 only
                        else if (!kNumu2024FD(sr) && kNumu2020FD(sr))
                        {
-                         std::cout << "2024 failed = " << kNumu2024FD(sr) << ", 2020 passed = " << kNumu2020FD(sr) << ": "  << sr->hdr.run << "/" << sr->hdr.subrun << "/" << sr->hdr.evt << std::endl;
+                         f20 << "2024 failed = " << kNumu2024FD(sr) << ", 2020 passed = " << kNumu2020FD(sr) << ": "  << sr->hdr.run << "/" << sr->hdr.subrun << "/" << sr->hdr.evt << std::endl;
                          cut_FD20++;
                        }
+                       // PASS BOTH
                        else if (kNumu2024FD(sr) && kNumu2020FD(sr))
                        {
-                         std::cout << "2024 passed = " << kNumu2024FD(sr) << ", 2020 passed = " << kNumu2020FD(sr) << ": "  << sr->hdr.run << "/" << sr->hdr.subrun << "/" << sr->hdr.evt << std::endl;
+                         fboth << "2024 passed = " << kNumu2024FD(sr) << ", 2020 passed = " << kNumu2020FD(sr) << ": "  << sr->hdr.run << "/" << sr->hdr.subrun << "/" << sr->hdr.evt << std::endl;
                          pass_both++;
                        }
+                       // failing BOTH is not so interesting...
                        else if (!kNumu2024FD(sr) && !kNumu2020FD(sr))
                        {
-                         std::cout << "2024 failed = " << kNumu2024FD(sr) << ", 2020 failed = " << kNumu2020FD(sr) << ": "  << sr->hdr.run << "/" << sr->hdr.subrun << "/" << sr->hdr.evt << std::endl;
+//                         std::cout << "2024 failed = " << kNumu2024FD(sr) << ", 2020 failed = " << kNumu2020FD(sr) << ": "  << sr->hdr.run << "/" << sr->hdr.subrun << "/" << sr->hdr.evt << std::endl;
                          fail_both++;
                        }
                        else {
@@ -131,7 +142,9 @@ void compare_numu_event_cuts_2020_vs_2024(const std::string& beam,        // fhc
   Spectrum s = pnxp->PredictComponent(calc, Flavors::kAllNuMu, Current::kCC, Sign::kBoth);
   s.SaveTo(&ofile, "numucc_all");
 
-
+  fboth.close();
+  f20.close();
+  f24.close();
 
   std::cout << "good_events: " << pass_both << std::endl;
   std::cout << "cut_FD24: " << cut_FD24 << std::endl;
