@@ -73,7 +73,7 @@ void compare_numu_event_cuts_2020_vs_2024(const std::string& beam,        // fhc
   else {std::cerr << "Unknown 'beam'. exit..." << std::endl; exit(1);}
 
   Loaders loader;
-  loader.SetLoaderPath(defMC_Non, caf::kFARDET, ana::Loaders::kMC);
+  loader.SetLoaderPath(defMC_Non, caf::kFARDET, ana::Loaders::kMC), DataSource::kBeam, Loaders::kNonSwap);
   loader.SetLoaderPath(defMC_Flux, caf::kFARDET, ana::Loaders::kMC, DataSource::kBeam, ana::Loaders::kFluxSwap);
   loader.SetSpillCut(kStandardSpillCuts);
 
@@ -119,7 +119,7 @@ void compare_numu_event_cuts_2020_vs_2024(const std::string& beam,        // fhc
 
   auto * pnxp = new PredictionNoExtrap(loader, haxis, kNoCut, kNoShift, kPPFXFluxCVWgt * kXSecCVWgt2024);
 
-  TFile ofile(Form("%s/compare_numu_event_cuts_2020_vs_2020.root", outDir.c_str()), "recreate");
+  TFile ofile(Form("%s/compare_numu_event_cuts_2020_vs_2024.root", outDir.c_str()), "recreate");
   Spectrum s = pnxp->PredictComponent(calc, Flavors::kAllNuMu, Current::kCC, Sign::kBoth);
   s.SaveTo(&ofile, "numucc_all");
 
