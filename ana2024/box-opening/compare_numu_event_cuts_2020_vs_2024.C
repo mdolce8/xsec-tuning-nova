@@ -105,7 +105,7 @@ void compare_numu_event_cuts_2020_vs_2024(const std::string& beam,        // fhc
 
   ); // map try_emplace
 
-  HistAxis haxis("Cut outcome combinations", ana::Binning::Simple(10, 1,10), vars.at("FD Cut"));
+  HistAxis haxis("Cut outcome combinations", ana::Binning::Simple(4, 0, 4), vars.at("FD Cut"));
 
 
 //  Spectrum s(loader.GetLoader(caf::kFARDET, ana::Loaders::kMC, ana::DataSource::kBeam, ana::Loaders::kNonSwap), haxis, kNoCut, kNoShift, kPPFXFluxCVWgt * kXSecCVWgt2024);
@@ -126,16 +126,20 @@ void compare_numu_event_cuts_2020_vs_2024(const std::string& beam,        // fhc
   std::cout << "cut_FD24: " << cut_FD24 << std::endl;
   std::cout << "cut_FD20: " << cut_FD20 << std::endl;
 
-  TH1D h = TH1D("h", beam.c_str(), 10, 0, 9);
+  TH1D h = TH1D("h", beam.c_str(), 4, 0, 4);
   h.SetBinContent(0, good_events);
   h.SetBinContent(1, cut_FD20);
   h.SetBinContent(2, cut_FD24);
 
+  h.GetXaxis()->SetBinLabel(0, "pass both");
+  h.GetXaxis()->SetBinLabel(0, "pass 2020");
+  h.GetXaxis()->SetBinLabel(0, "pass 2024");
+
   TCanvas c;
+  c.SetBottomMargin(0.15);
   h.Draw("hist e");
 
   h.Write("h_cuts_outcome");
-
   c.SaveAs(Form("%s/%s_cuts.png", outDir.c_str(), beam.c_str()));
 
   ofile.Close();
