@@ -98,6 +98,9 @@ void compare_numu_event_cuts_2020_vs_2024(const std::string& beam,        // fhc
 
   HistAxis haxis("label", ana::Binning::Simple(10, 1,10), vars.at("FD Cut"));
 
+
+  loader.Go();
+
 //  Spectrum s(loader.GetLoader(caf::kFARDET, ana::Loaders::kMC, ana::DataSource::kBeam, ana::Loaders::kNonSwap), haxis, kNoCut, kNoShift, kPPFXFluxCVWgt * kXSecCVWgt2024);
 
 //  Spectrum sflux(loader.GetLoader(caf::kFARDET, ana::Loaders::kMC, ana::DataSource::kBeam, ana::Loaders::kFluxSwap), haxis, kNoCut, kNoShift, kPPFXFluxCVWgt * kXSecCVWgt2024);
