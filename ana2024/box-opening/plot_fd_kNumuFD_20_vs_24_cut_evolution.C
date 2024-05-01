@@ -124,8 +124,8 @@ void plot_fd_kNumuFD_20_vs_24_cut_evolution(const std::string& beam)
 
 
 //    auto s20 = ana::LoadFrom<ana::Spectrum>(f20, specName);
-    Spectrum spec24 = *ana::Spectrum::LoadFrom(f24, specName20);
-    Spectrum spec20 = *ana::Spectrum::LoadFrom(f20, specName24);
+    Spectrum spec20 = *ana::Spectrum::LoadFrom(f20, specName20);
+    Spectrum spec24 = *ana::Spectrum::LoadFrom(f24, specName24);
 
     // do plotting
     TCanvas c;
