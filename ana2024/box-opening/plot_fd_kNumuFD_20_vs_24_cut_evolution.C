@@ -143,10 +143,10 @@ void plot_fd_kNumuFD_20_vs_24_cut_evolution(const std::string& beam)
     h24->SetMaximum(h20->GetMaximum() * 1.5);
 
     TLatex latex;
-    latex.DrawLatexNDC(0.65, 0.6, Form(beam == "fhc" ? "Neutrino Beam" : "AntiNeutrino Beam"));
+    latex.DrawLatexNDC(0.62, 0.6, Form(beam == "fhc" ? "Neutrino Beam" : "AntiNeutrino Beam"));
     latex.SetTextSize(0.85);
     TLatex ltx2;
-    ltx2.DrawLatexNDC(0.65, 0.5, "Asimov A");
+    ltx2.DrawLatexNDC(0.62, 0.5, "Asimov A");
     ltx2.SetTextSize(0.85);
 
     auto evts20 = h20->Integral();
