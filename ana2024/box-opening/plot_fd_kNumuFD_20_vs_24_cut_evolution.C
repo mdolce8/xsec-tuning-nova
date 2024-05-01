@@ -103,7 +103,7 @@ void plot_fd_kNumuFD_20_vs_24_cut_evolution(const std::string& beam)
 
   // dir of the FD Numu Data ROOT files
   const std::string inputDir = "/exp/nova/data/users/mdolce/preds+spectra/ana2024/box-opening";
-  const std::string outDir = "/exp/nova/data/users/mdolce/xsec-tuning-nova/plots/ana2024/box-opening/plot_fd_"+beam+"_kNumuFD_20_vs_24_cut_evolution";
+  const std::string outDir = "/exp/nova/data/users/mdolce/xsec-tuning-nova/plots/ana2024/box-opening/plot_fd_kNumuFD_20_vs_24_cut_evolution";
 
 
   // mapCuts have the 2020 names.
