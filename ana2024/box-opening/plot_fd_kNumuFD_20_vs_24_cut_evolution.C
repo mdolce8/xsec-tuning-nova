@@ -152,9 +152,9 @@ void plot_fd_kNumuFD_20_vs_24_cut_evolution(const std::string& beam)
     auto evts20 = h20->Integral();
     auto evts24 = h24->Integral();
     TLatex ltx3, ltx4;
-    ltx3.DrawLatexNDC(0.65, 0.4, Form("2020 Cut = %.2f", evts20));
+    ltx3.DrawLatexNDC(0.6, 0.4, Form("2020 Cut = %.2f", evts20));
     ltx3.SetTextSize(0.9);
-    ltx4.DrawLatexNDC(0.65, 0.3, Form("2024 Cut = %.2f", evts24));
+    ltx4.DrawLatexNDC(0.6, 0.3, Form("2024 Cut = %.2f", evts24));
     ltx4.SetTextSize(0.9);
 
     h20->SetXTitle("Reconstructed Neutrino Energy (GeV)");
