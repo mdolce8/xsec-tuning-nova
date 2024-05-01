@@ -144,6 +144,8 @@ void plot_fd_kNumuFD_20_vs_24_cut_evolution(const std::string& beam)
 
     TLatex latex;
     latex.DrawLatexNDC(0.15, 0.8, Form(beam == "fhc" ? "Neutrino Beam" : "AntiNeutrino Beam"));
+    TLatex ltx2;
+    ltx2.DrawLatexNDC(0.15, 0.7, "Asimov A");
 
     h20->SetXTitle("Reconstructed Neutrino Energy (GeV)");
     h20->SetYTitle("Events");
