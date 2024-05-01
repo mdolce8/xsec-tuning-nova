@@ -93,13 +93,17 @@ void generate_fd_kNumu2024FD_cuts_prod51_p1p10_reco_enu_2024info_mc(const std::s
   loader.SetSpillCut(kStandardSpillCuts);
 
   // Cumulative effect of cuts: last entry is kNumu2024FD
+
+  // k3flavor2020FDVeto = kNNCVeto && kCosRejVeto
+  // Ana2024 removed the kCNNVeto cut entirely.
+
   std::unordered_map<std::string, const ana::Cut> mapCuts
           {
                   {"kNumuQuality", kNumuQuality},
                   {"kNumuQuality_kNumuContainFD2024", kNumuQuality&&kNumuContainFD2024},
                   {"kNumuQuality_kNumuContainFD2024_kNumu2024PID", kNumuQuality&&kNumuContainFD2024&&kNumu2024PID},
                   {"kNumuQuality_kNumuContainFD2024_kNumu2024PID_kNumu2024CosRej", kNumuQuality&&kNumuContainFD2024&&kNumu2024PID&&kNumu2024CosRej},
-                  {"kNumuQuality_kNumuContainFD2024_kNumu2024PID_kNumu2024CosRej_k3flavor2020FDVeto", kNumuQuality&&kNumuContainFD2024&&kNumu2024PID&&kNumu2024CosRej&&k3flavor2020FDVeto}
+                  {"kNumuQuality_kNumuContainFD2024_kNumu2024PID_kNumu2024CosRej_kCosRejVeto", kNumuQuality&&kNumuContainFD2024&&kNumu2024PID&&kNumu2024CosRej&&kCosRejVeto}
           };
   std::map<std::string, const PredictionNoExtrap*> predNxp;
 
