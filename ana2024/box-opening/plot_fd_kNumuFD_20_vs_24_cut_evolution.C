@@ -89,35 +89,50 @@ void plot_fd_kNumuFD_20_vs_24_cut_evolution(const std::string& beam)
           };
 
 
+  std::unordered_map<std::string, std::string> mapCutNames
+          {
+                  {"kNumuQuality", "kNumuQuality"},
+                  {"kNumuQuality_kNumuContainFD2020", "kNumuQuality_kNumuContainFD2024"},
+                  {"kNumuQuality_kNumuContainFD2020_kNumu2020PID", "kNumuQuality_kNumuContainFD2024_kNumu2024PID"},
+                  {"kNumuQuality_kNumuContainFD2020_kNumu2020PID_kNumu2020CosRej", "kNumuQuality_kNumuContainFD2024_kNumu2024PID_kNumu2024CosRej"},
+                  {"kNumuQuality_kNumuContainFD2020_kNumu2020PID_kNumu2020CosRej_kCosRejVeto", "kNumuQuality_kNumuContainFD2024_kNumu2024PID_kNumu2024CosRej_kCosRejVeto"}
+          };
+
+
   const double POT = 4;
 
   // dir of the FD Numu Data ROOT files
   const std::string inputDir = "/exp/nova/data/users/mdolce/preds+spectra/ana2024/box-opening";
-  const std::string outDir = "/exp/nova/data/users/mdolce/xsec-tuning-nova/plots/ana2024/box-opening/plot_fd_kNumuFD_20_vs_24_cut_evolution" + beam;
+  const std::string outDir = "/exp/nova/data/users/mdolce/xsec-tuning-nova/plots/ana2024/box-opening/plot_fd_kNumuFD_20_vs_24_cut_evolution_" + beam;
 
 
+  // mapCuts have the 2020 names.
   for (const auto& cutPair : mapCuts){
     const std::string filename20 = Form("pred_nxp_fd_prod5.1_reco_enu_mc_%s_numu_Q5_cut_%s.root", beam.c_str(), cutPair.first.c_str());
     const std::string filePath20 = inputDir + "/" + filename20 ;
 
-    std::cout << "Quantile " << qCount << "........" << std::endl;
+    const std::string filename24 =  Form("pred_nxp_fd_prod5.1_reco_enu_mc_%s_numu_Q5_cut_%s.root", beam.c_str(), mapCutNames.at(cutPair.first).c_str());
+    const std::string filePath24 = inputDir + "/" + filename24 ;
+
 
     // these are the "numucc_all" category
-    const std::string specName = Form("pred_nxp_Q%i_numucc_all", qCount); // this is a dir.
+    const std::string specName20 = Form("%s_numucc_all", cutPair.first.c_str()); // this is a dir.
+    const std::string specName24 = Form("%s_numucc_all", mapCutNames.at(cutPair.first).c_str()); // this is a dir.
+
     TFile * f20 = TFile::Open(filePath20.c_str());
     TFile * f24 = TFile::Open(filePath24.c_str());
 
 
 //    auto s20 = ana::LoadFrom<ana::Spectrum>(f20, specName);
-    Spectrum spec24 = *ana::Spectrum::LoadFrom(f24, specName);
-    Spectrum spec20 = *ana::Spectrum::LoadFrom(f20, specName);
+    Spectrum spec24 = *ana::Spectrum::LoadFrom(f24, specName20);
+    Spectrum spec20 = *ana::Spectrum::LoadFrom(f20, specName24);
 
     // do plotting
     TCanvas c;
 
     // we are looking at only p1-10 results. So use 2020 POT.
-    TH1D * h20 = spec20.ToTH1(kAna2020FHCPOT);
-    TH1D * h24 = spec24.ToTH1(kAna2020FHCPOT);
+    TH1D * h20 = spec20.ToTH1(beam == "fhc" ? kAna2020FHCPOT : kAna2020RHCPOT);
+    TH1D * h24 = spec24.ToTH1(beam == "fhc" ? kAna2020FHCPOT : kAna2020RHCPOT);
 
     h24->Draw("same hist e");
     h20->Draw("same hist e");
@@ -129,29 +144,27 @@ void plot_fd_kNumuFD_20_vs_24_cut_evolution(const std::string& beam)
 
     TLatex latex;
     latex.DrawLatexNDC(0.15, 0.8, Form(beam == "fhc" ? "Neutrino Beam" : "AntiNeutrino Beam"));
-    const std::string qStr = "Q" + std::to_string(qCount);
-    TLatex latex2;
-    if (qCount < 5) latex2.DrawLatexNDC(.15,.85,(Form("Quantile %i", qCount)));
 
     h20->SetXTitle("Reconstructed Neutrino Energy (GeV)");
     h20->SetYTitle("Events");
 
-    float evts20 = h20->Integral();
-    float evts24 = h24->Integral();
-    std::cout << "2020 version events integral: " << evts20 << std::endl;
-    std::cout << "2024 version events integral: " << evts24 << std::endl;
+    auto evts20 = h20->Integral();
+    auto evts24 = h24->Integral();
+    std::cout << cutPair.first << " events integral: " << evts20 << std::endl;
+    std::cout << mapCutNames.at(cutPair.first) << " events integral: " << evts24 << std::endl;
 
+    // normalize appropriately.
     h20->Scale(0.1, "width");
     h24->Scale(0.1, "width");
 
     TLegend leg(0.65, 0.7, 0.9, 0.9);
     leg.SetFillStyle(0);
-    leg.AddEntry(h20, Form("2020. Events = %.2f", evts20), "l");
-    leg.AddEntry(h24, Form("2024. Events = %.2f", evts24), "l");
+    leg.AddEntry(h20, Form("%s. Events = %.2f", cutPair.first.c_str(), evts20), "l");
+    leg.AddEntry(h24, Form("%s. Events = %.2f", mapCutNames.at(cutPair.first).c_str(), evts24), "l");
 
     leg.Draw("same");
 
-    c.SaveAs(Form("%s/plot_fd_%s_prod5.1_p1p10_reco_enu_numu_mc_sloshing_%s_unnormalized.png", outDir.c_str(),  beam.c_str(), qStr.c_str()));
+    c.SaveAs(Form("%s/plot_fd_%s_%s_20_vs_24_cut_evolution.png", outDir.c_str(),  beam.c_str()));
 
   } // quantiles
 
