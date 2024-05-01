@@ -159,10 +159,14 @@ void plot_fd_kNumuFD_20_vs_24_cut_evolution(const std::string& beam)
     h20->Scale(0.1, "width");
     h24->Scale(0.1, "width");
 
-    TLegend leg(0.65, 0.7, 0.9, 0.9);
+    TLegend leg(0.55, 0.65, 0.9, 0.9);
     leg.SetFillStyle(0);
-    leg.AddEntry(h20, Form("%s. Events = %.2f", cutPair.first.c_str(), evts20), "l");
-    leg.AddEntry(h24, Form("%s. Events = %.2f", mapCutNames.at(cutPair.first).c_str(), evts24), "l");
+    leg.AddEntry(h20, Form("%s", cutPair.first.c_str()), "l");
+    leg.AddEntry(h24, Form("%s", mapCutNames.at(cutPair.first).c_str()), "l");
+
+    TLatex ltx3, ltx4;
+    ltx3.DrawLatexNDC(0.65, 0.6, Form("2020 Cut = %.2f", evts20));
+    ltx4.DrawLatexNDC(0.65, 0.5, Form("2024 Cut = %.2f", evts24));
 
     leg.Draw("same");
 
