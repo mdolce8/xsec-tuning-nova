@@ -103,7 +103,7 @@ void plot_fd_kNumuFD_20_vs_24_cut_evolution(const std::string& beam)
 
   // dir of the FD Numu Data ROOT files
   const std::string inputDir = "/exp/nova/data/users/mdolce/preds+spectra/ana2024/box-opening";
-  const std::string outDir = "/exp/nova/data/users/mdolce/xsec-tuning-nova/plots/ana2024/box-opening/plot_fd_kNumuFD_20_vs_24_cut_evolution_" + beam;
+  const std::string outDir = "/exp/nova/data/users/mdolce/xsec-tuning-nova/plots/ana2024/box-opening/plot_fd_"+beam+"_kNumuFD_20_vs_24_cut_evolution";
 
 
   // mapCuts have the 2020 names.
@@ -164,7 +164,7 @@ void plot_fd_kNumuFD_20_vs_24_cut_evolution(const std::string& beam)
 
     leg.Draw("same");
 
-    c.SaveAs(Form("%s/plot_fd_%s_%s_20_vs_24_cut_evolution.png", outDir.c_str(),  beam.c_str()));
+    c.SaveAs(Form("%s/plot_fd_%s_%s_20_vs_24_cut_evolution.png", outDir.c_str(),  beam.c_str(), cutPair.first.c_str()));
 
   } // quantiles
 
