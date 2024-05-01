@@ -1,5 +1,5 @@
 /*
- * generate_fd_decaf_cuts_prod5.1_p1p10_reco_enu_2024info_mc.C:
+ * generate_fd_kNumu2024FD_cuts_prod5.1_p1p10_reco_enu_2024info_mc.C:
  *    Create Spectrum objects from Prod5.1 MC
  *    in Reco Enu in the FD 2024 Quantiles.
  *    Use the 2020 cuts and vars to compare with the 2024 ones.
@@ -36,7 +36,7 @@
 using namespace ana;
 
 // =====================================================================================================
-void generate_fd_decaf_cuts_prod51_p1p10_reco_enu_2024info_mc(const std::string& beam,        // fhc or rhc
+void generate_fd_kNumu2024FD_cuts_prod51_p1p10_reco_enu_2024info_mc(const std::string& beam,        // fhc or rhc
                                                      const std::string& outDir,      // $data/preds+spectra/ana2024/box-opening ("." for grid: -o $scratch/data )
                                                      const bool gridSubmission = false
 )
@@ -92,10 +92,19 @@ void generate_fd_decaf_cuts_prod51_p1p10_reco_enu_2024info_mc(const std::string&
 
   loader.SetSpillCut(kStandardSpillCuts);
 
-
-
+  // Cumulative effect of cuts: last entry is kNumu2024FD
+  std::unordered_map<std::string, const ana::Cut> mapCuts
+          {
+                  {"kNumuQuality", kNumuQuality},
+                  {"kNumuQuality_kNumuContainFD2024", kNumuQuality&&kNumuContainFD2024},
+                  {"kNumuQuality_kNumuContainFD2024_kNumu2024PID", kNumuQuality&&kNumuContainFD2024&&kNumu2024PID},
+                  {"kNumuQuality_kNumuContainFD2024_kNumu2024PID_kNumu2024CosRej", kNumuQuality&&kNumuContainFD2024&&kNumu2024PID&&kNumu2024CosRej},
+                  {"kNumuQuality_kNumuContainFD2024_kNumu2024PID_kNumu2024CosRej_k3flavor2020FDVeto", kNumuQuality&&kNumuContainFD2024&&kNumu2024PID&&kNumu2024CosRej&&k3flavor2020FDVeto}
+          };
   std::map<std::string, const PredictionNoExtrap*> predNxp;
 
+  for (const auto& mapPair : mapCuts)
+    predNxp.try_emplace(mapPair.first, new PredictionNoExtrap(loader, kNumuCCOptimisedAxis2024, mapPair.second, kNoShift, kPPFXFluxCVWgt * kXSecCVWgt2024));
 
   loader.Go();
 
@@ -108,9 +117,8 @@ void generate_fd_decaf_cuts_prod51_p1p10_reco_enu_2024info_mc(const std::string&
 
 
   // save the spectra to each Quantile ROOT file
-  int quantileCount = 1;
   for (const auto &prednxp : predNxp){
-    std::string fileName = Form("pred_nxp_fd_prod5.1_p1p10_reco_enu_2024info_mc_%s_numu_Q%i.root",  beam.c_str(), quantileCount);
+    std::string fileName = Form("pred_nxp_fd_prod5.1_reco_enu_mc_%s_numu_Q5_cut_%s.root",  beam.c_str(), prednxp.first.c_str());
     const std::string& finalOutDir = out_dir + "/" + fileName;
     TFile ofile(Form("%s", finalOutDir.c_str()), "recreate");
 
@@ -134,7 +142,6 @@ void generate_fd_decaf_cuts_prod51_p1p10_reco_enu_2024info_mc(const std::string&
     ofile.Close();
     std::cout << "Wrote file: " << finalOutDir << std::endl;
 
-    quantileCount++;
   } // preds
 
 }
