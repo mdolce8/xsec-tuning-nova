@@ -14,7 +14,7 @@
 #include <CAFAna/Core/Loaders.h>
 #include <OscLib/OscCalcPMNSOpt.h>
 #include "3FlavorAna/Cuts/QuantileCuts2024.h"
-#include "3FlavorAna/Cuts/NumuCuts2024.h"
+#include "3FlavorAna/Cuts/NueCuts2024.h"
 #include "3FlavorAna/NDFit/Samples/UsefulCutsVars.h"
 #include "3FlavorAna/Vars/HistAxes.h"
 #include "3FlavorAna/Vars/NumuVars.h"
@@ -128,7 +128,8 @@ void generate_fd_nue_spectra_crpa_study(const std::string& beam,        // fhc o
 	HistAxis ha_ENu_Theta("#theta", bins_theta, kTrueElectronTheta,
 												"E_{#nu}", bins_ENu, kCCE);
 
-  predNxp.try_emplace("pred_nxp_enu_theta_nue", new PredictionNoExtrap(loader, ha_ENu_Theta, kIsQE, kNoShift, kXSecCVWgt2024 * kXSecCVWgt2024));
+	// Cut is both Core and Peripheral.
+  predNxp.try_emplace("pred_nxp_enu_theta_nue", new PredictionNoExtrap(loader, ha_ENu_Theta, kIsQE&&kNue2024FDAllSamples, kNoShift, kXSecCVWgt2024 * kXSecCVWgt2024));
 
   loader.Go();
 
