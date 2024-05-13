@@ -37,7 +37,7 @@ using namespace ana;
 
 // =====================================================================================================
 void generate_fd_nue_spectra_crpa_study(const std::string& beam,        // fhc or rhc
-																				const std::string& outDir,      // $data/preds+spectra/ana2024/box-opening ("." for grid: -o $scratch/data )
+																				const std::string& outDir,      // $data/preds+spectra/ana2024/box-opening/crpa/ ("." for grid: -o $scratch/data )
 																			 	const bool gridSubmission = false
 )
 // =====================================================================================================
@@ -129,6 +129,7 @@ void generate_fd_nue_spectra_crpa_study(const std::string& beam,        // fhc o
 												"E_{#nu}", bins_ENu, kCCE);
 
 	// Cut is both Core and Peripheral.
+	// TODO: include the LE cut too? That should only be ~10 events...
   predNxp.try_emplace("pred_nxp_enu_theta_nue", new PredictionNoExtrap(loader, ha_ENu_Theta, kIsQE&&kNue2024FDAllSamples, kNoShift, kXSecCVWgt2024 * kXSecCVWgt2024));
 
   loader.Go();
@@ -141,10 +142,10 @@ void generate_fd_nue_spectra_crpa_study(const std::string& beam,        // fhc o
   if ( gSystem->AccessPathName( out_dir.c_str() ) ) gSystem->mkdir( out_dir.c_str(), true );
 
 
-  // save the spectra to each Quantile ROOT file
+  // save the spectra to each ROOT file
   int quantileCount = 1;
   for (const auto &prednxp : predNxp){
-    std::string fileName = Form("pred_nxp_fd_prod5.1_p1p10_reco_enu_2024info_mc_%s_numu_Q%i.root",  beam.c_str(), quantileCount);
+    std::string fileName = Form("pred_nxp_fd_%s_prod5.1_enu_theta_nue.root",  beam.c_str());
     const std::string& finalOutDir = out_dir + "/" + fileName;
     TFile ofile(Form("%s", finalOutDir.c_str()), "recreate");
 
