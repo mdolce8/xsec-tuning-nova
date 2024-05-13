@@ -71,8 +71,8 @@ void generate_fd_nue_spectra_crpa_study(const std::string& beam,        // fhc o
   };
 
 
-  std::cout << "Ana2024 Box Opening........" << std::endl;
-  std::cout << "Plotting Prod5.1 FD Numu Quantile(s) MC with 2024 cuts in Reco Enu........" << std::endl;
+  std::cout << "Ana2024 CRPA study........" << std::endl;
+  std::cout << "Making spectra for FD Nue sample in Ev vs. theta space........" << std::endl;
 
 
   // we are only looking at p1-10. no new periods
@@ -97,16 +97,38 @@ void generate_fd_nue_spectra_crpa_study(const std::string& beam,        // fhc o
 
   loader.SetSpillCut(kStandardSpillCuts);
 
-  std::vector<Cut> cutQuantiles = GetNumuEhadFracQuantCuts2024(beam != "fhc");
+
+	const ana::NuTruthVar kTrueElectronThetaST([](const caf::SRNeutrinoProxy * nu) {
+			if (abs(nu->pdg) != 12 || !nu->iscc)
+				return -5.0;
+			int nprims = nu->prim.size();
+			for (int iprim = 0; iprim < nprims; iprim++)
+			{
+				if (abs(nu->prim[iprim].pdg) == 11)
+				{
+
+					TVector3 edir = nu->prim[iprim].p.Vect();
+					TVector3 beamdir = ana::NuMIBeamDirection(caf::kNEARDET);
+
+					float theta = edir.Unit().Dot(beamdir.Unit());
+					return (float) TMath::ACos(theta) * 180 / TMath::Pi();
+				}
+			}
+			return -5.0;
+	});
+
+	const ana::Var kTrueElectronTheta = ana::VarFromNuTruthVar(kTrueElectronThetaST);
+
 
 
   std::map<std::string, const PredictionNoExtrap*> predNxp;
 
-  for (unsigned int quantileIdx = 0; quantileIdx < cutQuantiles.size(); quantileIdx++) {
-    predNxp.try_emplace(Form("pred_nxp_Q%i", quantileIdx+1), new PredictionNoExtrap(loader, kNumuCCOptimisedAxis2024, kNumu2024FD && cutQuantiles[quantileIdx], kNoShift, kXSecCVWgt2024 * kPPFXFluxCVWgt));
-  }
+	const ana::Binning bins_theta = ana::Binning::Simple(18, 0., 180.);
+	const ana::Binning bins_ENu = ana::Binning::Simple(10, 0., 1.2);
+	HistAxis ha_ENu_Theta("#theta", bins_theta, kTrueElectronTheta,
+												"E_{#nu}", bins_ENu, kCCE);
 
-  predNxp.try_emplace("pred_nxp_Q5", new PredictionNoExtrap(loader, kNumuCCOptimisedAxis2024, kNumu2024FD, kNoShift, kXSecCVWgt2024 * kPPFXFluxCVWgt));
+  predNxp.try_emplace("pred_nxp_enu_theta_nue", new PredictionNoExtrap(loader, ha_ENu_Theta, kIsQE, kNoShift, kXSecCVWgt2024 * kXSecCVWgt2024));
 
   loader.Go();
 
