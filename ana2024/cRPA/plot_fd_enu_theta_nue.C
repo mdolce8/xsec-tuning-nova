@@ -10,23 +10,20 @@
  */
 
 #include <iostream>
-#include <CAFAna/Analysis/Exposures.h>
 
 
 #include "3FlavorAna/NDFit/NDFitHelper.h"
 #include "3FlavorAna/NDFit/InitializeFit.h"
-#include "3FlavorAna/Cuts/NumuCuts2020.h"
 
 #include "CAFAna/Analysis/Plots.h"
-#include "CAFAna/Prediction/PredictionNoExtrap.h"
+#include "CAFAna/Analysis/Exposures.h"
 #include "CAFAna/Core/LoadFromFile.h"
 
 #include "OscLib/OscCalcPMNSOpt.h"
 
 #include "TAxis.h"
-#include "TGaxis.h"
 #include "TCanvas.h"
-#include "TH1.h"
+#include "TH2.h"
 #include "TFile.h"
 #include "TLatex.h"
 #include "TLegend.h"
@@ -69,68 +66,38 @@ void plot_fd_enu_theta_nue(const std::string& beam)
 //          {"nc", {Flavors::kAll, Current::kNC, Sign::kBoth}}
   };
 
-  std::unordered_map<std::string, const ana::Cut> mapCuts
-          {
-//                  {"kNumuQuality", kNumuQuality}, // made this already with the 2024 macro, they are completely identical.
-                  {"kNumuQuality_kNumuContainFD2020", kNumuQuality&&kNumuContainFD2020},
-                  {"kNumuQuality_kNumuContainFD2020_kNumu2020PID", kNumuQuality&&kNumuContainFD2020&&kNumu2020PID},
-                  {"kNumuQuality_kNumuContainFD2020_kNumu2020PID_kNumu2020CosRej", kNumuQuality&&kNumuContainFD2020&&kNumu2020PID&&kNumu2020CosRej},
-                  {"kNumuQuality_kNumuContainFD2020_kNumu2020PID_kNumu2020CosRej_kCosRejVeto", kNumuQuality&&kNumuContainFD2020&&kNumu2020PID&&kNumu2020CosRej&&kCosRejVeto}
-          };
 
 
-  std::unordered_map<std::string, std::string> mapCutNames
-          {
-                  {"kNumuQuality", "kNumuQuality"},
-                  {"kNumuQuality_kNumuContainFD2020", "kNumuQuality_kNumuContainFD2024"},
-                  {"kNumuQuality_kNumuContainFD2020_kNumu2020PID", "kNumuQuality_kNumuContainFD2024_kNumu2024PID"},
-                  {"kNumuQuality_kNumuContainFD2020_kNumu2020PID_kNumu2020CosRej", "kNumuQuality_kNumuContainFD2024_kNumu2024PID_kNumu2024CosRej"},
-                  {"kNumuQuality_kNumuContainFD2020_kNumu2020PID_kNumu2020CosRej_kCosRejVeto", "kNumuQuality_kNumuContainFD2024_kNumu2024PID_kNumu2024CosRej_kCosRejVeto"}
-          };
-
-
-  const double POT = 4;
 
   // dir of the FD Numu Data ROOT files
-  const std::string inputDir = "/exp/nova/data/users/mdolce/preds+spectra/ana2024/box-opening";
-  const std::string outDir = "/exp/nova/data/users/mdolce/xsec-tuning-nova/plots/ana2024/box-opening/plot_fd_kNumuFD_20_vs_24_cut_evolution";
+  const std::string inputDir = "/exp/nova/data/users/mdolce/preds+spectra/ana2024/crpa/";
+  const std::string outDir = "/exp/nova/data/users/mdolce/xsec-tuning-nova/plots/ana2024/cRPA/plot_fd_enu_theta_nue/";
 
 
   // mapCuts have the 2020 names.
-  for (const auto& cutPair : mapCuts){
-    const std::string filename20 = Form("pred_nxp_fd_prod5.1_reco_enu_mc_%s_numu_Q5_cut_%s.root", beam.c_str(), cutPair.first.c_str());
-    const std::string filePath20 = inputDir + "/" + filename20 ;
-
-    const std::string filename24 =  Form("pred_nxp_fd_prod5.1_reco_enu_mc_%s_numu_Q5_cut_%s.root", beam.c_str(), mapCutNames.at(cutPair.first).c_str());
-    const std::string filePath24 = inputDir + "/" + filename24 ;
+  for (const auto& pairFlavor : flavors){
+    const std::string fname = Form("pred_nxp_fd_%s_prod5.1_enu_theta_nue.root", beam.c_str());
+    const std::string fPath = inputDir + "/" + fname;
 
 
-    // these are the "numucc_all" category
-    const std::string specName20 = Form("%s_numucc_all", cutPair.first.c_str()); // this is a dir.
-    const std::string specName24 = Form("%s_numucc_all", mapCutNames.at(cutPair.first).c_str()); // this is a dir.
+    // these are the "app_nuecc" category
+    const std::string sName = Form("pred_nxp_enu_theta_%s_all", pairFlavor.first.c_str()); // this is a dir.
 
-    TFile * f20 = TFile::Open(filePath20.c_str());
-    TFile * f24 = TFile::Open(filePath24.c_str());
+    TFile * f = TFile::Open(fPath.c_str());
 
 
-//    auto s20 = ana::LoadFrom<ana::Spectrum>(f20, specName);
-    Spectrum spec20 = *ana::Spectrum::LoadFrom(f20, specName20);
-    Spectrum spec24 = *ana::Spectrum::LoadFrom(f24, specName24);
+    Spectrum s = *ana::Spectrum::LoadFrom(f, sName);
 
     // do plotting
     TCanvas c;
 
-    // we are looking at only p1-10 results. So use 2020 POT.
-    TH1D * h20 = spec20.ToTH1(beam == "fhc" ? kAna2020FHCPOT : kAna2020RHCPOT);
-    TH1D * h24 = spec24.ToTH1(beam == "fhc" ? kAna2020FHCPOT : kAna2020RHCPOT);
+    TH2 * h2 = s.ToTH2(beam == "fhc" ? kAna2024FHCPOT : kAna2024RHCPOT);
 
-    h24->Draw("same hist e");
-    h20->Draw("same hist e");
+    h2->Draw("same hist colz");
 
-    h24->SetLineColor(kRed);
 
-    h20->SetMaximum(h20->GetMaximum() * 1.5);
-    h24->SetMaximum(h20->GetMaximum() * 1.5);
+    h2->SetMaximum(h2->GetMaximum() * 1.5);
+		h2->SetTitle(beam == "fhc" ? "Neutrino Beam" : "AntiNeutrino Beam");
 
     TLatex latex;
     latex.DrawLatexNDC(0.62, 0.6, Form(beam == "fhc" ? "Neutrino Beam" : "AntiNeutrino Beam"));
@@ -139,38 +106,18 @@ void plot_fd_enu_theta_nue(const std::string& beam)
     ltx2.DrawLatexNDC(0.62, 0.5, "Asimov A");
     ltx2.SetTextSize(0.85);
 
-    auto evts20 = h20->Integral();
-    auto evts24 = h24->Integral();
-    TLatex ltx3, ltx4;
-    ltx3.DrawLatexNDC(0.6, 0.4, Form("2020 Cut = %.2f", evts20));
-    ltx3.SetTextSize(0.9);
-    ltx4.DrawLatexNDC(0.6, 0.3, Form("2024 Cut = %.2f", evts24));
-    ltx4.SetTextSize(0.9);
+    std::cout << " events integral: " << h2->Integral() << std::endl;
 
-    h20->SetXTitle("Reconstructed Neutrino Energy (GeV)");
-    h20->SetYTitle("Events");
-
-    std::cout << cutPair.first << " events integral: " << evts20 << std::endl;
-    std::cout << mapCutNames.at(cutPair.first) << " events integral: " << evts24 << std::endl;
-
-    // normalize appropriately.
-    h20->Scale(0.1, "width");
-    h24->Scale(0.1, "width");
-
-    h24->SetMaximum(h24->GetMaximum() * 1.5);
-
-    TLegend leg(0.1, 0.62, 0.9, 0.9);
-    leg.SetFillStyle(0);
-    leg.AddEntry(h20, Form("%s", cutPair.first.c_str()), "l");
-    leg.AddEntry(h24, Form("%s", mapCutNames.at(cutPair.first).c_str()), "l");
-
-    leg.Draw("same");
+//    TLegend leg(0.1, 0.62, 0.9, 0.9);
+//    leg.SetFillStyle(0);
+//    leg.AddEntry(h2, Form("%s", cutPair.first.c_str()), "l");
+//    leg.Draw("same");
 
     Simulation();
 
-    c.SaveAs(Form("%s/plot_fd_%s_%s_20_vs_24_cut_evolution.png", outDir.c_str(),  beam.c_str(), cutPair.first.c_str()));
+    c.SaveAs(Form("%s/plot_fd_%s_prod5.1_enu_theta_nue.png", outDir.c_str(),  beam.c_str()));
 
-  } // quantiles
+  } // flavors
 
 
 
