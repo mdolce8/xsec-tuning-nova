@@ -128,9 +128,11 @@ void generate_fd_nue_spectra_crpa_study(const std::string& beam,        // fhc o
 	HistAxis ha_ENu_Theta("#theta", bins_theta, kTrueElectronTheta,
 												"E_{#nu}", bins_ENu, kCCE);
 
-	// Cut is both Core and Peripheral.
-	// TODO: include the LE cut too? That should only be ~10 events...
-  predNxp.try_emplace("pred_nxp_enu_theta_nue", new PredictionNoExtrap(loader, ha_ENu_Theta, kIsQE&&kNue2024FDAllSamples, kNoShift, kXSecCVWgt2024 * kXSecCVWgt2024));
+	// any relevant appeared Nue.
+	const Cut kNueAll = kNue2024FDAllSamples || kNue2024FDLE;
+
+	// Cut is both Core and Peripheral OR LowE sample.
+  predNxp.try_emplace("pred_nxp_enu_theta_nue", new PredictionNoExtrap(loader, ha_ENu_Theta, kIsQE && kNueAll, kNoShift, kXSecCVWgt2024 * kXSecCVWgt2024));
 
   loader.Go();
 
