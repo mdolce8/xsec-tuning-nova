@@ -81,7 +81,7 @@ void plot_fd_enu_theta_nue(const std::string& beam)
 
 
     // these are the "app_nuecc" category
-    const std::string sName = Form("pred_nxp_enu_theta_%s_all", pairFlavor.first.c_str()); // this is a dir.
+    const std::string sName = Form("pred_nxp_enu_theta_nue_%s_all", pairFlavor.first.c_str()); // this is a dir.
 
     TFile * f = TFile::Open(fPath.c_str());
 
