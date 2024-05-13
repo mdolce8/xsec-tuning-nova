@@ -96,14 +96,15 @@ void plot_fd_enu_theta_nue(const std::string& beam)
     h2->Draw("same hist colz");
 
 
-    h2->SetMaximum(h2->GetMaximum() * 1.5);
-		h2->SetTitle(beam == "fhc" ? "Neutrino Beam" : "AntiNeutrino Beam");
+//    h2->SetMaximum(h2->GetMaximum() * 1.5);
 
     TLatex latex;
     latex.DrawLatexNDC(0.62, 0.6, Form(beam == "fhc" ? "Neutrino Beam" : "AntiNeutrino Beam"));
+		latex.SetTextColor(kGray);
     latex.SetTextSize(0.85);
     TLatex ltx2;
     ltx2.DrawLatexNDC(0.62, 0.5, "Asimov A");
+		ltx2.SetTextColor(kGray);
     ltx2.SetTextSize(0.85);
 
     std::cout << " events integral: " << h2->Integral() << std::endl;
