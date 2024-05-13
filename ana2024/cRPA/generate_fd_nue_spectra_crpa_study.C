@@ -66,8 +66,8 @@ void generate_fd_nue_spectra_crpa_study(const std::string& beam,        // fhc o
           {"beam_nuecc", {Flavors::kNuEToNuE, Current::kCC, Sign::kBoth}},
           {"app_nuecc", {Flavors::kNuMuToNuE, Current::kCC, Sign::kNu}},
           {"app_nuebarcc", {Flavors::kNuMuToNuE, Current::kCC, Sign::kAntiNu}},
-          {"numucc", {Flavors::kAllNuMu, Current::kCC, Sign::kBoth}},
-          {"nc", {Flavors::kAll, Current::kNC, Sign::kBoth}}
+//          {"numucc", {Flavors::kAllNuMu, Current::kCC, Sign::kBoth}},
+//          {"nc", {Flavors::kAll, Current::kNC, Sign::kBoth}}
   };
 
 
@@ -124,9 +124,9 @@ void generate_fd_nue_spectra_crpa_study(const std::string& beam,        // fhc o
   std::map<std::string, const PredictionNoExtrap*> predNxp;
 
 	const ana::Binning bins_theta = ana::Binning::Simple(18, 0., 180.);
-	const ana::Binning bins_ENu = ana::Binning::Simple(10, 0., 1.2);
-	HistAxis ha_ENu_Theta("#theta", bins_theta, kTrueElectronTheta,
-												"E_{#nu}", bins_ENu, kCCE);
+	const ana::Binning bins_ENu = ana::Binning::Simple(30, 0., 3.6);
+	HistAxis ha_ENu_Theta("#theta (deg)", bins_theta, kTrueElectronTheta,
+												"E_{#nu} (GeV)", bins_ENu, kCCE);
 
 	// any relevant appeared Nue.
 	const Cut kNueAll = kNue2024FDAllSamples || kNue2024FDLE;
