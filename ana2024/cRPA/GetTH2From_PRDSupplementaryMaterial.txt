@@ -1,0 +1,31 @@
+Want to extract a TH2 from the TCanvas inside the PRD_Supplementary.root file from
+cRPA paper: https://journals.aps.org/prd/supplemental/10.1103/PhysRevD.108.L031301
+
+
+root [3] RR_CRPA_C_LFG_O_e_ae->GetListOfPrimitives()     // the TCanvas we want to turn into a TH2.
+root [7] TH2 * h2
+(TH2 *) nullptr
+root [8] for (const TObject * obj : *RR_CRPA_C_LFG_O_e_ae->GetListOfPrimitives()) { if ((h2 = dynamic_cast<const TH2*>(obj))) break; }
+ROOT_prompt_8:1:86: error: assigning to 'TH2 *' from 'const TH2 *' discards qualifiers
+for (const TObject * obj : *RR_CRPA_C_LFG_O_e_ae->GetListOfPrimitives()) { if ((h2 = dynamic_cast<const TH2*>(obj))) break; }
+                                                                                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+root [9] for (const TObject * obj : *RR_CRPA_C_LFG_O_e_ae->GetListOfPrimitives()) { if ((h2 = dynamic_cast<TH2*>(obj))) break; }
+ROOT_prompt_9:1:86: error: dynamic_cast from 'const TObject *' to 'TH2 *' casts away qualifiers
+for (const TObject * obj : *RR_CRPA_C_LFG_O_e_ae->GetListOfPrimitives()) { if ((h2 = dynamic_cast<TH2*>(obj))) break; }
+                                                                                     ^~~~~~~~~~~~~~~~~~~~~~~
+root [10] for (TObject * obj : *RR_CRPA_C_LFG_O_e_ae->GetListOfPrimitives()) { if ((h2 = dynamic_cast<TH2*>(obj))) break; }
+root [11]
+root [11] h2
+(TH2 *) 0x7f959e94dc00
+root [12] h2->Draw("colz")
+root [13] new TCanvas; h2->Draw("colz")
+root [14] h2->Integral()
+(double) 167.40563
+root [15] TFile f("RR_CRPA_C_LFG_O_e_ae.root" , "recreate")
+(TFile &) Name: RR_CRPA_C_LFG_O_e_ae.root Title:
+root [16] h2->SetName("RR_CRPA_C_LFG_O_e_ae")
+root [17] h2->SetTitle("RR_CRPA_C_LFG_O_e_ae")
+root [18] h2->Write(h2->GetName())
+(int) 2814
+root [19] f.Close()
+root [20]
