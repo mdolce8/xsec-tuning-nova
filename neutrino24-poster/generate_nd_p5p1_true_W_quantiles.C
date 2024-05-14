@@ -1,5 +1,5 @@
 /*
- * generate_nd_p5p1_true_Q2_W_quantiles.C:
+ * generate_nd_p5p1_true_W_quantiles.C:
  *    Create PredInterp objects from Prod5.1 MC
  *    in True W and Q^2 ND 2024 Quantiles.
  *    Xsec systematics are involved here.
@@ -35,7 +35,7 @@
 using namespace ana;
 
 // =====================================================================================================
-void generate_nd_p5p1_true_Q2_W_quantiles(const std::string& beam,        // fhc or rhc
+void generate_nd_p5p1_true_W_quantiles(const std::string& beam,        // fhc or rhc
                                           const bool test = true,
                                           const bool gridSubmission = false
 )
