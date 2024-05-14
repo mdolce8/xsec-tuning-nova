@@ -148,6 +148,6 @@ void plot_fd_enu_theta_nue(const std::string& beam)
 
 
 	c.SaveAs(Form("%s/plot_fd_%s_enu_theta_nue_summed.png", outDir.c_str(), beam.c_str()));
-
+	TFile ofile(Form("%s/th2_fd_%s_enu_theta_nue_summed.root", outDir.c_str(), beam.c_str()));
 
 }
