@@ -9,20 +9,20 @@
  *
  */
 
-#include <CAFAna/Prediction/PredictionNoExtrap.h>
-#include <CAFAna/Core/Loaders.h>
-#include <OscLib/OscCalcPMNSOpt.h>
 #include "3FlavorAna/Cuts/QuantileCuts2024.h"
 #include "3FlavorAna/Cuts/NumuCuts2024.h"
 #include "3FlavorAna/NDFit/Samples/UsefulCutsVars.h"
 #include "3FlavorAna/Vars/HistAxes.h"
-#include "3FlavorAna/Vars/NumuVars.h"
 
-#include "CAFAna/Core/Spectrum.h"
-#include "CAFAna/Core/SpectrumLoader.h"
+#include "CAFAna/Core/Loaders.h"
 #include "CAFAna/Cuts/SpillCuts.h"
+#include "CAFAna/Prediction/PredictionInterp.h"
+#include "CAFAna/Prediction/PredictionNoOsc.h"
+#include "CAFAna/Systs/XSecSystLists.h"
 #include "CAFAna/Weights/XsecTunes.h"
 #include "CAFAna/Weights/PPFXWeights.h"
+
+#include "OscLib/OscCalcPMNSOpt.h"
 
 #include "TFile.h"
 #include "TH1.h"
@@ -36,11 +36,20 @@ using namespace ana;
 
 // =====================================================================================================
 void generate_nd_p5p1_true_Q2_W_quantiles(const std::string& beam,        // fhc or rhc
-                                                     const std::string& outDir,      // $data/preds+spectra/ana2024/box-opening ("." for grid: -o $scratch/data )
-                                                     const bool gridSubmission = false
+                                          const bool test = true,
+                                          const bool gridSubmission = false
 )
 // =====================================================================================================
 {
+
+  std::string outDir;
+  if (test)
+    outDir = "/nova/ana/users/mdolce/preds+spectra/ana2024/neutrino24-poster/test/";
+  else {
+    outDir = "/nova/ana/users/mdolce/preds+spectra/ana2024/neutrino24-poster/";
+  }
+  std::cout << "Predictions will be made and placed into..." << outDir << std::endl;
+
 
   // Asimov A. The 2020 best fit.
   auto calc = new osc::OscCalcPMNSOpt();
@@ -53,59 +62,54 @@ void generate_nd_p5p1_true_Q2_W_quantiles(const std::string& beam,        // fhc
   calc->SetdCP(0.82*M_PI);
   calc->SetTh13(asin(sqrt(2.18e-2)));
 
-  struct Component
-  {
-      Flavors::Flavors_t flav;
-      Current::Current_t curr;
-      Sign::Sign_t sign;
-  };
-
-  std::map<std::string, Component> flavors = {
-          //{"nuecc", {Flavors::kAllNuE, Current::kCC, Sign::kBoth}},
-          {"beam_nuecc", {Flavors::kNuEToNuE, Current::kCC, Sign::kBoth}},
-          {"app_nuecc", {Flavors::kNuMuToNuE, Current::kCC, Sign::kNu}},
-          {"app_nuebarcc", {Flavors::kNuMuToNuE, Current::kCC, Sign::kAntiNu}},
-          {"numucc", {Flavors::kAllNuMu, Current::kCC, Sign::kBoth}},
-          {"nc", {Flavors::kAll, Current::kNC, Sign::kBoth}}
-  };
+  // the xsec systs
+  std::vector<const ISyst*> xsecSysts = getAllXsecSysts_2024();
 
 
   std::cout << "Ana2024 Box Opening........" << std::endl;
   std::cout << "Plotting Prod5.1 FD Numu Quantile(s) MC with 2024 cuts in Reco Enu........" << std::endl;
 
 
-  // we are only looking at p1-10. no new periods
-
-  std::string defMC_Non, defMC_Flux, defMC_Tau;
+// 		Definitions:
+  // only use nonswap for ND
+  std::string defNonSwap;
   if (beam == "fhc") {
-    defMC_Non = "prod_sumdecaf_R20-11-25-prod5.1reco.j.l_fd_genie_N1810j0211a_nonswap_fhc_nova_v08_full_v1_numu2020"; // 3F concat -- 150 files
-    defMC_Flux = "prod_sumdecaf_R20-11-25-prod5.1reco.j.l_fd_genie_N1810j0211a_fluxswap_fhc_nova_v08_full_v1_numu2020";
-    defMC_Tau = "prod_sumdecaf_R20-11-25-prod5.1reco.j_fd_genie_N1810j0211a_tauswap_fhc_nova_v08_full_v1_numu2020";
+    std::cout << "Using FHC definitions...." << std::endl;
+    defNonSwap = "prod_sumdecaf_R20-11-25-prod5.1reco.a_nd_genie_N1810j0211a_nonswap_fhc_nova_v08_full_v1_numu2020";
+
   }
-  else if (beam == "rhc") {
-    defMC_Non = "prod_sumdecaf_R20-11-25-prod5.1reco.j.l_fd_genie_N1810j0211a_nonswap_rhc_nova_v08_full_v1_numu2020"; // 3F concat -- 150 files
-    defMC_Flux = "prod_sumdecaf_R20-11-25-prod5.1reco.j.l_fd_genie_N1810j0211a_fluxswap_rhc_nova_v08_full_v1_numu2020";
-    defMC_Tau = "prod_sumdecaf_R20-11-25-prod5.1reco.j_fd_genie_N1810j0211a_tauswap_rhc_nova_v08_full_v1_numu2020";
+  if (beam == "rhc") {
+    std::cout << "Using RHC Definitions...." << std::endl;
+    defNonSwap = "prod_sumdecaf_development_nd_genie_N1810j0211a_nonswap_rhc_nova_v08_full_v1_numu2020prod5.1";
   }
-  else {std::cerr << "Unknown 'beam'. exit..." << std::endl; exit(1);}
 
   Loaders loader;
-  loader.SetLoaderPath(defMC_Non, caf::kFARDET, ana::Loaders::kMC);
-  loader.SetLoaderPath(defMC_Flux, caf::kFARDET, ana::Loaders::kMC, DataSource::kBeam, ana::Loaders::kFluxSwap);
-//  loader.SetLoaderPath(defMC_Tau, caf::kFARDET, ana::Loaders::kMC, DataSource::kBeam, ana::Loaders::kTauSwap);
-
+  loader.SetLoaderPath(defNonSwap, caf::kNEARDET,  Loaders::kMC, kBeam, Loaders::kNonSwap);
   loader.SetSpillCut(kStandardSpillCuts);
+
+  if (defNonSwap.empty()) throw std::runtime_error( "MC SAM Definition is empty" );
 
   std::vector<Cut> cutQuantiles = GetNumuEhadFracQuantCuts2024(beam != "fhc");
 
+  HistAxis histAxisTrueW("True W (GeV)", Binning::Simple(40, 0.0, 2.0), kTrueW);
 
-  std::map<std::string, const PredictionNoExtrap*> predNxp;
+
+  std::map<std::string, NoOscPredictionGenerator> predGens;
+  std::map<std::string, const PredictionInterp*> predInterps;
 
   for (unsigned int quantileIdx = 0; quantileIdx < cutQuantiles.size(); quantileIdx++) {
-    predNxp.try_emplace(Form("pred_nxp_Q%i", quantileIdx+1), new PredictionNoExtrap(loader, kNumuCCOptimisedAxis2024, kNumu2024FD && cutQuantiles[quantileIdx], kNoShift, kXSecCVWgt2024 * kPPFXFluxCVWgt));
+    predGens.try_emplace(Form("pred_interp_Q%d", quantileIdx+1),
+                         NoOscPredictionGenerator(loader.GetLoader(caf::kNEARDET, Loaders::kMC), histAxisTrueW, kNumu2024ND && cutQuantiles[quantileIdx], kPPFXFluxCVWgt * kXSecCVWgt2024));
   }
 
-  predNxp.try_emplace("pred_nxp_Q5", new PredictionNoExtrap(loader, kNumuCCOptimisedAxis2024, kNumu2024FD, kNoShift, kXSecCVWgt2024 * kPPFXFluxCVWgt));
+  // Q5 is Inclusive sample.
+  predGens.try_emplace(Form("pred_interp_Q%d", (int) cutQuantiles.size()+1),
+                       NoOscPredictionGenerator(loader.GetLoader(caf::kNEARDET, Loaders::kMC), histAxisTrueW, kNumu2024ND, kPPFXFluxCVWgt * kXSecCVWgt2024));
+
+  for (const auto &predGen : predGens) {
+    predInterps.try_emplace(predGen.first,
+                            new PredictionInterp(xsecSysts, calc, predGen.second, loader));
+  }
 
   loader.Go();
 
@@ -117,30 +121,19 @@ void generate_nd_p5p1_true_Q2_W_quantiles(const std::string& beam,        // fhc
   if ( gSystem->AccessPathName( out_dir.c_str() ) ) gSystem->mkdir( out_dir.c_str(), true );
 
 
-  // save the spectra to each Quantile ROOT file
+  // save the PredInterps to each Quantile ROOT file
   int quantileCount = 1;
-  for (const auto &prednxp : predNxp){
-    std::string fileName = Form("pred_nxp_fd_prod5.1_p1p10_reco_enu_2024info_mc_%s_numu_Q%i.root",  beam.c_str(), quantileCount);
+  for (const std::pair<std::string, const PredictionInterp*> predPair : predInterps){
+
+    // create ROOT file.
+    std::string fileName = Form("pred_interp_nxp_xsec24_nd_%s_trueW_Q%i.root", beam.c_str(), quantileCount);
     const std::string& finalOutDir = out_dir + "/" + fileName;
     TFile ofile(Form("%s", finalOutDir.c_str()), "recreate");
 
-    // save the PredNoExtrap info
-    std::cout << "saving PredNxp: " << std::endl;
-    prednxp.second->SaveTo(&ofile, prednxp.first);
-
-    // save the Spectrum info.
-    std::cout << "saving Spectrum: " << std::endl;
-    std::map<std::string, Spectrum> specs_preds;
-    for (auto flavor : flavors){
-      auto tmp_spec = prednxp.second->PredictComponent(calc, flavor.second.flav, flavor.second.curr, flavor.second.sign);
-      std::string key = prednxp.first+"_"+flavor.first+"_all";
-      specs_preds.insert({key, tmp_spec});
-    } // flavors
-
-    for(auto spec: specs_preds)
-      spec.second.SaveTo(&ofile, spec.first.c_str());
-
-    std::cout << "saving PredNxp: " << std::endl;
+    predPair.second->SaveTo(&ofile, predPair.first);
+    const double pot = predPair.second->Predict(calc).POT(); //keep this POT, and use `kAna2020{F,R}HCPOT` when plotting elsewhere....
+    predPair.second->Predict(calc).ToTH1(pot)->Write(Form("h1_%s", predPair.first.c_str()));
+    std::cout << "saving TH1 with intrinsic POT: " << pot << std::endl;
 
     ofile.Close();
     std::cout << "Wrote file: " << finalOutDir << std::endl;
