@@ -17,7 +17,6 @@
 
 #include "CAFAna/Analysis/Plots.h"
 #include "CAFAna/Analysis/Exposures.h"
-#include "CAFAna/Core/LoadFromFile.h"
 
 #include "OscLib/OscCalcPMNSOpt.h"
 
@@ -57,24 +56,28 @@ void plot_fd_enu_theta_nue(const std::string& beam)
       Sign::Sign_t sign;
   };
 
+
+	// we NEED nue_app signal for RHC.
+	// nuebar_app is small for FHC, but let's include anyway.
   std::map<std::string, Component> flavors = {
           //{"nuecc", {Flavors::kAllNuE, Current::kCC, Sign::kBoth}},
 //          {"beam_nuecc", {Flavors::kNuEToNuE, Current::kCC, Sign::kBoth}},
           {"app_nuecc", {Flavors::kNuMuToNuE, Current::kCC, Sign::kNu}},
-//          {"app_nuebarcc", {Flavors::kNuMuToNuE, Current::kCC, Sign::kAntiNu}},
+          {"app_nuebarcc", {Flavors::kNuMuToNuE, Current::kCC, Sign::kAntiNu}},
 //          {"numucc", {Flavors::kAllNuMu, Current::kCC, Sign::kBoth}},
 //          {"nc", {Flavors::kAll, Current::kNC, Sign::kBoth}}
   };
 
 
-
+	// create sum of the nue_app and nuebar_app portions.
+	TH2D h2Sum = TH2D("nue_app", "#nu_e", 18, 0., 180, 30, 0., 3.6);
 
   // dir of the FD Numu Data ROOT files
   const std::string inputDir = "/exp/nova/data/users/mdolce/preds+spectra/ana2024/crpa/";
   const std::string outDir = "/exp/nova/data/users/mdolce/xsec-tuning-nova/plots/ana2024/cRPA/plot_fd_enu_theta_nue/";
 
 
-  // mapCuts have the 2020 names.
+  // loop over the flavors.
   for (const auto& pairFlavor : flavors){
     const std::string fname = Form("pred_nxp_fd_%s_prod5.1_enu_theta_nue.root", beam.c_str());
     const std::string fPath = inputDir + "/" + fname;
@@ -91,9 +94,12 @@ void plot_fd_enu_theta_nue(const std::string& beam)
     // do plotting
     TCanvas c;
 
-    TH2 * h2 = s.ToTH2(beam == "fhc" ? kAna2024FHCPOT : kAna2024RHCPOT);
+    TH2 * h2Flavor = s.ToTH2(beam == "fhc" ? kAna2024FHCPOT : kAna2024RHCPOT);
 
-    h2->Draw("same hist colz");
+		// add this flavor histogram to the h2Sum
+		h2Sum.Add(h2Flavor);
+
+    h2Flavor->Draw("same hist colz");
 
 
 //    h2->SetMaximum(h2->GetMaximum() * 1.5);
@@ -107,7 +113,7 @@ void plot_fd_enu_theta_nue(const std::string& beam)
 		ltx2.DrawLatexNDC(0.62, 0.5, "Asimov A");
     ltx2.SetTextSize(0.85);
 
-    std::cout << " events integral: " << h2->Integral() << std::endl;
+    std::cout << " events integral: " << h2Flavor->Integral() << std::endl;
 
 //    TLegend leg(0.1, 0.62, 0.9, 0.9);
 //    leg.SetFillStyle(0);
@@ -121,6 +127,27 @@ void plot_fd_enu_theta_nue(const std::string& beam)
   } // flavors
 
 
+	TCanvas c;
+	h2Sum.Draw("colz");
+	c.SetRightMargin(0.1);
+	Simulation();
+	h2Sum.SetTitle("#nu_e App.");
+	h2Sum.SetYTitle("E_{#nu} (GeV)");
+	h2Sum.SetXTitle("#theta (deg)");
+
+	TLatex latex;
+	latex.SetTextColor(kGray);
+	latex.DrawLatexNDC(0.62, 0.6, Form(beam == "fhc" ? "Neutrino Beam" : "AntiNeutrino Beam"));
+	latex.SetTextSize(0.85);
+	TLatex ltx2;
+	ltx2.SetTextColor(kGray);
+	ltx2.DrawLatexNDC(0.62, 0.5, "Asimov A");
+	ltx2.SetTextSize(0.85);
+
+	std::cout << " Summed events integral: " << h2Sum.Integral() << std::endl;
+
+
+	c.SaveAs(Form("%s/plot_fd_%s_enu_theta_nue_summed.png", outDir.c_str(), beam.c_str()));
 
 
 }
