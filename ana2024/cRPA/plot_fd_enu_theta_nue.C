@@ -79,6 +79,7 @@ void plot_fd_enu_theta_nue(const std::string& beam)
 
   // loop over the flavors.
   for (const auto& pairFlavor : flavors){
+		std::cout << "looping through flavor......." << pairFlavor.first << std::endl;
     const std::string fname = Form("pred_nxp_fd_%s_prod5.1_enu_theta_nue.root", beam.c_str());
     const std::string fPath = inputDir + "/" + fname;
 
@@ -131,7 +132,7 @@ void plot_fd_enu_theta_nue(const std::string& beam)
 	h2Sum.Draw("colz");
 	c.SetRightMargin(0.1);
 	Simulation();
-	h2Sum.SetTitle("#nu_e App.");
+	h2Sum.SetTitle("#nu_{e} App.");
 	h2Sum.SetYTitle("E_{#nu} (GeV)");
 	h2Sum.SetXTitle("#theta (deg)");
 
