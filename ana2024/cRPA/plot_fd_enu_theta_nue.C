@@ -132,7 +132,6 @@ void plot_fd_enu_theta_nue(const std::string& beam)
 	h2Sum.Draw("colz");
 	c.SetRightMargin(0.1);
 	Simulation();
-	h2Sum.SetTitle("#nu_{e} App.");
 	h2Sum.SetYTitle("E_{#nu} (GeV)");
 	h2Sum.SetXTitle("#theta (deg)");
 
