@@ -97,10 +97,14 @@ void generate_nd_p5p1_true_W_quantiles(const std::string& beam,        // fhc or
   std::map<std::string, NoOscPredictionGenerator> predGens;
   std::map<std::string, const PredictionInterp*> predInterps;
 
-  for (unsigned int quantileIdx = 0; quantileIdx < cutQuantiles.size(); quantileIdx++) {
-    predGens.try_emplace(Form("pred_interp_Q%d", quantileIdx+1),
-                         NoOscPredictionGenerator(loader.GetLoader(caf::kNEARDET, Loaders::kMC), histAxisTrueW, kNumu2024ND && cutQuantiles[quantileIdx], kPPFXFluxCVWgt * kXSecCVWgt2024));
-  }
+	if (!test){
+		for (unsigned int quantileIdx = 0; quantileIdx < cutQuantiles.size(); quantileIdx++) {
+			predGens.try_emplace(Form("pred_interp_Q%d", quantileIdx + 1),
+													 NoOscPredictionGenerator(loader.GetLoader(caf::kNEARDET, Loaders::kMC), histAxisTrueW,
+																										kNumu2024ND && cutQuantiles[quantileIdx],
+																										kPPFXFluxCVWgt * kXSecCVWgt2024));
+		}
+	}
 
   // Q5 is Inclusive sample.
   predGens.try_emplace(Form("pred_interp_Q%d", (int) cutQuantiles.size()+1),
@@ -126,7 +130,7 @@ void generate_nd_p5p1_true_W_quantiles(const std::string& beam,        // fhc or
   for (const std::pair<std::string, const PredictionInterp*> predPair : predInterps){
 
     // create ROOT file.
-    std::string fileName = Form("pred_interp_nxp_xsec24_nd_%s_trueW_Q%i.root", beam.c_str(), quantileCount);
+    std::string fileName = Form("%s_nxp_xsec24_nd_%s_trueW.root", predPair.first.c_str(), beam.c_str());
     const std::string& finalOutDir = out_dir + "/" + fileName;
     TFile ofile(Form("%s", finalOutDir.c_str()), "recreate");
 
