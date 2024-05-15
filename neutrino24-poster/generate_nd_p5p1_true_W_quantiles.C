@@ -44,9 +44,9 @@ void generate_nd_p5p1_true_W_quantiles(const std::string& beam,        // fhc or
 
   std::string outDir;
   if (test)
-    outDir = "/nova/ana/users/mdolce/preds+spectra/ana2024/neutrino24-poster/test/";
+    outDir = "/exp/nova/data/users/mdolce/preds+spectra/ana2024/neutrino24-poster/test/";
   else {
-    outDir = "/nova/ana/users/mdolce/preds+spectra/ana2024/neutrino24-poster/";
+    outDir = "/exp/nova/data/users/mdolce/preds+spectra/ana2024/neutrino24-poster/";
   }
   std::cout << "Predictions will be made and placed into..." << outDir << std::endl;
 
