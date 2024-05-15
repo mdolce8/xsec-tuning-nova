@@ -30,8 +30,6 @@
 
 #include "Utilities/rootlogon.C"
 
-// TODO: read in ROOT file of the Summed TH2 and the RR ratio from paper.
-// TODO: figure out how to apply the ratio to the prediction.
 
 using namespace ana;
 
@@ -61,27 +59,50 @@ void apply_crpa_lfg_ratio(const std::string& beam)
 	TH2D * h2Ratio = (TH2D*) fcRPA.Get("CC_RPA_LFG_O_e_ae.root");
 
 	// TODO: is this right? start at 0 ?
-	for (unsigned int binIdxX = 0; binIdxX <= h2Sum->GetNbinsX(); binIdxX++){
-		for (unsigned int binIdxY = 0; binIdxY <= h2Sum->GetNbinsY(); binIdxY++){
+	// NOTE: the bin widths are identical, so this should be easy...?
+	// NOTE: must do Y loop first, because we want the last row (i.e. same y bin).
+	for (unsigned int binIdxY = 0; binIdxY <= h2Sum->GetNbinsY(); binIdxY++){
+		for (unsigned int binIdxX = 0; binIdxX <= h2Sum->GetNbinsX(); binIdxX++){
 
-			const double contentRatio = h2Ratio->GetBinContent(binIdxX, binIdxY);
-			const double contentSumNue = h2Sum->GetBinContent(binIdxX, binIdxY);
+			// standard case, apply ratio as normal.
+			if (binIdxX <= h2Ratio->GetNbinsX() && binIdxY <= h2Ratio->GetNbinsY()) {
+				if (binIdxX % 5 == 0) std::cout << "Applying weight as expected. Proceed as normal." << std::endl;
+				const double contentRatio = h2Ratio->GetBinContent(binIdxX, binIdxY);
+				const double contentSumNue = h2Sum->GetBinContent(binIdxX, binIdxY);
 
-			const double contentRwgt = contentRatio * contentSumNue; // this is the value after re-weighting to cRPA.
+				const double contentRwgt = contentRatio * contentSumNue; // this is the value after re-weighting to cRPA.
+				h2SumRwgt->SetBinContent(binIdxX, binIdxY, contentRwgt);
+			}
 
-			h2SumRwgt->SetBinContent(binIdxX, binIdxY, contentRwgt);
+			// special case: address bin values above 1.2 GeV....
+			else if (binIdxY >= h2Ratio->GetNbinsY()){
+				std::cout << "binIdxY == h2Ratio->GetNbinsY() ==" << binIdxY << std::endl;
+				std::cout << "Neutrino Energy: " << h2Ratio->GetYaxis()->GetBinCenter(binIdxY) << " GeV" << std::endl;
+				if (binIdxX % 5 == 0) std::cout << "Applying weight to Angle (deg) " << h2Sum->GetXaxis()->GetBinCenter(binIdxX) << std::endl;
 
-			// TODO: still leaves us with the bin values above 1.2 GeV....
+				// want the bin content from the top row. That would be this value.
+				// NOTE: we need to scan the x values still. Only the Y bin is constant
+				const double contentRatioTopRow = h2Ratio->GetBinContent(binIdxX, h2Ratio->GetNbinsY());
+				const double contentSumNue = h2Sum->GetBinContent(binIdxX, binIdxY);
+
+				const double contentRwgt = contentSumNue * contentRatioTopRow;
+				h2SumRwgt->SetBinContent(binIdxX, binIdxY, contentRwgt);
+			}
+
+			else {
+				std::cout << "binIdxX, binIDxY" << binIdxX << ", " << binIdxY << std::endl;
+				std::cerr << "I don't know what to do...exit." << std::endl;
+				exit(0);
+			}
 
 		} // binIdxY
 	} // binIdxX
 
 
-	// Draw the Reweighted histogram now.
+	// Draw the Re-weighted histogram now. No need to scale, already scaled to 2024 POT.
 	TCanvas c;
 
-	h2SumRwgt->Scale(beam == "fhc" ? kAna2024FHCPOT : kAna2024RHCPOT);
-
+	h2SumRwgt->SetTitle("Approx. cRPA");
 	h2SumRwgt->Draw("same hist colz");
 	TLatex latex;
 	latex.SetTextColor(kGray);
@@ -95,7 +116,7 @@ void apply_crpa_lfg_ratio(const std::string& beam)
 
 	std::cout << " events integral: " << h2SumRwgt->Integral() << std::endl;
 
-	c.SaveAs(Form("%s/plot_fd_%s_prod5.1_enu_theta_nue.png", outDir.c_str(),  beam.c_str()));
+	c.SaveAs(Form("%s/plot_crpa_lfg_fd_%s_prod5.1_enu_theta_nue.png", outDir.c_str(),  beam.c_str()));
 
 
 }
