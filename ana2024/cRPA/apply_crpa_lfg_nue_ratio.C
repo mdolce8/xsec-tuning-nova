@@ -109,7 +109,7 @@ void apply_crpa_lfg_nue_ratio(const std::string& beam)
 
 	h2SumRwgt->SetTitle("Approx. cRPA");
 	h2SumRwgt->Draw("same hist colz");
-	h2SumRwgt->GetZaxis()->SetRangeUser(0.5, 1.5);
+//	h2SumRwgt->GetZaxis()->SetRangeUser(0.5, 1.5); // this works. but leave out for now. Want this for a new TH2, the ratio of the ratio...?
 	TLatex latex;
 	latex.SetTextColor(kGray);
 	latex.DrawLatexNDC(0.62, 0.6, Form(beam == "fhc" ? "Neutrino Beam" : "AntiNeutrino Beam"));
