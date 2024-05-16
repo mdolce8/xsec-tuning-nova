@@ -37,7 +37,7 @@ using namespace ana;
 
 // =====================================================================================================
 void generate_fd_nue_spectra_crpa_study(const std::string& beam,        // fhc or rhc
-																				const std::string& outDir,      // $data/preds+spectra/ana2024/box-opening/crpa/ ("." for grid: -o $scratch/data )
+																				const std::string& outDir,      // $data/preds+spectra/ana2024/crpa/ ("." for grid: -o $scratch/data )
 																			 	const bool gridSubmission = false
 )
 // =====================================================================================================
