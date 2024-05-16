@@ -64,6 +64,7 @@ void apply_crpa_lfg_nue_ratio(const std::string& beam)
 	for (unsigned int binIdxY = 1; binIdxY <= h2Sum->GetNbinsY(); binIdxY++){
 		for (unsigned int binIdxX = 1; binIdxX <= h2Sum->GetNbinsX(); binIdxX++){
 
+			std::cout << "binIdX, binIdxY" << binIdxX << ", " << binIdxY << std::endl;
 			// standard case, apply ratio as normal.
 			if (binIdxX <= h2Ratio->GetNbinsX() && binIdxY <= h2Ratio->GetNbinsY()) {
 				if (binIdxX % 5 == 0) std::cout << "Applying weight as expected. Proceed as normal." << std::endl;
