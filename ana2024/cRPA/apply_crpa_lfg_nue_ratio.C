@@ -41,14 +41,14 @@ void apply_crpa_lfg_nue_ratio(const std::string& beam)
 	const std::string outDir = "/exp/nova/data/users/mdolce/xsec-tuning-nova/plots/ana2024/cRPA/apply_crpa_lfg_nue_ratio/";
 
 	// ROOT file Summed TH2
-	TFile fnue("/exp/nova/data/users/mdolce/xsec-tuning-nova/plots/ana2024/cRPA/plot_fd_enu_theta_nue/th2_fd_fhc_enu_theta_nue_summed.root", "read");
+	TFile * fnue = TFile::Open("/exp/nova/data/users/mdolce/xsec-tuning-nova/plots/ana2024/cRPA/plot_fd_enu_theta_nue/th2_fd_fhc_enu_theta_nue_summed.root", "read");
 
 	// I think this is the right ratio to read in at the moment?
-	TFile fcRPA("/exp/nova/data/users/mdolce/xsec-tuning-nova/RR_CRPA_C_LFG_O_e_ae.root", "read");
+	TFile * fcRPA = TFile::Open("/exp/nova/data/users/mdolce/xsec-tuning-nova/RR_CRPA_C_LFG_O_e_ae.root", "read");
 
 
 	// TH2 sum of the nue_app and nuebar_app portions.
-	TH2D * h2Sum = (TH2D*) fnue.Get("nue_app");
+	TH2D * h2Sum = (TH2D*) fnue->Get("nue_app");
 
 	// make a clone for the reweighted histogram
 	TH2D * h2SumRwgt = (TH2D*) h2Sum->Clone("nue_app_cRPA");
@@ -56,7 +56,7 @@ void apply_crpa_lfg_nue_ratio(const std::string& beam)
 	assert (h2SumRwgt->Integral() == 0);
 
 	// TH2 of the cRPA / LFG ratio for nue
-	TH2D * h2Ratio = (TH2D*) fcRPA.Get("CC_RPA_LFG_O_e_ae.root");
+	TH2D * h2Ratio = (TH2D*) fcRPA->Get("CC_RPA_LFG_O_e_ae.root");
 
 	// NOTE: _this_ is the right way: start at [1, GetNbins()].
 	// NOTE: the bin widths are identical, so this should be easy...?
