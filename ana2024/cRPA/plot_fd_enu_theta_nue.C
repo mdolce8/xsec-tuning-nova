@@ -70,7 +70,7 @@ void plot_fd_enu_theta_nue(const std::string& beam)
 
 
 	// create sum of the nue_app and nuebar_app portions.
-	TH2D h2Sum = TH2D("nue_app", "FD #nu_{e}", 18, 0., 180, 30, 0., 3.6);
+	TH2D h2Sum = TH2D("nue_app", "FD #nu_{e}", 18, 0., 180, 40, 0.,4.0);
 
   // dir of the FD Numu Data ROOT files
   const std::string inputDir = "/exp/nova/data/users/mdolce/preds+spectra/ana2024/crpa/";
