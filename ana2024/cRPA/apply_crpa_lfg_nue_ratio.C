@@ -50,6 +50,8 @@ void apply_crpa_lfg_nue_ratio(const std::string& beam)
 	// TH2 sum of the nue_app and nuebar_app portions.
 	TH2D * h2Sum = (TH2D*) fnue->Get("nue_app");
 
+	std::cout << "h2Sum events: " << h2Sum->Integral() << std::endl;
+
 	// make a clone for the reweighted histogram
 	TH2D * h2SumRwgt = (TH2D*) h2Sum->Clone("nue_app_cRPA");
 	h2SumRwgt->Reset("ICESM"); // maintain the binning, just clear the content
@@ -58,13 +60,16 @@ void apply_crpa_lfg_nue_ratio(const std::string& beam)
 	// TH2 of the cRPA / LFG ratio for nue
 	TH2D * h2Ratio = (TH2D*) fcRPA->Get("CC_RPA_LFG_O_e_ae.root");
 
+	std::cout << "h2Sum events: " << h2Ratio->Integral() << std::endl;
+
+
 	// NOTE: _this_ is the right way: start at [1, GetNbins()].
 	// NOTE: the bin widths are identical, so this should be easy...?
 	// NOTE: must do Y loop first, because we want the last row (i.e. same y bin).
 	for (unsigned int binIdxY = 1; binIdxY <= h2Sum->GetNbinsY(); binIdxY++){
 		for (unsigned int binIdxX = 1; binIdxX <= h2Sum->GetNbinsX(); binIdxX++){
 
-			std::cout << "binIdX, binIdxY" << binIdxX << ", " << binIdxY << std::endl;
+			std::cout << "binIdX, binIdxY: " << binIdxX << ", " << binIdxY << std::endl;
 			// standard case, apply ratio as normal.
 			if (binIdxX <= h2Ratio->GetNbinsX() && binIdxY <= h2Ratio->GetNbinsY()) {
 				if (binIdxX % 5 == 0) std::cout << "Applying weight as expected. Proceed as normal." << std::endl;
