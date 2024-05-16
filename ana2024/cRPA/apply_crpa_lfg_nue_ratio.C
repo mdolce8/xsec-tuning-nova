@@ -58,7 +58,7 @@ void apply_crpa_lfg_ratio(const std::string& beam)
 	// TH2 of the cRPA / LFG ratio for nue
 	TH2D * h2Ratio = (TH2D*) fcRPA.Get("CC_RPA_LFG_O_e_ae.root");
 
-	// TODO: is this right? start at 0 ?
+	// NOTE: _this_ is the right way: start at [1, GetNbins()].
 	// NOTE: the bin widths are identical, so this should be easy...?
 	// NOTE: must do Y loop first, because we want the last row (i.e. same y bin).
 	for (unsigned int binIdxY = 1; binIdxY <= h2Sum->GetNbinsY(); binIdxY++){
