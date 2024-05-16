@@ -58,7 +58,7 @@ void apply_crpa_lfg_nue_ratio(const std::string& beam)
 	assert (h2SumRwgt->Integral() == 0);
 
 	// TH2 of the cRPA / LFG ratio for nue
-	TH2D * h2Ratio = (TH2D*) fcRPA->Get("CC_RPA_LFG_O_e_ae.root");
+	TH2D * h2Ratio = (TH2D*) fcRPA->Get("CC_RPA_LFG_O_e_ae");
 
 	std::cout << "h2Ratio events: " << h2Ratio->Integral() << std::endl;
 
