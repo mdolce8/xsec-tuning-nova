@@ -150,6 +150,7 @@ void plot_fd_enu_theta_nue(const std::string& beam)
 
 	// save to ROOT file.
 	TFile ofile(Form("%s/th2_fd_%s_enu_theta_nue_summed.root", outDir.c_str(), beam.c_str()), "recreate");
+	h2Sum.SetDirectory(&ofile);
 	h2Sum.Write(h2Sum.GetName());
 	ofile.Close();
 
