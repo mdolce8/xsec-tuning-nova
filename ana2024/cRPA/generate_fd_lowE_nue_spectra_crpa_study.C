@@ -34,13 +34,16 @@
 
 using namespace ana;
 
+// TODO: what is the right cut to use for _unselected_ events?
+
 // =====================================================================================================
 void generate_fd_lowE_nue_spectra_crpa_study(const std::string& beam,        // fhc or rhc
-																				const std::string& outDir,      // $data/preds+spectra/ana2024/crpa/ ("." for grid: -o $scratch/data )
 																			 	const bool gridSubmission = false
 )
 // =====================================================================================================
 {
+
+	const std::string outDir = "/exp/nova/data/users/mdolce/preds+spectra/ana2024/crpa/";
 
   // Asimov A. The 2020 best fit.
   auto calc = new osc::OscCalcPMNSOpt();
@@ -83,6 +86,8 @@ void generate_fd_lowE_nue_spectra_crpa_study(const std::string& beam,        // 
     defMC_Tau = "prod_sumdecaf_R20-11-25-prod5.1reco.j_fd_genie_N1810j0211a_tauswap_fhc_nova_v08_full_v1_numu2020";
   }
   else if (beam == "rhc") {
+		std::cout << "RHC is not an option for lowE Sample. Exiting...." << std::endl;
+		exit(0);
     defMC_Non = "prod_sumdecaf_R20-11-25-prod5.1reco.j.l_fd_genie_N1810j0211a_nonswap_rhc_nova_v08_full_v1_numu2020"; // 3F concat -- 150 files
     defMC_Flux = "prod_sumdecaf_R20-11-25-prod5.1reco.j.l_fd_genie_N1810j0211a_fluxswap_rhc_nova_v08_full_v1_numu2020";
     defMC_Tau = "prod_sumdecaf_R20-11-25-prod5.1reco.j_fd_genie_N1810j0211a_tauswap_rhc_nova_v08_full_v1_numu2020";
@@ -123,15 +128,13 @@ void generate_fd_lowE_nue_spectra_crpa_study(const std::string& beam,        // 
   std::map<std::string, const PredictionNoExtrap*> predNxp;
 
 	const ana::Binning bins_theta = ana::Binning::Simple(18, 0., 180.);
-	const ana::Binning bins_ENu = ana::Binning::Simple(40, 0., 4.0);
+	const ana::Binning bins_ENu = ana::Binning::Simple(15, 0., 1.5);  // maintain the 100 MeV/bin scheme, like paper.
 	HistAxis ha_ENu_Theta("#theta (deg)", bins_theta, kTrueElectronTheta,
 												"E_{#nu} (GeV)", bins_ENu, kCCE);
 
-	// any relevant appeared Nue.
-	const Cut kNueAll = kNue2024FDAllSamples || kNue2024FDLE;
 
 	// Cut is both Core and Peripheral OR LowE sample.
-  predNxp.try_emplace("pred_nxp_enu_theta_nue", new PredictionNoExtrap(loader, ha_ENu_Theta, , kNoShift, kPPFXFluxCVWgt * kXSecCVWgt2024));
+  predNxp.try_emplace("pred_nxp_enu_theta_nue", new PredictionNoExtrap(loader, ha_ENu_Theta, !kNue2024FDLE, kNoShift, kPPFXFluxCVWgt * kXSecCVWgt2024));
 
   loader.Go();
 
@@ -144,9 +147,8 @@ void generate_fd_lowE_nue_spectra_crpa_study(const std::string& beam,        // 
 
 
   // save the spectra to each ROOT file
-  int quantileCount = 1;
   for (const auto &prednxp : predNxp){
-    std::string fileName = Form("pred_nxp_fd_%s_prod5.1_enu_theta_nue.root",  beam.c_str());
+    std::string fileName = Form("pred_nxp_fd_%s_prod5.1_enu_theta_lowE_nue.root",  beam.c_str());
     const std::string& finalOutDir = out_dir + "/" + fileName;
     TFile ofile(Form("%s", finalOutDir.c_str()), "recreate");
 
@@ -171,7 +173,6 @@ void generate_fd_lowE_nue_spectra_crpa_study(const std::string& beam,        // 
     ofile.Close();
     std::cout << "Wrote file: " << finalOutDir << std::endl;
 
-    quantileCount++;
   } // preds
 
 }
