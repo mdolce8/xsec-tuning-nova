@@ -66,22 +66,24 @@ void apply_crpa_lfg_nue_ratio(const std::string& beam)
 	for (unsigned int binIdxY = 1; binIdxY <= h2Sum->GetNbinsY(); binIdxY++){
 		for (unsigned int binIdxX = 1; binIdxX <= h2Sum->GetNbinsX(); binIdxX++){
 
-			std::cout << "binIdX, binIdxY: " << binIdxX << ", " << binIdxY << std::endl;
 			// standard case, apply ratio as normal.
 			if (binIdxX <= h2Ratio->GetNbinsX() && binIdxY <= h2Ratio->GetNbinsY()) {
-				if (binIdxX % 5 == 0) std::cout << "Applying weight as expected. Proceed as normal." << std::endl;
 				const double contentRatio = h2Ratio->GetBinContent(binIdxX, binIdxY);
 				const double contentSumNue = h2Sum->GetBinContent(binIdxX, binIdxY);
 
 				const double contentRwgt = contentRatio * contentSumNue; // this is the value after re-weighting to cRPA.
 				h2SumRwgt->SetBinContent(binIdxX, binIdxY, contentRwgt);
+
+				if (binIdxX % 5 == 0) std::cout << "Applying weight as expected. Proceed as normal. Ratio to be applied to Nue App. is = " << contentRatio << std::endl;
 			}
 
 			// special case: address bin values above 1.2 GeV....
 			else if (binIdxY > h2Ratio->GetNbinsY()){
-				std::cout << "binIdxY == h2Ratio->GetNbinsY() ==" << binIdxY << std::endl;
-				std::cout << "Neutrino Energy: " << h2Ratio->GetYaxis()->GetBinCenter(binIdxY) << " GeV" << std::endl;
-				if (binIdxX % 5 == 0) std::cout << "Applying weight to Angle (deg) " << h2Sum->GetXaxis()->GetBinCenter(binIdxX) << std::endl;
+				if (binIdxX % 15 == 0) { // one for each row.
+					std::cout << "Neutrino Energy: " << h2Ratio->GetYaxis()->GetBinCenter(binIdxY) << " GeV" << std::endl;
+					std::cout << "Applying weight to Angle (deg) " << h2Sum->GetXaxis()->GetBinCenter(binIdxX) << std::endl;
+					std::cout << "binIdxY == " << binIdxY << std::endl;
+				}
 
 				// want the bin content from the top row. That would be this value.
 				// NOTE: we need to scan the x values still. Only the Y bin is constant
@@ -107,6 +109,7 @@ void apply_crpa_lfg_nue_ratio(const std::string& beam)
 
 	h2SumRwgt->SetTitle("Approx. cRPA");
 	h2SumRwgt->Draw("same hist colz");
+	h2SumRwgt->GetZaxis()->SetRangeUser(0.5, 1.5);
 	TLatex latex;
 	latex.SetTextColor(kGray);
 	latex.DrawLatexNDC(0.62, 0.6, Form(beam == "fhc" ? "Neutrino Beam" : "AntiNeutrino Beam"));
