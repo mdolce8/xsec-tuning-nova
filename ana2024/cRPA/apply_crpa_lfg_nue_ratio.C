@@ -43,13 +43,8 @@ void apply_crpa_lfg_nue_ratio(const std::string& beam)
 	// ROOT file Summed TH2
 	TFile * fnue = TFile::Open("/exp/nova/data/users/mdolce/xsec-tuning-nova/plots/ana2024/cRPA/plot_fd_enu_theta_nue/th2_fd_fhc_enu_theta_nue_summed.root", "read");
 
-	// I think this is the right ratio to read in at the moment?
-	TFile * fcRPA = TFile::Open("/exp/nova/data/users/mdolce/xsec-tuning-nova/RR_CRPA_C_LFG_O_e_ae.root", "read");
-
-
 	// TH2 sum of the nue_app and nuebar_app portions.
 	TH2D * h2Sum = (TH2D*) fnue->Get("nue_app");
-
 	std::cout << "h2Sum events: " << h2Sum->Integral() << std::endl;
 
 	// make a clone for the reweighted histogram
@@ -57,9 +52,11 @@ void apply_crpa_lfg_nue_ratio(const std::string& beam)
 	h2SumRwgt->Reset("ICESM"); // maintain the binning, just clear the content
 	assert (h2SumRwgt->Integral() == 0);
 
+	// I think this is the right ratio to read in at the moment?
+	TFile * fcRPA = TFile::Open("/exp/nova/data/users/mdolce/xsec-tuning-nova/RR_CRPA_C_LFG_O_e_ae.root", "read");
+
 	// TH2 of the cRPA / LFG ratio for nue
 	TH2D * h2Ratio = (TH2D*) fcRPA->Get("RR_CRPA_C_LFG_O_e_ae");
-
 	std::cout << "h2Ratio events: " << h2Ratio->Integral() << std::endl;
 
 
