@@ -41,7 +41,7 @@ void apply_crpa_lfg_nue_ratio(const std::string& beam)
 	const std::string outDir = "/exp/nova/data/users/mdolce/xsec-tuning-nova/plots/ana2024/cRPA/apply_crpa_lfg_nue_ratio/";
 
 	// ROOT file Summed TH2
-	TFile * fnue = TFile::Open("/exp/nova/data/users/mdolce/xsec-tuning-nova/plots/ana2024/cRPA/plot_fd_enu_theta_nue/th2_fd_fhc_enu_theta_nue_summed.root", "read");
+	TFile * fnue = TFile::Open(Form("/exp/nova/data/users/mdolce/xsec-tuning-nova/plots/ana2024/cRPA/plot_fd_enu_theta_nue/th2_fd_%s_enu_theta_nue_summed.root", beam.c_str()), "read");
 
 	// TH2 sum of the nue_app and nuebar_app portions.
 	TH2D * h2Sum = (TH2D*) fnue->Get("nue_app");
@@ -125,7 +125,5 @@ void apply_crpa_lfg_nue_ratio(const std::string& beam)
 	std::cout << " events integral: " << h2SumRwgt->Integral() << std::endl;
 
 	c.SaveAs(Form("%s/plot_crpa_lfg_fd_%s_prod5.1_enu_theta_nue.png", outDir.c_str(),  beam.c_str()));
-
-	delete h2Ratio;
 
 }
