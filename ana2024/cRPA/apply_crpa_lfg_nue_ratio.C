@@ -61,8 +61,8 @@ void apply_crpa_lfg_ratio(const std::string& beam)
 	// TODO: is this right? start at 0 ?
 	// NOTE: the bin widths are identical, so this should be easy...?
 	// NOTE: must do Y loop first, because we want the last row (i.e. same y bin).
-	for (unsigned int binIdxY = 0; binIdxY <= h2Sum->GetNbinsY(); binIdxY++){
-		for (unsigned int binIdxX = 0; binIdxX <= h2Sum->GetNbinsX(); binIdxX++){
+	for (unsigned int binIdxY = 1; binIdxY <= h2Sum->GetNbinsY(); binIdxY++){
+		for (unsigned int binIdxX = 1; binIdxX <= h2Sum->GetNbinsX(); binIdxX++){
 
 			// standard case, apply ratio as normal.
 			if (binIdxX <= h2Ratio->GetNbinsX() && binIdxY <= h2Ratio->GetNbinsY()) {
@@ -75,7 +75,7 @@ void apply_crpa_lfg_ratio(const std::string& beam)
 			}
 
 			// special case: address bin values above 1.2 GeV....
-			else if (binIdxY >= h2Ratio->GetNbinsY()){
+			else if (binIdxY > h2Ratio->GetNbinsY()){
 				std::cout << "binIdxY == h2Ratio->GetNbinsY() ==" << binIdxY << std::endl;
 				std::cout << "Neutrino Energy: " << h2Ratio->GetYaxis()->GetBinCenter(binIdxY) << " GeV" << std::endl;
 				if (binIdxX % 5 == 0) std::cout << "Applying weight to Angle (deg) " << h2Sum->GetXaxis()->GetBinCenter(binIdxX) << std::endl;
