@@ -60,7 +60,7 @@ void apply_crpa_lfg_nue_ratio(const std::string& beam)
 	// TH2 of the cRPA / LFG ratio for nue
 	TH2D * h2Ratio = (TH2D*) fcRPA->Get("CC_RPA_LFG_O_e_ae.root");
 
-	std::cout << "h2Sum events: " << h2Ratio->Integral() << std::endl;
+	std::cout << "h2Ratio events: " << h2Ratio->Integral() << std::endl;
 
 
 	// NOTE: _this_ is the right way: start at [1, GetNbins()].
