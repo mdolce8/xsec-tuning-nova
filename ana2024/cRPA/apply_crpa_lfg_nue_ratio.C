@@ -74,7 +74,9 @@ void apply_crpa_lfg_nue_ratio(const std::string& beam)
 				const double contentRwgt = contentRatio * contentSumNue; // this is the value after re-weighting to cRPA.
 				h2SumRwgt->SetBinContent(binIdxX, binIdxY, contentRwgt);
 
-				if (binIdxX % 5 == 0) std::cout << "Applying weight as expected. Proceed as normal. Ratio to be applied to Nue App. is = " << contentRatio << std::endl;
+				if (binIdxX % 5 == 0) std::cout << "Applying weight as expected. To bin: " << binIdxX << ", " << binIdxY <<
+				". To values: (" << h2Sum->GetXaxis()->GetBinCenter(binIdxX) << ", " << h2Sum->GetYaxis()->GetBinCenter(binIdxY) <<
+				"  Ratio to be applied to Nue App. = " << contentRatio << std::endl;
 			}
 
 			// special case: address bin values above 1.2 GeV....
