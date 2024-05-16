@@ -124,7 +124,7 @@ void generate_fd_nue_spectra_crpa_study(const std::string& beam,        // fhc o
   std::map<std::string, const PredictionNoExtrap*> predNxp;
 
 	const ana::Binning bins_theta = ana::Binning::Simple(18, 0., 180.);
-	const ana::Binning bins_ENu = ana::Binning::Simple(30, 0., 3.6);
+	const ana::Binning bins_ENu = ana::Binning::Simple(40, 0., 4.0);
 	HistAxis ha_ENu_Theta("#theta (deg)", bins_theta, kTrueElectronTheta,
 												"E_{#nu} (GeV)", bins_ENu, kCCE);
 
