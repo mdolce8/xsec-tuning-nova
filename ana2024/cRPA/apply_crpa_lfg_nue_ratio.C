@@ -126,5 +126,6 @@ void apply_crpa_lfg_nue_ratio(const std::string& beam)
 
 	c.SaveAs(Form("%s/plot_crpa_lfg_fd_%s_prod5.1_enu_theta_nue.png", outDir.c_str(),  beam.c_str()));
 
+	delete h2Ratio;
 
 }
