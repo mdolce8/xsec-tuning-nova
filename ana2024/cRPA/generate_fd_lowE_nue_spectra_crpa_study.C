@@ -135,7 +135,7 @@ void generate_fd_lowE_nue_spectra_crpa_study(const std::string& beam,        // 
 	// TODO: make PredictionNoExtraps of signal, signal + beam nues, signal + all bkgd.
 
 	// Cut is both Core and Peripheral OR LowE sample.
-  predNxp.try_emplace("pred_nxp_enu_theta_nue", new PredictionNoExtrap(loader, ha_ENu_Theta, !kNue2024FDLE, kNoShift, kPPFXFluxCVWgt * kXSecCVWgt2024));
+  predNxp.try_emplace("pred_nxp_enu_theta_nue", new PredictionNoExtrap(loader, ha_ENu_Theta, kNoCut, kNoShift, kPPFXFluxCVWgt * kXSecCVWgt2024));
 
   loader.Go();
 
