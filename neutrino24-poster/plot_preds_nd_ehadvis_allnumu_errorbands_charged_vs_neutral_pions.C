@@ -6,6 +6,7 @@
  * of the "new" RES and DIS systematics,
  * with the true Npi^+- > 0 component
  * for Neutrino 2024 (talk) and poster.
+ * Contains ONLY the RESvpn + DISHadro systs.
  *
  *
  *
@@ -22,7 +23,6 @@
 #include "3FlavorAna/NDFit/InitializeFit.h"
 #include "3FlavorAna/NDFit/NDFitHelper.h"
 #include "3FlavorAna/NDFit/NDFitEnums.h"
-#include "3FlavorAna/Systs/EnergySysts2020.h"
 
 #include "CAFAna/Analysis/Exposures.h"
 #include "CAFAna/Analysis/Plots.h"
@@ -47,54 +47,13 @@
 
 
 
-namespace files
+
+// map of the two files.
+std::map<std::string, std::string> FILE_NAMES
 {
-    struct PredIdentifier
-    {
-        ana::Loaders::FluxType horn;
-        std::string topology;
-
-        bool operator==(const PredIdentifier & other) const { return other.horn == horn && other.topology == topology; }
-    };
-    const std::unordered_map<std::string, std::vector<PredIdentifier>> ND_QUANTILE_PREDS
-            {
-                    {
-                            "nd-quantiles",
-                            {
-                                    {ana::Loaders::kRHC, "Q1"},
-                                    {ana::Loaders::kRHC, "Q2"},
-                                    {ana::Loaders::kRHC, "Q3"},
-                                    {ana::Loaders::kRHC, "Q4"},
-                                    {ana::Loaders::kRHC, "Q5"},
-
-                                    {ana::Loaders::kFHC, "Q1"},
-                                    {ana::Loaders::kFHC, "Q2"},
-                                    {ana::Loaders::kFHC, "Q3"},
-                                    {ana::Loaders::kFHC, "Q4"},
-                                    {ana::Loaders::kFHC, "Q5"},
-                            }
-                    },
-            };
-    const std::unordered_map<std::string, std::string> FILE_PATTERNS
-            {
-                    // Prod5.1 ND Reco Enu Quantile Cut pred Files
-                    {"xsec24", "pred_interp_nxp_%s_nd_%s_numu_%s.root"},
-                    {"resdis", "pred_interp_nxp_%s_nd_%s_numu_%s.root"},
-                    {"mecdg", "pred_interp_nxp_%s_nd_%s_numu_%s.root"},
-                    {"mecshape", "pred_interp_nxp_%s_nd_%s_numu_%s.root"}
-            };
-}
-
-namespace histogram
-{
-    // correct histogram: bin_content/bin_width
-    void NormalizeBinContent(TH1 * h1){
-      for (int binIdx = 0; binIdx < h1->GetNbinsX(); binIdx++) {
-        auto contentNormalized = h1->GetBinContent(binIdx) / h1->GetBinWidth(binIdx);
-        h1->SetBinContent(binIdx, contentNormalized);
-      }
-    }
-}
+				{"pred_interp_Q5", "pred_interp_Q5_nd_allnumu_%s_resvpvn_dishadro_ehadvis.root"},
+				{"pred_interp_Q5_chg_pi", "pred_interp_Q5_chg_pi_nd_allnumu_%s_resvpvn_dishadro_ehadvis.root"}
+};
 
 void NeutrinoLabel(const ndfit::NeutrinoType nu, const bool antiParticle = false){
   std::string nuLtx;
@@ -119,12 +78,10 @@ void plot_preds_nd_ehadvis_allnumu_errorbands_charged_vs_neutral_pions(const boo
 
   const std::string systString = "xsec24"; // --> all xsec24 systs.
 
-  std::string outDirPlot = "/nova/ana/users/mdolce/xsec-tuning-nova/plots/ana2024/plot_preds_nd_ehadvis_quantiles_errorbands";
-  if (plotData) outDirPlot += "/data/";
+  std::string outDirPlot = "/exp/nova/data/users/mdolce/xsec-tuning-nova/plots/neutrino24-poster/plot_preds_nd_ehadvis_allnumu_errorbands_charged_vs_neutral_pions";
 
   //load all systs that exist in the preds ROOT file
   NewRESDISSysts();
-  getAllXsecSysts_2020_GSF();
 
 
 
