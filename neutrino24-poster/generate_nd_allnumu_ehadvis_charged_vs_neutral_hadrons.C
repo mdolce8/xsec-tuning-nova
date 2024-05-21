@@ -22,6 +22,8 @@
 #include "CAFAna/Prediction/PredictionInterp.h"
 #include "CAFAna/Prediction/PredictionNoOsc.h"
 #include "CAFAna/Systs/XSecSystLists.h"
+#include "CAFAna/Systs/RESSysts.h"
+#include "CAFAna/Systs/DISSysts.h"
 #include "CAFAna/Weights/XsecTunes.h"
 #include "CAFAna/Weights/PPFXWeights.h"
 
@@ -66,11 +68,15 @@ void generate_nd_allnumu_ehadvis_charged_vs_neutral_hadrons(const std::string& b
   calc->SetTh13(asin(sqrt(2.18e-2)));
 
   // the xsec systs
-  std::vector<const ISyst*> xsecSysts = getAllXsecSysts_2024();
+  std::vector<const ISyst*> xsecSysts;
+	xsecSysts.push_back(&kRESvpvnRatioNuXSecSyst);
+	xsecSysts.push_back(&kRESvpvnRatioNubarXSecSyst);
+	xsecSysts.push_back(&kDISNuHadronQ1Syst);
+	xsecSysts.push_back(&kDISNuBarHadronQ0Syst);
 
 
   std::cout << "Ana2024 Box Opening........" << std::endl;
-  std::cout << "Plotting Prod5.1 FD Numu Quantile(s) MC with 2024 cuts in Reco Enu........" << std::endl;
+  std::cout << "Plotting Prod5.1 ND Numu AllNumu MC with 2024 cuts in EHadVis..... with true Npi^{+-} > 0........" << std::endl;
 
 
 // 		Definitions:
@@ -92,26 +98,25 @@ void generate_nd_allnumu_ehadvis_charged_vs_neutral_hadrons(const std::string& b
 
   if (defNonSwap.empty()) throw std::runtime_error( "MC SAM Definition is empty" );
 
-  std::vector<Cut> cutQuantiles = GetNumuEhadFracQuantCuts2024(beam != "fhc");
+	HistAxis histAxisEHadVis("Reco E_{had, vis} (GeV)", Binning::Simple(40, 0, 2.0), kNumuHadVisE);
 
-  HistAxis histAxisTrueW("True W (GeV)", Binning::Simple(40, 0.0, 2.0), kTrueW);
-
+	const ana::Cut kChargedPions([](const caf::SRProxy* sr) -> bool
+															 {
+																	 const caf::SRNeutrinoProxy& nu = sr->mc.nu[0];
+																	 if (nu.npiplus > 0) return true;
+																	 else if (nu.npiminus > 0) return true;
+																	 else return false;
+															 });
 
   std::map<std::string, NoOscPredictionGenerator> predGens;
   std::map<std::string, const PredictionInterp*> predInterps;
 
-	if (!test){
-		for (unsigned int quantileIdx = 0; quantileIdx < cutQuantiles.size(); quantileIdx++) {
-			predGens.try_emplace(Form("pred_interp_Q%d", quantileIdx + 1),
-													 NoOscPredictionGenerator(loader.GetLoader(caf::kNEARDET, Loaders::kMC), histAxisTrueW,
-																										kNumu2024ND && cutQuantiles[quantileIdx],
-																										kPPFXFluxCVWgt * kXSecCVWgt2024));
-		}
-	}
-
   // Q5 is Inclusive sample.
-  predGens.try_emplace(Form("pred_interp_Q%d", (int) cutQuantiles.size()+1),
-                       NoOscPredictionGenerator(loader.GetLoader(caf::kNEARDET, Loaders::kMC), histAxisTrueW, kNumu2024ND, kPPFXFluxCVWgt * kXSecCVWgt2024));
+  predGens.try_emplace("pred_interp_Q5",
+                       NoOscPredictionGenerator(loader.GetLoader(caf::kNEARDET, Loaders::kMC), histAxisEHadVis, kNumu2024ND, kPPFXFluxCVWgt * kXSecCVWgt2024));
+
+	predGens.try_emplace("pred_interp_Q5_chg_pi",
+											 NoOscPredictionGenerator(loader.GetLoader(caf::kNEARDET, Loaders::kMC), histAxisEHadVis, kNumu2024ND && kChargedPions, kPPFXFluxCVWgt * kXSecCVWgt2024));
 
   for (const auto &predGen : predGens) {
     predInterps.try_emplace(predGen.first,
@@ -129,11 +134,10 @@ void generate_nd_allnumu_ehadvis_charged_vs_neutral_hadrons(const std::string& b
 
 
   // save the PredInterps to each Quantile ROOT file
-  int quantileCount = 1;
   for (const std::pair<std::string, const PredictionInterp*> predPair : predInterps){
 
     // create ROOT file.
-    std::string fileName = Form("%s_nxp_xsec24_nd_%s_trueW.root", predPair.first.c_str(), beam.c_str());
+    std::string fileName = Form("%s_nd_allnumu_%s_resvpvn_dishadro_ehadvis.root", predPair.first.c_str(), beam.c_str());
     const std::string& finalOutDir = out_dir + "/" + fileName;
     TFile ofile(Form("%s", finalOutDir.c_str()), "recreate");
 
@@ -145,7 +149,6 @@ void generate_nd_allnumu_ehadvis_charged_vs_neutral_hadrons(const std::string& b
     ofile.Close();
     std::cout << "Wrote file: " << finalOutDir << std::endl;
 
-    quantileCount++;
   } // preds
 
 }
