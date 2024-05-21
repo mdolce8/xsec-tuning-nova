@@ -102,6 +102,7 @@ void generate_nd_allnumu_ehadvis_charged_vs_neutral_hadrons(const std::string& b
 
 	const ana::Cut kChargedPions([](const caf::SRProxy* sr) -> bool
 															 {
+																	 if (sr->mc.nnu < 1) return false;
 																	 const caf::SRNeutrinoProxy& nu = sr->mc.nu[0];
 																	 if (nu.npiplus > 0) return true;
 																	 else if (nu.npiminus > 0) return true;
