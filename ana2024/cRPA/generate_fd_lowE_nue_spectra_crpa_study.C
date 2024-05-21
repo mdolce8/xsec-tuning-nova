@@ -34,8 +34,6 @@
 
 using namespace ana;
 
-// TODO: need to change the Flavors:: to "all" (signal + background) and whatever Zoya requested...
-
 // =====================================================================================================
 void generate_fd_lowE_nue_spectra_crpa_study(const std::string& beam,        // fhc or rhc
 																			 	const bool gridSubmission = false
@@ -63,18 +61,19 @@ void generate_fd_lowE_nue_spectra_crpa_study(const std::string& beam,        // 
       Sign::Sign_t sign;
   };
 
-  std::map<std::string, Component> flavors = {
-          //{"nuecc", {Flavors::kAllNuE, Current::kCC, Sign::kBoth}},
-          {"beam_nuecc", {Flavors::kNuEToNuE, Current::kCC, Sign::kBoth}},
-          {"app_nuecc", {Flavors::kNuMuToNuE, Current::kCC, Sign::kNu}},
-          {"app_nuebarcc", {Flavors::kNuMuToNuE, Current::kCC, Sign::kAntiNu}},
+	// Request is LowE dists of: Signal, signal + beam nues, signal + all bkgd.
+	std::map<std::string, Component> flavors = {
+          {"nuecc", {Flavors::kAllNuE, Current::kCC, Sign::kBoth}}, // All
+          {"beam_nuecc", {Flavors::kNuEToNuE, Current::kCC, Sign::kBoth}}, // Beam Nue
+          {"app_nuecc", {Flavors::kNuMuToNuE, Current::kCC, Sign::kNu}}, // Signal
+          {"app_nuebarcc", {Flavors::kNuMuToNuE, Current::kCC, Sign::kAntiNu}}, // W.S. Signal
 //          {"numucc", {Flavors::kAllNuMu, Current::kCC, Sign::kBoth}},
 //          {"nc", {Flavors::kAll, Current::kNC, Sign::kBoth}}
   };
 
 
   std::cout << "Ana2024 CRPA study........" << std::endl;
-  std::cout << "Making spectra for FD Nue sample in Ev vs. theta space........" << std::endl;
+  std::cout << "Making spectra for FD LowE Nue sample in Ev vs. theta space........" << std::endl;
 
 
   // we are only looking at p1-10. no new periods
@@ -132,7 +131,6 @@ void generate_fd_lowE_nue_spectra_crpa_study(const std::string& beam,        // 
 	HistAxis ha_ENu_Theta("#theta (deg)", bins_theta, kTrueElectronTheta,
 												"E_{#nu} (GeV)", bins_ENu, kCCE);
 
-	// TODO: make PredictionNoExtraps of signal, signal + beam nues, signal + all bkgd.
 
 	// Cut is both Core and Peripheral OR LowE sample.
   predNxp.try_emplace("pred_nxp_enu_theta_nue", new PredictionNoExtrap(loader, ha_ENu_Theta, kNue2024FDLE, kNoShift, kPPFXFluxCVWgt * kXSecCVWgt2024));
