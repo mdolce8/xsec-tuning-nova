@@ -191,7 +191,7 @@ void plot_preds_nd_ehadvis_allnumu_errorbands_charged_vs_neutral_pions(const std
       auto * xAxisEHad = new TGaxis(0.001, 0.5, 0.8, 0.501, 0., 0.8, 10, "");
       xAxisEHad->SetLabelOffset(-0.015); // default is 0.005
       xAxisEHad->SetLabelFont(42);
-      xAxisEHad->SetTitle("E_{had}^{vis} (GeV)");
+      xAxisEHad->SetTitle("Hadronic Visible Energy (GeV)");
       xAxisEHad->SetTitleOffset(1.2);
       xAxisEHad->CenterTitle();
       xAxisEHad->SetTitleFont(42);
@@ -221,7 +221,7 @@ void plot_preds_nd_ehadvis_allnumu_errorbands_charged_vs_neutral_pions(const std
       TH1 * hCVPred = predBundle.pred->PredictSyst(calc2020BF.get(), SystShifts::Nominal()).ToTH1(predBundle.pot,
                                                                                                   EExposureType::kPOT,
                                                                                                   kBinDensity);
-		TLegend leg(0.45, 0.65, 0.9, 0.9);
+		TLegend leg(0.45, 0.6, 0.9, 0.85);
 		leg.SetFillColor(0);
 		leg.SetFillStyle(0);
 
