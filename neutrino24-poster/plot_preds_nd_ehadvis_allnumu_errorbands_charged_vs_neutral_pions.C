@@ -240,6 +240,7 @@ void plot_preds_nd_ehadvis_allnumu_errorbands_charged_vs_neutral_pions(const std
       hCVPred->SetMaximum(hCVPred->GetMaximum() * 2.0);
       hCVPred->GetXaxis()->SetLabelSize(0.0);
       hCVPred->GetXaxis()->SetTitleSize(0.0);
+			hCVPred->GetXaxis()->SetRangeUser(0., 0.8);
 
       TLegend leg(0.45, 0.65, 0.9, 0.9);
       leg.SetFillColor(0);
@@ -290,7 +291,7 @@ void plot_preds_nd_ehadvis_allnumu_errorbands_charged_vs_neutral_pions(const std
       hUnity->GetYaxis()->SetTitleSize(0.02);
       hUnity->GetYaxis()->SetLabelSize(0.02);
       hUnity->GetYaxis()->SetTitleOffset(1.5);
-      hUnity->SetYTitle("NOvA MC Ratio");
+      hUnity->SetYTitle("MC Ratio");
       hUnity->GetYaxis()->CenterTitle();
       xAxisEHad->Draw("same");
 
