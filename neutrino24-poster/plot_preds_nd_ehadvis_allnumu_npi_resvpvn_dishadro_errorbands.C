@@ -201,38 +201,32 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 
 
 		// do the plotting
-      c.cd();
+		c.cd();
 
-      /// Plot comparison and ratio on save canvas
-      SplitCanvas(0.25, p1, p2);
-      // EHadVis
-      //create the histograms for the PlotWithSystErrorBand() function
-      std::cout << "Producing EHadVis plots for " << predBundle.name << "......" << std::endl;
-      TH1 * hCVPred = predBundle.pred->PredictSyst(calc2020BF.get(), SystShifts::Nominal()).ToTH1(predBundle.pot,
-                                                                                                  EExposureType::kPOT,
-                                                                                                  kBinDensity);
+		/// Plot comparison and ratio on save canvas
+		SplitCanvas(0.25, p1, p2);
+		// EHadVis
+		//create the histograms for the PlotWithSystErrorBand() function
+		std::cout << "Producing EHadVis plots for " << predBundle.name << "......" << std::endl;
+		TH1 * hCVPred = predBundle.pred->PredictSyst(calc2020BF.get(), SystShifts::Nominal()).ToTH1(predBundle.pot,
+																																																EExposureType::kPOT,
+																																																kBinDensity);
 
-      // Rescale
-      hCVPred->SetLineColor(kGray + 2);
-      hCVPred->SetLineWidth(3);
-      hCVPred->Scale(scaleFactor);
-      for (TH1 * hist : up1Shifts)
-        hist->Scale(scaleFactor);
-      for (TH1 * hist : dn1Shifts)
-        hist->Scale(scaleFactor);
+		// Rescale
+		hCVPred->SetLineColor(kGray + 2);
+		hCVPred->SetLineWidth(3);
+		hCVPred->Scale(scaleFactor);
+		for (TH1 * hist : up1Shifts)
+			hist->Scale(scaleFactor);
+		for (TH1 * hist : dn1Shifts)
+			hist->Scale(scaleFactor);
 
 
-      p1->cd();
+		p1->cd();
 		auto ErrorBand = PlotWithSystErrorBand(hCVPred, up1Shifts, dn1Shifts, kGray + 2, kGray);
-		if (predCounter == 1) {
-			TH1D * hCVPredClone = (TH1D*) hCVPred->Clone("hCVPredClone");
-			hCVPredClone->SetLineColor(kGreen + 2);
-			hCVPredClone->SetFillColor(kGreen + 2);
-			hCVPredClone->SetFillColorAlpha(kGreen + 2, 0.5);
-			hCVPredClone->Draw("same hist");
-			leg.AddEntry(hCVPredClone, "True N#pi^{#pm} > 0", "f");
-		}
-		else {
+
+		// pred_interp_Q5
+		if (predCounter == 0) {
 			hCVPred->Draw("same hist e");
 			hCVPred->GetYaxis()->SetTitle("10^{6} Events / GeV");
 			hCVPred->GetYaxis()->SetTitleSize(0.036);
@@ -245,43 +239,60 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 			leg.AddEntry(up1Shifts.at(0), "#pm1#sigma #pi^{#pm} unc.", "f");
 		}
 
+		// pred_interp_Q5 chg pi
+		else if (predCounter == 1) {
+			TH1D * hCVPredClone = (TH1D*) hCVPred->Clone("hCVPredClone");
+			hCVPredClone->SetLineColor(kGreen + 2);
+			hCVPredClone->SetFillColor(kGreen + 2);
+			hCVPredClone->SetFillColorAlpha(kGreen + 2, 0.5);
+			hCVPredClone->Draw("same hist");
+			leg.AddEntry(hCVPredClone, "True N#pi^{#pm} > 0", "f");
+			hCVPredClone->SetTitle("; ; ");
+			hCVPredClone->GetXaxis()->SetLabelSize(0);
+		}
+		else {exit(0);}
 		up1Shifts.at(0)->SetFillColor(kGray);
 		up1Shifts.at(0)->SetLineColor(kGray);
 
-      /// EHadVis ratio
-      p2->cd();
-      TH1 *hUnity = (TH1F *) hCVPred->Clone("hEUnity");
-      hUnity->Divide(hCVPred);
+		/// EHadVis ratio
+		p2->cd();
+		TH1 *hUnity = (TH1F *) hCVPred->Clone("hEUnity");
+		hUnity->Divide(hCVPred);
 
 
-      ///create the ratios for the error bands
-      std::vector<TH1*> up1ShiftsRatio = up1Shifts;
-      std::vector<TH1*> dn1ShiftsRatio = dn1Shifts;
-      for (auto &hist: up1ShiftsRatio)
-        hist->Divide(hCVPred);
-      for (auto &hist: dn1ShiftsRatio)
-        hist->Divide(hCVPred);
+		///create the ratios for the error bands
+		std::vector<TH1*> up1ShiftsRatio = up1Shifts;
+		std::vector<TH1*> dn1ShiftsRatio = dn1Shifts;
+		for (auto &hist: up1ShiftsRatio)
+			hist->Divide(hCVPred);
+		for (auto &hist: dn1ShiftsRatio)
+			hist->Divide(hCVPred);
 
 
-      PlotWithSystErrorBand(hUnity, up1ShiftsRatio, dn1ShiftsRatio, kGray + 2, kGray);
+		PlotWithSystErrorBand(hUnity, up1ShiftsRatio, dn1ShiftsRatio, kGray + 2, kGray);
 
-			if (predCounter == 0) {
-				xAxisEHad->Draw("same");
-			}
+		if (predCounter == 0) {
+			xAxisEHad->Draw("same");
+			hUnity->GetXaxis()->CenterTitle();
+			hUnity->GetXaxis()->SetTitleOffset(1.);
+			hUnity->GetXaxis()->SetTitleSize(0.045);
+			hUnity->SetXTitle(""); // set from the TAxis object
+			hUnity->GetYaxis()->CenterTitle();
+			hUnity->GetYaxis()->SetRangeUser(0.5, 1.5);
+			hUnity->GetYaxis()->SetTitleSize(0.02);
+			hUnity->GetYaxis()->SetLabelSize(0.02);
+			hUnity->GetYaxis()->SetTitleOffset(1.5);
+			hUnity->SetYTitle("MC Ratio");
+			hUnity->GetYaxis()->CenterTitle();
+		}
 
-		hUnity->GetXaxis()->CenterTitle();
-		hUnity->GetXaxis()->SetTitleOffset(1.);
-		hUnity->GetXaxis()->SetTitleSize(0.045);
-		hUnity->SetXTitle(""); // set from the TAxis object
-		hUnity->GetYaxis()->CenterTitle();
-		hUnity->GetYaxis()->SetRangeUser(0.5, 1.5);
-		hUnity->GetYaxis()->SetTitleSize(0.02);
-		hUnity->GetYaxis()->SetLabelSize(0.02);
-		hUnity->GetYaxis()->SetTitleOffset(1.5);
-		hUnity->SetYTitle("MC Ratio");
-		hUnity->GetYaxis()->CenterTitle();
+		else if (predCounter == 1){
+			hUnity->SetTitle(";;");
+		}
 
- 	predCounter++;
+
+
+		predCounter++;
   } //predBundle in preds
 
 	p1->cd();
