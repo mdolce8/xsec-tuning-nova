@@ -91,9 +91,9 @@ void plot_preds_nd_ehadvis_allnumu_errorbands_charged_vs_neutral_pions(const std
   std::vector<ana::FitPredictions> preds;
   for (const auto &pairPredName: FILE_NAMES) {
 
-		const std::string path = inputDir + "/" + pairPredName.first;
+		const std::string path = inputDir + "/" + pairPredName.second;
 		TFile f(path.c_str());
-		auto p = ana::LoadFrom<PredictionInterp>(&f, pairPredName.second);
+		auto p = ana::LoadFrom<PredictionInterp>(&f, pairPredName.first);
 
 		if (!p)
 		{
