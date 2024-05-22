@@ -221,7 +221,9 @@ void plot_preds_nd_ehadvis_allnumu_errorbands_charged_vs_neutral_pions(const std
       TH1 * hCVPred = predBundle.pred->PredictSyst(calc2020BF.get(), SystShifts::Nominal()).ToTH1(predBundle.pot,
                                                                                                   EExposureType::kPOT,
                                                                                                   kBinDensity);
-
+		TLegend leg(0.45, 0.65, 0.9, 0.9);
+		leg.SetFillColor(0);
+		leg.SetFillStyle(0);
 
       // Rescale
       hCVPred->SetLineColor(kGray + 2);
@@ -241,6 +243,7 @@ void plot_preds_nd_ehadvis_allnumu_errorbands_charged_vs_neutral_pions(const std
 			hCVPredClone->SetFillColor(kGreen + 2);
 			hCVPredClone->SetFillColorAlpha(kGreen + 2, 0.5);
 			hCVPredClone->Draw("same hist");
+			leg.AddEntry(hCVPredClone, "True N#pi^{#pm} > 0", "f");
 		}
 		hCVPred->Draw("same hist e");
 		hCVPred->GetYaxis()->SetTitle("10^{6} Events / GeV");
@@ -251,9 +254,6 @@ void plot_preds_nd_ehadvis_allnumu_errorbands_charged_vs_neutral_pions(const std
       hCVPred->GetXaxis()->SetTitleSize(0.0);
 			hCVPred->GetXaxis()->SetRangeUser(0., 0.8);
 
-      TLegend leg(0.45, 0.65, 0.9, 0.9);
-      leg.SetFillColor(0);
-      leg.SetFillStyle(0);
       const std::string errorBands = "#pm1#sigma #pi^{#pm} unc.";
       const std::string cvPred = "NOvA 2024 MC";
       std::string legCVText;
