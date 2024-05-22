@@ -114,21 +114,6 @@ void plot_preds_nd_ehadvis_allnumu_errorbands_charged_vs_neutral_pions(const boo
 
 
 
-  // Load the ND Reco Enu Quantile data to get the pot.
-  std::cout << "Loading the ND data...." << std::endl;
-  std::map<std::string, ana::Spectrum> dataSpectra;
-  const std::string& dataPath = "/nova/ana/users/mdolce/preds+spectra/ana2024/initialize_nd_ehadvis_quantiles_data_ana2024/";
-  for (std::string beam : {"fhc","rhc"}){
-    for (const std::string& q : {"Q1", "Q2", "Q3", "Q4", "Q5"}){
-      const std::string& dataFilename = Form("nd_ehadvis_prod5.1_data_%s_numu_%s.root", beam.c_str(), q.c_str());
-      const std::string& filenameStr = dataPath + "/" + dataFilename;
-      TFile* infileData= TFile::Open(filenameStr.c_str(), "read");
-      const std::string spectraName = Form("%s_nd_pred_interp_%s", beam.c_str(), q.c_str());
-      // I am giving this map an R-value, which is a temporary object and has no name.
-      dataSpectra.try_emplace(spectraName, *ana::Spectrum::LoadFrom(infileData, Form("pred_interp_%s", q.c_str()))); // this works, ignore the CLion error
-    } // quantiles
-  } // beam
-
 
   auto calc2020BF = std::make_unique<osc::OscCalcAnalytic>();
   ndfit::Calculator2020BestFit(*calc2020BF);
