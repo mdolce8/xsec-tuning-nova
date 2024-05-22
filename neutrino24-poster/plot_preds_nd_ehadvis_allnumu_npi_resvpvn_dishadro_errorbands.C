@@ -241,12 +241,12 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 			hCVPred->GetXaxis()->SetLabelSize(0.0);
 			hCVPred->GetXaxis()->SetTitleSize(0.0);
 			hCVPred->GetXaxis()->SetRangeUser(0., 0.8);
+			leg.AddEntry(hCVPred, "NOvA 2024 MC", "l");
+			leg.AddEntry(up1Shifts.at(0), "#pm1#sigma #pi^{#pm} unc.", "f");
 		}
 
-      leg.AddEntry(hCVPred, "NOvA 2024 MC", "l");
-      up1Shifts.at(0)->SetFillColor(kGray);
-      up1Shifts.at(0)->SetLineColor(kGray);
-      leg.AddEntry(up1Shifts.at(0), "#pm1#sigma #pi^{#pm} unc.", "f");
+		up1Shifts.at(0)->SetFillColor(kGray);
+		up1Shifts.at(0)->SetLineColor(kGray);
 
       /// EHadVis ratio
       p2->cd();
@@ -266,20 +266,20 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
       PlotWithSystErrorBand(hUnity, up1ShiftsRatio, dn1ShiftsRatio, kGray + 2, kGray);
 
 			if (predCounter == 0) {
-				hUnity->GetXaxis()->CenterTitle();
-				hUnity->GetXaxis()->SetTitleOffset(1.);
-				hUnity->GetXaxis()->SetTitleSize(0.045);
-				hUnity->SetXTitle(""); // set from the TAxis object
-				hUnity->GetYaxis()->CenterTitle();
-				hUnity->GetYaxis()->SetRangeUser(0.5, 1.5);
-				hUnity->GetYaxis()->SetTitleSize(0.02);
-				hUnity->GetYaxis()->SetLabelSize(0.02);
-				hUnity->GetYaxis()->SetTitleOffset(1.5);
-				hUnity->SetYTitle("MC Ratio");
-				hUnity->GetYaxis()->CenterTitle();
 				xAxisEHad->Draw("same");
 			}
 
+		hUnity->GetXaxis()->CenterTitle();
+		hUnity->GetXaxis()->SetTitleOffset(1.);
+		hUnity->GetXaxis()->SetTitleSize(0.045);
+		hUnity->SetXTitle(""); // set from the TAxis object
+		hUnity->GetYaxis()->CenterTitle();
+		hUnity->GetYaxis()->SetRangeUser(0.5, 1.5);
+		hUnity->GetYaxis()->SetTitleSize(0.02);
+		hUnity->GetYaxis()->SetLabelSize(0.02);
+		hUnity->GetYaxis()->SetTitleOffset(1.5);
+		hUnity->SetYTitle("MC Ratio");
+		hUnity->GetYaxis()->CenterTitle();
 
  	predCounter++;
   } //predBundle in preds
