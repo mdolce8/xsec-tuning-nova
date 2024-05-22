@@ -141,20 +141,40 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
   TCanvas c("c","c", 600,600); // 900, 600
   TPad * p1, * p2; //p1 upper, p2 lower
 
+	auto * xAxisEHad = new TGaxis(0.001, 0.5, 0.8, 0.501, 0., 0.8, 10, "");
+	xAxisEHad->SetLabelOffset(-0.015); // default is 0.005
+	xAxisEHad->SetLabelFont(42);
+	xAxisEHad->SetTitle("Hadronic Visible Energy (GeV)");
+	xAxisEHad->SetTitleOffset(1.2);
+	xAxisEHad->CenterTitle();
+	xAxisEHad->SetTitleFont(42);
 
-  // set scale factors here.
+	//pavetext to print out the events
+	TPaveText ptEnuEvents(0.7, 0.60, 0.85, 0.67, "ARC NDC");
+	ptEnuEvents.SetFillColor(0);
+	ptEnuEvents.SetFillStyle(0);
+	ptEnuEvents.SetBorderSize(0);
+	ptEnuEvents.SetTextSize(0.032);
+	ptEnuEvents.SetTextFont(102);
+
+	TLegend leg(0.45, 0.6, 0.9, 0.85);
+	leg.SetFillColor(0);
+	leg.SetFillStyle(0);
+
+	// set scale factors here.
   const double scaleFactor = 1e-6;
 
+	// Assumption: we know the predictions are the both from AllNumu (Q5) sample.
+	const ndfit::Quantiles q = ndfit::visuals::GetQuantileEnum(preds[0].name);
+	const std::string quantileString = ndfit::visuals::GetQuantileString(q);
+	const std::string beamType = ndfit::visuals::GetHornCurrent(preds[0].name);
+	hc = beamType;
 
+	// first: Q5. second: Q5_chg_pi
 	int predCounter = 0;
   std::cout << "Plotting the ratio and predictions" << std::endl;
   for (const auto &predBundle : preds) {
     std::cout << predBundle.name << "......." << std::endl;
-
-    const ndfit::Quantiles q = ndfit::visuals::GetQuantileEnum(predBundle.name);
-    const std::string quantileString = ndfit::visuals::GetQuantileString(q);
-    const std::string beamType = ndfit::visuals::GetHornCurrent(predBundle.name);
-		hc = beamType;
 
     /// create the error bands -- one vector for each prediction.
     std::vector<TH1*> up1Shifts, dn1Shifts;
@@ -165,52 +185,23 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 		for (const auto &syst : systs) {
       std::cout << "Looping through syst....." << syst->ShortName() << std::endl;
 
-
       SystShifts pm1SigmaShift;
       pm1SigmaShift.SetShift(syst, +1.);
       TH1 *hUp1 = predBundle.pred->PredictSyst(calc2020BF.get(), pm1SigmaShift).ToTH1(predBundle.pot,
                                                                                       EExposureType::kPOT,
                                                                                       kBinDensity);
-//      std::cout << "Up integral: " << hUp1->Integral() << std::endl;
       up1Shifts.push_back(hUp1);
 
       pm1SigmaShift.SetShift(syst, -1.);
       TH1 *hDn1 = predBundle.pred->PredictSyst(calc2020BF.get(), pm1SigmaShift).ToTH1(predBundle.pot,
                                                                                       EExposureType::kPOT,
                                                                                       kBinDensity);
-//      std::cout << "Down integral: " << hDn1->Integral() << std::endl;
       dn1Shifts.push_back(hDn1);
-
     } // systs to create error bands
 
 
 		// do the plotting
       c.cd();
-
-      auto * xAxisEHad = new TGaxis(0.001, 0.5, 0.8, 0.501, 0., 0.8, 10, "");
-      xAxisEHad->SetLabelOffset(-0.015); // default is 0.005
-      xAxisEHad->SetLabelFont(42);
-      xAxisEHad->SetTitle("Hadronic Visible Energy (GeV)");
-      xAxisEHad->SetTitleOffset(1.2);
-      xAxisEHad->CenterTitle();
-      xAxisEHad->SetTitleFont(42);
-
-      //pavetext to print out the events
-      TPaveText ptEnuEvents(0.7, 0.60, 0.85, 0.67, "ARC NDC");
-      ptEnuEvents.SetFillColor(0);
-      ptEnuEvents.SetFillStyle(0);
-      ptEnuEvents.SetBorderSize(0);
-      ptEnuEvents.SetTextSize(0.032);
-      ptEnuEvents.SetTextFont(102);
-
-      // contains all systs
-//      PlotWithSystErrorBand((IPrediction *&) predBundle.pred, systs, calc2020BF.get(), predBundle.pot, kGray + 2, kGray);
-//      c.SaveAs(ndfit::FullFilename(outDirPlot, "profiled_error_bands_plot_" + predBundle.name + ".png").c_str());
-//      c.Clear();
-      // 2D profile
-
-
-
 
       /// Plot comparison and ratio on save canvas
       SplitCanvas(0.25, p1, p2);
@@ -220,9 +211,6 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
       TH1 * hCVPred = predBundle.pred->PredictSyst(calc2020BF.get(), SystShifts::Nominal()).ToTH1(predBundle.pot,
                                                                                                   EExposureType::kPOT,
                                                                                                   kBinDensity);
-		TLegend leg(0.45, 0.6, 0.9, 0.85);
-		leg.SetFillColor(0);
-		leg.SetFillStyle(0);
 
       // Rescale
       hCVPred->SetLineColor(kGray + 2);
@@ -236,7 +224,7 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 
       p1->cd();
 		auto ErrorBand = PlotWithSystErrorBand(hCVPred, up1Shifts, dn1Shifts, kGray + 2, kGray);
-		if (predCounter != 0) {
+		if (predCounter == 1) {
 			TH1D * hCVPredClone = (TH1D*) hCVPred->Clone("hCVPredClone");
 			hCVPredClone->SetLineColor(kGreen + 2);
 			hCVPredClone->SetFillColor(kGreen + 2);
@@ -244,37 +232,24 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 			hCVPredClone->Draw("same hist");
 			leg.AddEntry(hCVPredClone, "True N#pi^{#pm} > 0", "f");
 		}
-		hCVPred->Draw("same hist e");
-		hCVPred->GetYaxis()->SetTitle("10^{6} Events / GeV");
-      hCVPred->GetYaxis()->SetTitleSize(0.036);
-      hCVPred->GetYaxis()->SetTitleOffset(1.1);
-      hCVPred->SetMaximum(hCVPred->GetMaximum() * 2.0);
-      hCVPred->GetXaxis()->SetLabelSize(0.0);
-      hCVPred->GetXaxis()->SetTitleSize(0.0);
+		else {
+			hCVPred->Draw("same hist e");
+			hCVPred->GetYaxis()->SetTitle("10^{6} Events / GeV");
+			hCVPred->GetYaxis()->SetTitleSize(0.036);
+			hCVPred->GetYaxis()->SetTitleOffset(1.1);
+			hCVPred->SetMaximum(hCVPred->GetMaximum() * 2.0);
+			hCVPred->GetXaxis()->SetLabelSize(0.0);
+			hCVPred->GetXaxis()->SetTitleSize(0.0);
 			hCVPred->GetXaxis()->SetRangeUser(0., 0.8);
+		}
 
-      const std::string errorBands = "#pm1#sigma #pi^{#pm} unc.";
-      const std::string cvPred = "NOvA 2024 MC";
-      std::string legCVText;
-      leg.AddEntry(hCVPred, cvPred.c_str(), "l");
+      leg.AddEntry(hCVPred, "NOvA 2024 MC", "l");
       up1Shifts.at(0)->SetFillColor(kGray);
       up1Shifts.at(0)->SetLineColor(kGray);
-      leg.AddEntry(up1Shifts.at(0), Form("%s", errorBands.c_str()), "f");
-      leg.Draw("same");
-      TLatex latex;
-      latex.SetTextSize(0.04);
-      latex.SetTextAlign(13);
-      latex.DrawLatexNDC(.15, .85, (Form("%s", beamType.c_str())));
-      latex.DrawLatexNDC(.15, .8, Form("%s", quantileString.c_str()));
-      latex.Draw("same");
-//    ptEnuEvents.Draw("same");
-      Simulation();
-      NeutrinoLabel(ndfit::NeutrinoType::kNumu, beamType == "Antineutrino Beam");
-      ndfit::visuals::DetectorLabel(caf::kNEARDET);
+      leg.AddEntry(up1Shifts.at(0), "#pm1#sigma #pi^{#pm} unc.", "f");
 
       /// EHadVis ratio
       p2->cd();
-      p2->SetGridy(1);
       TH1 *hUnity = (TH1F *) hCVPred->Clone("hEUnity");
       hUnity->Divide(hCVPred);
 
@@ -290,24 +265,42 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 
       PlotWithSystErrorBand(hUnity, up1ShiftsRatio, dn1ShiftsRatio, kGray + 2, kGray);
 
-      hUnity->GetXaxis()->CenterTitle();
-      hUnity->GetXaxis()->SetTitleOffset(1.);
-      hUnity->GetXaxis()->SetTitleSize(0.045);
-      hUnity->SetXTitle(""); // set from the TAxis object
-      hUnity->GetYaxis()->CenterTitle();
-      hUnity->GetYaxis()->SetRangeUser(0.5, 1.5);
-      hUnity->GetYaxis()->SetTitleSize(0.02);
-      hUnity->GetYaxis()->SetLabelSize(0.02);
-      hUnity->GetYaxis()->SetTitleOffset(1.5);
-      hUnity->SetYTitle("MC Ratio");
-      hUnity->GetYaxis()->CenterTitle();
-      xAxisEHad->Draw("same");
+			if (predCounter == 0) {
+				hUnity->GetXaxis()->CenterTitle();
+				hUnity->GetXaxis()->SetTitleOffset(1.);
+				hUnity->GetXaxis()->SetTitleSize(0.045);
+				hUnity->SetXTitle(""); // set from the TAxis object
+				hUnity->GetYaxis()->CenterTitle();
+				hUnity->GetYaxis()->SetRangeUser(0.5, 1.5);
+				hUnity->GetYaxis()->SetTitleSize(0.02);
+				hUnity->GetYaxis()->SetLabelSize(0.02);
+				hUnity->GetYaxis()->SetTitleOffset(1.5);
+				hUnity->SetYTitle("MC Ratio");
+				hUnity->GetYaxis()->CenterTitle();
+				xAxisEHad->Draw("same");
+			}
 
-
-      ndfit::visuals::DetectorLabel(predBundle.det);
 
  	predCounter++;
   } //predBundle in preds
+
+	p1->cd();
+	leg.Draw("same");
+	TLatex latex;
+	latex.SetTextSize(0.04);
+	latex.SetTextAlign(13);
+	latex.DrawLatexNDC(.15, .85, hc.c_str());
+	latex.DrawLatexNDC(.15, .8,  quantileString.c_str());
+	latex.Draw("same");
+//    ptEnuEvents.Draw("same");
+	Simulation();
+	NeutrinoLabel(ndfit::NeutrinoType::kNumu, beamType == "Antineutrino Beam");
+	ndfit::visuals::DetectorLabel(caf::kNEARDET);
+
+	// ratio visuals
+	p2->cd();
+	p2->SetGridy(1);
+
 
 	const std::string plotname = Form("plot_nd_allnumu_npi_%s_EHadVis_resvpvn_dishadro_errorbands", beam.c_str());
 	for (const auto &ext: {".png", ".pdf"}) // ".root"
