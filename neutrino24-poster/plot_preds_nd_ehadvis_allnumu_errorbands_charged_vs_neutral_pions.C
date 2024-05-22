@@ -77,14 +77,12 @@ void plot_preds_nd_ehadvis_allnumu_errorbands_charged_vs_neutral_pions(const std
 // =====================================================================================================
 {
 
-  const std::string systString = "xsec24"; // --> all xsec24 systs.
-
   std::string outDirPlot = "/exp/nova/data/users/mdolce/xsec-tuning-nova/plots/neutrino24-poster/plot_preds_nd_ehadvis_allnumu_errorbands_charged_vs_neutral_pions";
 
   //load all systs that exist in the preds ROOT file
   NewRESDISSysts();
 
-
+	std::string hc;
 
   // Load the ND predictions.
   const std::string& inputDir = "/exp/nova/data/users/mdolce/preds+spectra/ana2024/neutrino24-poster/generate_nd_allnumu_ehadvis_charged_vs_neutral_hadrons/test";
@@ -138,7 +136,7 @@ void plot_preds_nd_ehadvis_allnumu_errorbands_charged_vs_neutral_pions(const std
 	std::cout << "Total number of systs found: " << systs.size() << std::endl;
 
 
-
+	// canvas for drawing BOTH preds together on same axis
   TCanvas c("c","c", 600,600); // 900, 600
   TPad * p1, * p2; //p1 upper, p2 lower
 
@@ -155,6 +153,7 @@ void plot_preds_nd_ehadvis_allnumu_errorbands_charged_vs_neutral_pions(const std
     const ndfit::Quantiles q = ndfit::visuals::GetQuantileEnum(predBundle.name);
     const std::string quantileString = ndfit::visuals::GetQuantileString(q);
     const std::string beamType = ndfit::visuals::GetHornCurrent(predBundle.name);
+		hc = beamType;
 
     /// create the error bands -- one vector for each prediction.
     std::vector<TH1*> up1Shifts, dn1Shifts;
@@ -186,7 +185,6 @@ void plot_preds_nd_ehadvis_allnumu_errorbands_charged_vs_neutral_pions(const std
 
 		// do the plotting
       c.cd();
-      c.Clear();
 
       auto * xAxisEHad = new TGaxis(0.001, 0.5, 0.8, 0.501, 0., 0.8, 10, "");
       xAxisEHad->SetLabelOffset(-0.015); // default is 0.005
@@ -205,9 +203,9 @@ void plot_preds_nd_ehadvis_allnumu_errorbands_charged_vs_neutral_pions(const std
       ptEnuEvents.SetTextFont(102);
 
       // contains all systs
-      PlotWithSystErrorBand((IPrediction *&) predBundle.pred, systs, calc2020BF.get(), predBundle.pot, kGray + 2, kGray);
-      c.SaveAs(ndfit::FullFilename(outDirPlot, "profiled_error_bands_plot_" + predBundle.name + ".png").c_str());
-      c.Clear();
+//      PlotWithSystErrorBand((IPrediction *&) predBundle.pred, systs, calc2020BF.get(), predBundle.pot, kGray + 2, kGray);
+//      c.SaveAs(ndfit::FullFilename(outDirPlot, "profiled_error_bands_plot_" + predBundle.name + ".png").c_str());
+//      c.Clear();
       // 2D profile
 
 
@@ -306,24 +304,26 @@ void plot_preds_nd_ehadvis_allnumu_errorbands_charged_vs_neutral_pions(const std
 
 
       ndfit::visuals::DetectorLabel(predBundle.det);
-      for (const auto &ext: {".png", ".pdf"}) // ".root"
-        c.SaveAs(ndfit::FullFilename(outDirPlot, "plot_" + predBundle.name + "_EHadVis_xsec24_errorbands" + ext).c_str());
-
-    // write captions here...
-    if (saveCaptions) {
-      std::ofstream ofile;
-      ofile.open(ndfit::FullFilename(outDirPlot, "plot_" + predBundle.name + "_EHadVis_xsec24_errorbands" + ".txt").c_str());
-      ofile << "Near Detector " << beamType << " Prod5.1 Ana2024 Monte Carlo prediction in the hadronic energy fraction:  " << quantileString
-                << ". The variable in this plot is reconstructed hadronic visible energy (in dark grey)."
-                   " The light grey band is the 1 sigma error from all NOvA cross-section uncertainties for the Ana2024 analysis."
-                   " This includes the new RES and DIS uncertainties from the ND fitting work."
-                   " The top distribution is the number of events, and the bottom is the ratio from the MC." << std::endl;
-      ofile.close();
-    }
 
  	predCounter++;
   } //predBundle in preds
 
+	const std::string plotname = Form("plot_nd_allnumu_npi_%s_EHadVis_resvpvn_dishadro_errorbands", beam.c_str());
+	for (const auto &ext: {".png", ".pdf"}) // ".root"
+		c.SaveAs(ndfit::FullFilename(outDirPlot, plotname + ext).c_str());
+
+	// write captions here...
+	if (saveCaptions) {
+		std::ofstream ofile;
+		ofile.open(ndfit::FullFilename(outDirPlot, plotname + ".txt").c_str());
+		ofile << "Near Detector " << hc << " Prod5.1 Ana2024 Monte Carlo prediction in hadronic visible energy. "
+						 " The prediction is broken down by the total ND selected sample (grey) and the component that contains"
+						 " at least one true charged pion, pre-FSI (green). "
+						 " The light grey band is the 1 sigma error from NOvA's RESvp/vn Nu and Nubar systematics and "
+						 "DIS Nu and Nubar hadronization systematics, implemented for the first time in the Ana2024 analysis."
+						 " The top distribution is the number of events; the bottom is the ratio relative to the nominal MC." << std::endl;
+		ofile.close();
+	}
 
 
 }
