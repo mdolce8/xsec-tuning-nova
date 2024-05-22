@@ -318,7 +318,7 @@ void plot_preds_nd_ehadvis_allnumu_errorbands_charged_vs_neutral_pions(const std
       ofile.close();
     }
 
-
+ 	predCounter++;
   } //predBundle in preds
 
 
