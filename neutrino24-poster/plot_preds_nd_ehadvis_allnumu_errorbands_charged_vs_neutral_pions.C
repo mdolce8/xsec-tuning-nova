@@ -57,7 +57,7 @@ std::map<std::string, std::string> FILE_NAMES
 
 void NeutrinoLabel(const ndfit::NeutrinoType nu, const bool antiParticle = false){
   std::string nuLtx;
-  std::cout << "antiNeutrino ? " << antiParticle << std::endl;
+//  std::cout << "antiNeutrino ? " << antiParticle << std::endl;
   nu == ndfit::NeutrinoType::kNue ? nuLtx = "#nu_{e}" : nuLtx = "#nu_{#mu}";
   if (antiParticle) nuLtx = "#bar{" + nuLtx + "}";
   auto * prelim = new TLatex(.25, .7, Form("%s", nuLtx.c_str())); // top left: below topology, horn
@@ -110,7 +110,7 @@ void plot_preds_nd_ehadvis_allnumu_errorbands_charged_vs_neutral_pions(const std
 
 		ana::FitPredictions pred {
 			"fhc_nd_" + pairPredName.first,
-			p.release(),
+			p.release(),  // ignore, this is the right thing to do.
 			{nullptr, 0.},
 			pot,
 			0.,
@@ -147,6 +147,7 @@ void plot_preds_nd_ehadvis_allnumu_errorbands_charged_vs_neutral_pions(const std
   const double scaleFactor = 1e-6;
 
 
+	int predCounter = 0;
   std::cout << "Plotting the ratio and predictions" << std::endl;
   for (const auto &predBundle : preds) {
     std::cout << predBundle.name << "......." << std::endl;
@@ -220,6 +221,11 @@ void plot_preds_nd_ehadvis_allnumu_errorbands_charged_vs_neutral_pions(const std
       TH1 * hCVPred = predBundle.pred->PredictSyst(calc2020BF.get(), SystShifts::Nominal()).ToTH1(predBundle.pot,
                                                                                                   EExposureType::kPOT,
                                                                                                   kBinDensity);
+
+			if (predCounter != 0) {
+				hCVPred->SetLineColor(kGreen + 2);
+				hCVPred->SetFillColor(kGreen + 2);
+			}
 
       // Rescale
       hCVPred->SetLineColor(kGray + 2);
