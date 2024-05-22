@@ -109,7 +109,7 @@ void plot_preds_nd_ehadvis_allnumu_errorbands_charged_vs_neutral_pions(const std
 		const double pot = beam == "fhc" ? kAna2024FHCPOT : kAna2024RHCPOT;
 
 		ana::FitPredictions pred {
-			"fhc_nd_" + pairPredName.first,
+			beam + "_nd_" + pairPredName.first,
 			p.release(),  // ignore, this is the right thing to do.
 			{nullptr, 0.},
 			pot,
