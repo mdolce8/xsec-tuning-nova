@@ -215,6 +215,8 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 		// Rescale
 		hCVPred->SetLineColor(kGray + 2);
 		hCVPred->SetLineWidth(3);
+		hCVPred->SetTitle(";;");
+		hCVPred->GetXaxis()->SetLabelSize(0);
 		hCVPred->Scale(scaleFactor);
 		for (TH1 * hist : up1Shifts)
 			hist->Scale(scaleFactor);
@@ -242,7 +244,7 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 		// pred_interp_Q5 chg pi
 		else if (predCounter == 1) {
 			TH1D * hCVPredClone = (TH1D*) hCVPred->Clone("hCVPredClone");
-			hCVPredClone->SetLineColor(kGreen + 2);
+			hCVPredClone->SetLineColor(kGreen + 4); // slightly darker.
 			hCVPredClone->SetFillColor(kGreen + 2);
 			hCVPredClone->SetFillColorAlpha(kGreen + 2, 0.5);
 			hCVPredClone->Draw("same hist");
