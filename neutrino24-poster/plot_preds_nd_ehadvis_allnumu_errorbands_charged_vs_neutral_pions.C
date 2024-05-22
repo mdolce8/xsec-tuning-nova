@@ -87,7 +87,7 @@ void plot_preds_nd_ehadvis_allnumu_errorbands_charged_vs_neutral_pions(const std
 
 
   // Load the ND predictions.
-  const std::string& inputDir = "/nova/ana/users/mdolce/preds+spectra/ana2024/generate_nd_ehadvis_quantiles_predictions_ana2024/";
+  const std::string& inputDir = "/exp/nova/data/users/mdolce/preds+spectra/ana2024/neutrino24-poster/generate_nd_allnumu_ehadvis_charged_vs_neutral_hadrons/test";
   std::vector<ana::FitPredictions> preds;
   for (const auto &pairPredName: FILE_NAMES) {
 
