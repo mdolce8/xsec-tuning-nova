@@ -146,11 +146,8 @@ void plot_preds_nd_ehadvis_allnumu_errorbands_charged_vs_neutral_pions(const std
   // set scale factors here.
   const double scaleFactor = 1e-6;
 
-  int sampleType = 0;
 
-  std::cout << "Plotting the ratio and fitted predictions with data" << std::endl;
-  std::cout << "Looping through systematics. Total number of systematics: " << systs.size() << std::endl;
-
+  std::cout << "Plotting the ratio and predictions" << std::endl;
   for (const auto &predBundle : preds) {
     std::cout << predBundle.name << "......." << std::endl;
 
@@ -175,22 +172,23 @@ void plot_preds_nd_ehadvis_allnumu_errorbands_charged_vs_neutral_pions(const std
     /// create the error bands -- one vector for each prediction.
     std::vector<TH1*> up1Shifts, dn1Shifts;
 
-    // use the systs from each specific topology
+    // use the systs to create error bands
     // Use ONLY the systs that were used in the fitting...
-    for (const auto &syst : systs) {
-//      std::cout << "Looping through syst....." << syst->ShortName() << std::endl;
+		std::cout << "Looping through systematics. Total number of systematics: " << systs.size() << std::endl;
+		for (const auto &syst : systs) {
+      std::cout << "Looping through syst....." << syst->ShortName() << std::endl;
 
 
       SystShifts pm1SigmaShift;
       pm1SigmaShift.SetShift(syst, +1.);
-      TH1 *hUp1 = predBundle.pred->PredictSyst(calc2020BF.get(), pm1SigmaShift).ToTH1(POT,
+      TH1 *hUp1 = predBundle.pred->PredictSyst(calc2020BF.get(), pm1SigmaShift).ToTH1(predBundle.pot,
                                                                                       EExposureType::kPOT,
                                                                                       kBinDensity);
 //      std::cout << "Up integral: " << hUp1->Integral() << std::endl;
       up1Shifts.push_back(hUp1);
 
       pm1SigmaShift.SetShift(syst, -1.);
-      TH1 *hDn1 = predBundle.pred->PredictSyst(calc2020BF.get(), pm1SigmaShift).ToTH1(POT,
+      TH1 *hDn1 = predBundle.pred->PredictSyst(calc2020BF.get(), pm1SigmaShift).ToTH1(predBundle.pot,
                                                                                       EExposureType::kPOT,
                                                                                       kBinDensity);
 //      std::cout << "Down integral: " << hDn1->Integral() << std::endl;
@@ -199,11 +197,9 @@ void plot_preds_nd_ehadvis_allnumu_errorbands_charged_vs_neutral_pions(const std
     } // systs to create error bands
 
 
+		// do the plotting
       c.cd();
       c.Clear();
-
-
-
 
       auto * xAxisEHad = new TGaxis(0.001, 0.5, 0.8, 0.501, 0., 0.8, 10, "");
       xAxisEHad->SetLabelOffset(-0.015); // default is 0.005
@@ -213,9 +209,7 @@ void plot_preds_nd_ehadvis_allnumu_errorbands_charged_vs_neutral_pions(const std
       xAxisEHad->CenterTitle();
       xAxisEHad->SetTitleFont(42);
 
-
-
-      //pavetext to print out the events for each topology
+      //pavetext to print out the events
       TPaveText ptEnuEvents(0.7, 0.60, 0.85, 0.67, "ARC NDC");
       ptEnuEvents.SetFillColor(0);
       ptEnuEvents.SetFillStyle(0);
@@ -223,9 +217,8 @@ void plot_preds_nd_ehadvis_allnumu_errorbands_charged_vs_neutral_pions(const std
       ptEnuEvents.SetTextSize(0.032);
       ptEnuEvents.SetTextFont(102);
 
-
       // contains all systs
-      PlotWithSystErrorBand((IPrediction *&) predBundle.pred, systs, calc2020BF.get(), POT, kGray + 2, kGray);
+      PlotWithSystErrorBand((IPrediction *&) predBundle.pred, systs, calc2020BF.get(), predBundle.pot, kGray + 2, kGray);
       c.SaveAs(ndfit::FullFilename(outDirPlot, "profiled_error_bands_plot_" + predBundle.name + ".png").c_str());
       c.Clear();
       // 2D profile
@@ -272,7 +265,7 @@ void plot_preds_nd_ehadvis_allnumu_errorbands_charged_vs_neutral_pions(const std
       TLegend leg(0.45, 0.65, 0.9, 0.9);
       leg.SetFillColor(0);
       leg.SetFillStyle(0);
-      const std::string errorBands = "#pm1#sigma xsec24";
+      const std::string errorBands = "#pm1#sigma #pi^{#pm} unc.";
       const std::string cvPred = "NOvA 2024 MC";
       std::string legCVText;
       leg.AddEntry(hCVPred, cvPred.c_str(), "l");
@@ -349,7 +342,6 @@ void plot_preds_nd_ehadvis_allnumu_errorbands_charged_vs_neutral_pions(const std
     }
 
 
-    sampleType++;
   } //predBundle in preds
 
 
