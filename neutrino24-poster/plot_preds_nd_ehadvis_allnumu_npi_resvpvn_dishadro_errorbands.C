@@ -164,6 +164,8 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 	// set scale factors here.
   const double scaleFactor = 1e-6;
 
+	double histMax = -5;
+
 	// Assumption: we know the predictions are the both from AllNumu (Q5) sample.
 	const ndfit::Quantiles q = ndfit::visuals::GetQuantileEnum(preds[0].name);
 	const std::string quantileString = ndfit::visuals::GetQuantileString(q);
@@ -233,7 +235,8 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 			hCVPred->GetYaxis()->SetTitle("10^{6} Events / GeV");
 			hCVPred->GetYaxis()->SetTitleSize(0.036);
 			hCVPred->GetYaxis()->SetTitleOffset(1.1);
-			hCVPred->SetMaximum(hCVPred->GetMaximum() * 2.0);
+			histMax = hCVPred->GetMaximum() * 2.0;
+			hCVPred->SetMaximum(histMax);
 			hCVPred->GetXaxis()->SetLabelSize(0.0);
 			hCVPred->GetXaxis()->SetTitleSize(0.0);
 			hCVPred->GetXaxis()->SetRangeUser(0., 0.8);
@@ -251,6 +254,7 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 			leg.AddEntry(hCVPredClone, "True N#pi^{#pm} > 0", "f");
 			hCVPredClone->SetTitle("; ; ");
 			hCVPredClone->GetXaxis()->SetLabelSize(0);
+			hCVPredClone->SetMaximum(histMax);
 		}
 		else {exit(0);}
 		up1Shifts.at(0)->SetFillColor(kGray);
@@ -260,6 +264,17 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 		p2->cd();
 		TH1 *hUnity = (TH1F *) hCVPred->Clone("hEUnity");
 		hUnity->Divide(hCVPred);
+		hUnity->SetTitle(";;");
+		hUnity->GetXaxis()->SetTitleOffset(1.);
+		hUnity->GetXaxis()->SetTitleSize(0.045);
+		hUnity->SetXTitle(""); // set from the TAxis object
+		hUnity->GetYaxis()->CenterTitle();
+		hUnity->GetYaxis()->SetRangeUser(0.5, 1.5);
+		hUnity->GetYaxis()->SetTitleSize(0.02);
+		hUnity->GetYaxis()->SetLabelSize(0.02);
+		hUnity->GetYaxis()->SetTitleOffset(1.5);
+		hUnity->GetXaxis()->CenterTitle();
+		hUnity->GetYaxis()->CenterTitle();
 
 
 		///create the ratios for the error bands
@@ -275,23 +290,8 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 
 		if (predCounter == 0) {
 			xAxisEHad->Draw("same");
-			hUnity->GetXaxis()->CenterTitle();
-			hUnity->GetXaxis()->SetTitleOffset(1.);
-			hUnity->GetXaxis()->SetTitleSize(0.045);
-			hUnity->SetXTitle(""); // set from the TAxis object
-			hUnity->GetYaxis()->CenterTitle();
-			hUnity->GetYaxis()->SetRangeUser(0.5, 1.5);
-			hUnity->GetYaxis()->SetTitleSize(0.02);
-			hUnity->GetYaxis()->SetLabelSize(0.02);
-			hUnity->GetYaxis()->SetTitleOffset(1.5);
 			hUnity->SetYTitle("MC Ratio");
-			hUnity->GetYaxis()->CenterTitle();
 		}
-
-		else if (predCounter == 1){
-			hUnity->SetTitle(";;");
-		}
-
 
 
 		predCounter++;
