@@ -72,7 +72,8 @@ using namespace ana;
 
 
 // =====================================================================================================
-void plot_preds_nd_ehadvis_allnumu_errorbands_charged_vs_neutral_pions(const bool saveCaptions = false)
+void plot_preds_nd_ehadvis_allnumu_errorbands_charged_vs_neutral_pions(const std::string beam = "fhc",
+				const bool saveCaptions = false)
 // =====================================================================================================
 {
 
@@ -85,36 +86,44 @@ void plot_preds_nd_ehadvis_allnumu_errorbands_charged_vs_neutral_pions(const boo
 
 
 
-
-
-
-  // Load the ND Quantile predictions.
+  // Load the ND predictions.
   const std::string& inputDir = "/nova/ana/users/mdolce/preds+spectra/ana2024/generate_nd_ehadvis_quantiles_predictions_ana2024/";
-  // code from LoadFDNumuPreds(), but adapted to read in any input directory.
-  auto it_topo = files::ND_QUANTILE_PREDS.find("nd-quantiles");
   std::vector<ana::FitPredictions> preds;
-  for (const auto &predId: it_topo->second) {
-    std::vector <std::pair<std::string, std::string>> sampleFilenamePairs;
-    std::vector <std::string> predObjNames;
+  for (const auto &pairPredName: FILE_NAMES) {
 
-    std::string hc = predId.horn == ana::Loaders::kFHC ? "fhc" : "rhc";
-    sampleFilenamePairs.emplace_back(hc + "_nd",
-                                     inputDir + "/" + Form(files::FILE_PATTERNS.at(systString).c_str(),
-                                                           systString.c_str(),
-                                                           hc.c_str(),
-                                                           predId.topology.c_str()));
-    predObjNames.emplace_back("pred_interp_" + predId.topology);
+		const std::string path = inputDir + "/" + pairPredName.first;
+		TFile f(path.c_str());
+		auto p = ana::LoadFrom<PredictionInterp>(&f, pairPredName.second);
 
-    std::cout << "File location: " << inputDir + "/" + Form("%s", Form(files::FILE_PATTERNS.at(systString).c_str(), systString.c_str(), hc.c_str(), predId.topology.c_str())) << std::endl;
-    auto pred = ndfit::LoadPreds(sampleFilenamePairs, predObjNames, caf::kNEARDET);
-    preds.emplace_back(std::move(pred[0]));
-    std::cout << "Added to preds: " << hc << "_nd_pred_interp_" << predId.topology << std::endl;
-  } // load preds from LoadFDNumuPreds()
+		if (!p)
+		{
+			// no prediction loaded from file
+			std::cerr << "File not not found. Failed to find file: " << &f << std::endl;
+			exit(1);
+		}
+
+		// Ensure the pred exists and spline gets initialized, and save some memory.
+		p->PredictSyst(static_cast<osc::IOscCalc *>(nullptr), ana::kNoShift);
+		p->MinimizeMemory();
+
+		const double pot = beam == "fhc" ? kAna2024FHCPOT : kAna2024RHCPOT;
+
+		ana::FitPredictions pred {
+			"fhc_nd_" + pairPredName.first,
+			p.release(),
+			{nullptr, 0.},
+			pot,
+			0.,
+			caf::kNEARDET,
+			ndfit::kNumu
+		};
+
+		preds.emplace_back(pred);
+  } // taken partially from LoadPreds()
 
 
 
-
-
+	// not really needed, since ND pred.
   auto calc2020BF = std::make_unique<osc::OscCalcAnalytic>();
   ndfit::Calculator2020BestFit(*calc2020BF);
 
@@ -126,7 +135,7 @@ void plot_preds_nd_ehadvis_allnumu_errorbands_charged_vs_neutral_pions(const boo
                 return syst1->ShortName() < syst2->ShortName();
             });
 
-
+	std::cout << "Total number of systs found: " << systs.size() << std::endl;
 
 
 
