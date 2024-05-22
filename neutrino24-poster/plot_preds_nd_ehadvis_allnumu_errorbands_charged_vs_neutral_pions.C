@@ -240,6 +240,7 @@ void plot_preds_nd_ehadvis_allnumu_errorbands_charged_vs_neutral_pions(const std
 			TH1D * hCVPredClone = (TH1D*) hCVPred->Clone("hCVPredClone");
 			hCVPredClone->SetLineColor(kGreen + 2);
 			hCVPredClone->SetFillColor(kGreen + 2);
+			hCVPredClone->Draw("same hist");
 		}
 		hCVPred->GetYaxis()->SetTitle("10^{6} Events / GeV");
       hCVPred->GetYaxis()->SetTitleSize(0.036);
