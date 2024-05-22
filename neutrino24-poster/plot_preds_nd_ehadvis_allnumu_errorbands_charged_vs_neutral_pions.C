@@ -155,20 +155,6 @@ void plot_preds_nd_ehadvis_allnumu_errorbands_charged_vs_neutral_pions(const std
     const std::string quantileString = ndfit::visuals::GetQuantileString(q);
     const std::string beamType = ndfit::visuals::GetHornCurrent(predBundle.name);
 
-    double POT;
-    if (!plotData) {
-      if (predBundle.name.find("fhc") != std::string::npos)
-        POT = kAna2024SensitivityFHCPOT;
-      else {
-        POT = kAna2024SensitivityRHCPOT;
-      }
-      std::cout << "Setting POT to MC....." << POT << std::endl;
-    }
-    else {
-      POT = dataSpectra.at(predBundle.name).POT();
-      std::cout << "Setting POT to data....." << POT << std::endl;
-    }
-
     /// create the error bands -- one vector for each prediction.
     std::vector<TH1*> up1Shifts, dn1Shifts;
 
@@ -231,8 +217,7 @@ void plot_preds_nd_ehadvis_allnumu_errorbands_charged_vs_neutral_pions(const std
       // EHadVis
       //create the histograms for the PlotWithSystErrorBand() function
       std::cout << "Producing EHadVis plots for " << predBundle.name << "......" << std::endl;
-      TH1 * hData = dataSpectra.at(predBundle.name).ToTH1(POT, EExposureType::kPOT, kBinDensity);
-      TH1 * hCVPred = predBundle.pred->PredictSyst(calc2020BF.get(), SystShifts::Nominal()).ToTH1(POT,
+      TH1 * hCVPred = predBundle.pred->PredictSyst(calc2020BF.get(), SystShifts::Nominal()).ToTH1(predBundle.pot,
                                                                                                   EExposureType::kPOT,
                                                                                                   kBinDensity);
 
@@ -245,16 +230,10 @@ void plot_preds_nd_ehadvis_allnumu_errorbands_charged_vs_neutral_pions(const std
       for (TH1 * hist : dn1Shifts)
         hist->Scale(scaleFactor);
 
-      hData->SetMarkerColor(kBlack);
-      hData->SetMarkerStyle(kFullCircle);
-      hData->SetLineWidth(2);
-      hData->Scale(scaleFactor);
-
 
       p1->cd();
       auto ErrorBand = PlotWithSystErrorBand(hCVPred, up1Shifts, dn1Shifts, kGray + 2, kGray);
       hCVPred->Draw("same hist e");
-      if (plotData) hData->Draw("same hist p"); // draw data as points
       hCVPred->GetYaxis()->SetTitle("10^{6} Events / GeV");
       hCVPred->GetYaxis()->SetTitleSize(0.036);
       hCVPred->GetYaxis()->SetTitleOffset(1.1);
@@ -272,7 +251,6 @@ void plot_preds_nd_ehadvis_allnumu_errorbands_charged_vs_neutral_pions(const std
       up1Shifts.at(0)->SetFillColor(kGray);
       up1Shifts.at(0)->SetLineColor(kGray);
       leg.AddEntry(up1Shifts.at(0), Form("%s", errorBands.c_str()), "f");
-      if (plotData) leg.AddEntry(hData, "Prod5.1 Data", "p");
       leg.Draw("same");
       TLatex latex;
       latex.SetTextSize(0.04);
@@ -281,8 +259,7 @@ void plot_preds_nd_ehadvis_allnumu_errorbands_charged_vs_neutral_pions(const std
       latex.DrawLatexNDC(.15, .8, Form("%s", quantileString.c_str()));
       latex.Draw("same");
 //    ptEnuEvents.Draw("same");
-      if (plotData) Preliminary();
-      else {Simulation();}
+      Simulation();
       NeutrinoLabel(ndfit::NeutrinoType::kNumu, beamType == "Antineutrino Beam");
       ndfit::visuals::DetectorLabel(caf::kNEARDET);
 
@@ -291,8 +268,6 @@ void plot_preds_nd_ehadvis_allnumu_errorbands_charged_vs_neutral_pions(const std
       p2->SetGridy(1);
       TH1 *hUnity = (TH1F *) hCVPred->Clone("hEUnity");
       hUnity->Divide(hCVPred);
-      TH1 *hDataRatio = (TH1F *) hData->Clone("hDataRatio");
-      hDataRatio->Divide(hCVPred);
 
 
       ///create the ratios for the error bands
@@ -315,29 +290,24 @@ void plot_preds_nd_ehadvis_allnumu_errorbands_charged_vs_neutral_pions(const std
       hUnity->GetYaxis()->SetTitleSize(0.02);
       hUnity->GetYaxis()->SetLabelSize(0.02);
       hUnity->GetYaxis()->SetTitleOffset(1.5);
-      hUnity->SetYTitle(plotData ? "#frac{Prod5.1 Data}{NOvA MC}" : "NOvA MC Ratio");
+      hUnity->SetYTitle("NOvA MC Ratio");
       hUnity->GetYaxis()->CenterTitle();
       xAxisEHad->Draw("same");
 
-      if (plotData) hDataRatio->Draw("hist same pe");
 
-      std::string strData = plotData ? "_data" : "";
       ndfit::visuals::DetectorLabel(predBundle.det);
       for (const auto &ext: {".png", ".pdf"}) // ".root"
-        c.SaveAs(ndfit::FullFilename(outDirPlot, "plot_" + predBundle.name + "_EHadVis_xsec24_errorbands" + strData + ext).c_str());
+        c.SaveAs(ndfit::FullFilename(outDirPlot, "plot_" + predBundle.name + "_EHadVis_xsec24_errorbands" + ext).c_str());
 
     // write captions here...
     if (saveCaptions) {
       std::ofstream ofile;
-      ofile.open(ndfit::FullFilename(outDirPlot, "plot_" + predBundle.name + "_EHadVis_xsec24_errorbands" + strData + ".txt").c_str());
+      ofile.open(ndfit::FullFilename(outDirPlot, "plot_" + predBundle.name + "_EHadVis_xsec24_errorbands" + ".txt").c_str());
       ofile << "Near Detector " << beamType << " Prod5.1 Ana2024 Monte Carlo prediction in the hadronic energy fraction:  " << quantileString
                 << ". The variable in this plot is reconstructed hadronic visible energy (in dark grey)."
                    " The light grey band is the 1 sigma error from all NOvA cross-section uncertainties for the Ana2024 analysis."
                    " This includes the new RES and DIS uncertainties from the ND fitting work."
                    " The top distribution is the number of events, and the bottom is the ratio from the MC." << std::endl;
-                   if (plotData) {
-                     ofile << "The black points are the Prod5.1 data." << std::endl;
-                   }
       ofile.close();
     }
 
