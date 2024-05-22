@@ -222,10 +222,6 @@ void plot_preds_nd_ehadvis_allnumu_errorbands_charged_vs_neutral_pions(const std
                                                                                                   EExposureType::kPOT,
                                                                                                   kBinDensity);
 
-			if (predCounter != 0) {
-				hCVPred->SetLineColor(kGreen + 2);
-				hCVPred->SetFillColor(kGreen + 2);
-			}
 
       // Rescale
       hCVPred->SetLineColor(kGray + 2);
@@ -240,7 +236,12 @@ void plot_preds_nd_ehadvis_allnumu_errorbands_charged_vs_neutral_pions(const std
       p1->cd();
       auto ErrorBand = PlotWithSystErrorBand(hCVPred, up1Shifts, dn1Shifts, kGray + 2, kGray);
       hCVPred->Draw("same hist e");
-      hCVPred->GetYaxis()->SetTitle("10^{6} Events / GeV");
+		if (predCounter != 0) {
+			TH1D * hCVPredClone = (TH1D*) hCVPred->Clone("hCVPredClone");
+			hCVPredClone->SetLineColor(kGreen + 2);
+			hCVPredClone->SetFillColor(kGreen + 2);
+		}
+		hCVPred->GetYaxis()->SetTitle("10^{6} Events / GeV");
       hCVPred->GetYaxis()->SetTitleSize(0.036);
       hCVPred->GetYaxis()->SetTitleOffset(1.1);
       hCVPred->SetMaximum(hCVPred->GetMaximum() * 2.0);
