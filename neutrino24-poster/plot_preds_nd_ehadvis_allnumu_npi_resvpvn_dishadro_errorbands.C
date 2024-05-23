@@ -227,7 +227,6 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 
 
 		p1->cd();
-		auto ErrorBand = PlotWithSystErrorBand(hCVPred, up1Shifts, dn1Shifts, kGray + 2, kGray);
 
 		// pred_interp_Q5
 		if (predCounter == 0) {
@@ -259,6 +258,7 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 		up1Shifts.at(0)->SetFillColor(kGray);
 		up1Shifts.at(0)->SetLineColor(kGray);
 
+		auto ErrorBand = PlotWithSystErrorBand(hCVPred, up1Shifts, dn1Shifts, kGray + 2, kGray);
 
 		/// EHadVis ratio
 		p2->cd();
@@ -290,9 +290,9 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 
 		if (predCounter == 0) {
 			hUnity->SetYTitle("MC Ratio");
+			xAxisEHad->Draw("same");
 		}
 
-		else if(predCounter == 1) xAxisEHad->Draw("same");
 
 
 		predCounter++;
