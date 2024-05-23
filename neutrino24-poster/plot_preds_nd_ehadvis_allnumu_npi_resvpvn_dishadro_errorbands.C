@@ -318,7 +318,7 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 
 
 
-
+ c.Update();
 
 
 	const std::string plotname = Form("plot_nd_allnumu_npi_%s_EHadVis_resvpvn_dishadro_errorbands", beam.c_str());
