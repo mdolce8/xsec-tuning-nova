@@ -227,10 +227,16 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 	hUnity->Divide(hPredQ5); // scale first, then divide.
 
 	// scale the vectors of TH1s.
-	for (const auto &vecHist : {up1Shifts_q5, up1Shifts_chg_pi, dn1Shifts_q5, dn1Shifts_chg_pi}){
-		for (TH1 *histShift: vecHist)
-			histShift->Scale(scaleFactor);
-	}
+//	for (const auto &vecHist : {up1Shifts_q5, up1Shifts_chg_pi, dn1Shifts_q5, dn1Shifts_chg_pi}){
+//		for (TH1 *histShift: vecHist)
+//			histShift->Scale(scaleFactor);
+//	}
+	for (TH1* hShift : up1Shifts_q5)
+		hShift->Divide(hPredQ5);
+	for (TH1* hShift : dn1Shifts_q5)
+		hShift->Divide(hPredQ5);
+
+
 
 	/// only create the ratios for the error bands of the Q5 AllNumu pred.
 	std::vector<TH1*> up1ShiftsRatio = up1Shifts_q5;
