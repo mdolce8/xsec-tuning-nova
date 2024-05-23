@@ -259,7 +259,7 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 
 	for (TH1* h : {(TH1*) hPredQ5, (TH1*) hPredQ5_chg_pi, (TH1*) hPredQ5_chg_pi_Clone}) {
 		h->GetYaxis()->SetTitleSize(0.036);
-		h->GetYaxis()->SetTitleOffset(1.15);
+		h->GetYaxis()->SetTitleOffset(1.25);
 		h->GetXaxis()->SetLabelSize(0.0);
 		h->GetXaxis()->SetTitleSize(0.0);
 		h->SetTitle(";;");
@@ -287,7 +287,6 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 	// Draw Ratio on p2.
 	p2->cd();
 	p2->SetGridy(1);
-	hUnity->Divide(hPredQ5);
 
 	// Draw Q5 error band.
 	PlotWithSystErrorBand(hUnity, up1ShiftsRatio, dn1ShiftsRatio, kGray + 2, kGray);
@@ -298,6 +297,7 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 	hUnity->SetXTitle(""); // set from the TAxis object
 	hUnity->GetYaxis()->CenterTitle();
 	hUnity->GetYaxis()->SetRangeUser(0.5, 1.5);
+	hUnity->GetXaxis()->SetRangeUser(0., 0.8);
 	hUnity->GetYaxis()->SetTitleSize(0.02);
 	hUnity->GetYaxis()->SetLabelSize(0.02);
 	hUnity->GetYaxis()->SetTitleOffset(1.5);
