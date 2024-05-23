@@ -254,11 +254,11 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 			leg.AddEntry(hCVPredClone, "True N#pi^{#pm} > 0", "f");
 			hCVPredClone->SetTitle("; ; ");
 			hCVPredClone->GetXaxis()->SetLabelSize(0);
-			hCVPredClone->SetMaximum(histMax);
 		}
 		else {exit(0);}
 		up1Shifts.at(0)->SetFillColor(kGray);
 		up1Shifts.at(0)->SetLineColor(kGray);
+
 
 		/// EHadVis ratio
 		p2->cd();
@@ -289,9 +289,10 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 		PlotWithSystErrorBand(hUnity, up1ShiftsRatio, dn1ShiftsRatio, kGray + 2, kGray);
 
 		if (predCounter == 0) {
-			xAxisEHad->Draw("same");
 			hUnity->SetYTitle("MC Ratio");
 		}
+
+		else if(predCounter == 1) xAxisEHad->Draw("same");
 
 
 		predCounter++;
