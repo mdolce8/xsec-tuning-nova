@@ -231,10 +231,14 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 //		for (TH1 *histShift: vecHist)
 //			histShift->Scale(scaleFactor);
 //	}
-	for (TH1* hShift : up1Shifts_q5)
+	for (TH1* hShift : up1Shifts_q5) {
+		hShift->Scale(scaleFactor);
 		hShift->Divide(hPredQ5);
-	for (TH1* hShift : dn1Shifts_q5)
+	}
+	for (TH1* hShift : dn1Shifts_q5) {
+		hShift->Scale(scaleFactor);
 		hShift->Divide(hPredQ5);
+	}
 
 
 
