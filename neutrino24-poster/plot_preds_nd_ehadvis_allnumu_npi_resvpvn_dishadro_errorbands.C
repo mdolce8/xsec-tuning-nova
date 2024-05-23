@@ -213,8 +213,6 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 
 	// create the ratios -- ONLY for the Q5 prediction.
 	TH1 *hUnity = (TH1F *) hPredQ5->Clone("hEUnity");
-	hUnity->Divide(hPredQ5);
-
 	// do the necessary removal of info.
 	for (TH1* h : {(TH1*) hPredQ5, (TH1*) hPredQ5_chg_pi, (TH1*) hPredQ5_chg_pi_Clone, (TH1*) hUnity}) {
 		h->GetYaxis()->SetTitleSize(0.036);
@@ -223,14 +221,14 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 		h->GetXaxis()->SetTitleSize(0.0);
 		h->SetTitle(";;");
 		h->GetXaxis()->SetRangeUser(0., 0.8);
-		h->Scale(scaleFactor);
+		h->Scale(scaleFactor); // scale first, then divide.
 	}
-	// scale each of the vectors of TH1s.
+	hUnity->Divide(hPredQ5); // scale first, then divide.
+
+	// scale the vectors of TH1s.
 	for (const auto &vecHist : {up1Shifts_q5, up1Shifts_chg_pi, dn1Shifts_q5, dn1Shifts_chg_pi}){
-		for (TH1 *hist: vecHist)
-			hist->Scale(scaleFactor);
-		for (TH1 *hist: vecHist)
-			hist->Scale(scaleFactor);
+		for (TH1 *histShift: vecHist)
+			histShift->Scale(scaleFactor);
 	}
 
 	/// only create the ratios for the error bands of the Q5 AllNumu pred.
