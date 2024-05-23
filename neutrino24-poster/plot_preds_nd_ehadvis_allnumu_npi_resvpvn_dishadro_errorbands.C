@@ -238,7 +238,6 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 	hPredQ5->SetLineWidth(3);
 	hPredQ5->SetTitle(";;");
 	hPredQ5->GetXaxis()->SetLabelSize(0);
-	hPredQ5->Scale(scaleFactor);
 
 	hPredQ5_chg_pi_Clone->SetTitle("; ; ");
 	hPredQ5_chg_pi_Clone->GetXaxis()->SetLabelSize(0);
@@ -269,6 +268,7 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 		h->GetXaxis()->SetTitleSize(0.0);
 		h->SetTitle(";;");
 		h->GetXaxis()->SetRangeUser(0., 0.8);
+		h->Scale(scaleFactor);
 	}
 	hPredQ5->GetYaxis()->SetTitle("10^{6} Events / GeV");
 
