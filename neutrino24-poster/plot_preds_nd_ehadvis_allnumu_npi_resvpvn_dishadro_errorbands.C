@@ -262,8 +262,6 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 	for (TH1* h : {(TH1*) hPredQ5, (TH1*) hPredQ5_chg_pi, (TH1*) hPredQ5_chg_pi_Clone}) {
 		h->GetYaxis()->SetTitleSize(0.036);
 		h->GetYaxis()->SetTitleOffset(1.1);
-		histMax = h->GetMaximum() * 2.0;
-		h->SetMaximum(histMax);
 		h->GetXaxis()->SetLabelSize(0.0);
 		h->GetXaxis()->SetTitleSize(0.0);
 		h->SetTitle(";;");
@@ -271,6 +269,7 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 		h->Scale(scaleFactor);
 	}
 	hPredQ5->GetYaxis()->SetTitle("10^{6} Events / GeV");
+	hPredQ5->SetMaximum(hPredQ5->GetMaximum() * 2.0);
 
 	// draw the error bands and CV of the two preds.
 //	auto tgQ5 = PlotWithSystErrorBand(hPredQ5, up1Shifts_q5, dn1Shifts_q5, kGray + 2, kGray);
