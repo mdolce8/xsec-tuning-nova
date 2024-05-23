@@ -2,7 +2,7 @@
  *  apply_crpa_lfg_lowE_nue_ratio.C
  *
  * 	Apply the ratio from the cRPA paper to our
- *  NOvA FD Nue (appeared + background) spectra.
+ *  NOvA FD FHC LowE Nue (appeared + background) spectra.
  *
  *  This time we will use:
  *  RR_CRPA_C_LFG_O_e_mu
@@ -40,14 +40,14 @@
 using namespace ana;
 
 // =====================================================================================================
-void apply_crpa_lfglowE_nue_ratio(const std::string& beam)
+void apply_crpa_lfglowE_nue_ratio(const std::string& beam = "fhc")
 // =====================================================================================================
 {
 
 	const std::string outDir = "/exp/nova/data/users/mdolce/xsec-tuning-nova/plots/ana2024/cRPA/apply_crpa_lfg_lowE_nue_ratio/";
 
 	// ROOT file Summed TH2
-	TFile * fnue = TFile::Open(Form("/exp/nova/data/users/mdolce/xsec-tuning-nova/plots/ana2024/cRPA/plot_fd_enu_theta_nue/th2_fd_%s_enu_theta_nue_summed.root", beam.c_str()), "read");
+	TFile * fnue = TFile::Open(Form("/exp/nova/data/users/mdolce/xsec-tuning-nova/plots/ana2024/cRPA/plot_fd_enu_theta_lowE_nue/th2_fd_%s_enu_theta_lowE_nue_summed.root", beam.c_str()), "read");
 
 	// TH2 sum of the nue_app and nuebar_app portions.
 	TH2D * h2Sum = (TH2D*) fnue->Get("nue_app");
