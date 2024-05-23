@@ -247,14 +247,16 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 	leg.AddEntry(up1Shifts_q5.at(0), "#pm1#sigma #pi^{#pm} unc.", "f");
 	leg.AddEntry(hPredQ5_chg_pi_Clone, "True N#pi^{#pm} > 0", "f");
 
-	/// Draw !
+
+
+	///  =================== Draw ! ===================
 	c.cd();
 
 	/// Plot comparison and ratio on save canvas
 	SplitCanvas(0.25, p1, p2);
 	p1->cd();
 
-	hPredQ5->Draw("same hist e");
+//	hPredQ5->Draw("same hist e");
 	hPredQ5->GetYaxis()->SetTitle("10^{6} Events / GeV");
 	hPredQ5->GetYaxis()->SetTitleSize(0.036);
 	hPredQ5->GetYaxis()->SetTitleOffset(1.1);
@@ -264,10 +266,9 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 	hPredQ5->GetXaxis()->SetTitleSize(0.0);
 	hPredQ5->GetXaxis()->SetRangeUser(0., 0.8);
 
+	// draw the error bands and CV of the two preds.
 	auto tgQ5 = PlotWithSystErrorBand(hPredQ5, up1Shifts_q5, dn1Shifts_q5, kGray + 2, kGray);
 	auto tg_chg_pi = PlotWithSystErrorBand(hPredQ5_chg_pi, up1Shifts_chg_pi, dn1Shifts_chg_pi, kGreen + 4, kGreen + 2);
-
-
 
 	leg.Draw("same");
 	latex.Draw("same");
@@ -294,7 +295,7 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 	hUnity->GetXaxis()->CenterTitle();
 	hUnity->GetYaxis()->CenterTitle();
 
-	// this is the Q5 error band.
+	// Draw Q5 error band.
 	PlotWithSystErrorBand(hUnity, up1ShiftsRatio, dn1ShiftsRatio, kGray + 2, kGray);
 
 	hUnity->SetYTitle("MC Ratio");
