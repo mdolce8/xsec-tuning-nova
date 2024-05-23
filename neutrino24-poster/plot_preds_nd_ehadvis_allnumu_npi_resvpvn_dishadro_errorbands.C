@@ -227,7 +227,7 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 		for (TH1 * hist : dn1Shifts)
 			hist->Scale(scaleFactor);
 
-
+		p1->Update();
 		p1->cd();
 
 		auto ErrorBand = PlotWithSystErrorBand(hCVPred, up1Shifts, dn1Shifts, kGray + 2, kGray);
@@ -245,6 +245,19 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 			hCVPred->GetXaxis()->SetRangeUser(0., 0.8);
 			leg.AddEntry(hCVPred, "NOvA 2024 MC", "l");
 			leg.AddEntry(up1Shifts.at(0), "#pm1#sigma #pi^{#pm} unc.", "f");
+
+			p1->cd();
+			leg.Draw("same");
+			TLatex latex;
+			latex.SetTextSize(0.04);
+			latex.SetTextAlign(13);
+			latex.DrawLatexNDC(.15, .85, hc.c_str());
+			latex.DrawLatexNDC(.15, .8,  quantileString.c_str());
+			latex.Draw("same");
+//    ptEnuEvents.Draw("same");
+			Simulation();
+			NeutrinoLabel(ndfit::NeutrinoType::kNumu, beamType == "Antineutrino Beam");
+			ndfit::visuals::DetectorLabel(caf::kNEARDET);
 		}
 
 		// pred_interp_Q5 chg pi
@@ -264,6 +277,7 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 
 		/// EHadVis ratio
 		p2->cd();
+		p2->SetGridy(1);
 		TH1 *hUnity = (TH1F *) hCVPred->Clone("hEUnity");
 		hUnity->Divide(hCVPred);
 		hUnity->SetTitle(";;");
@@ -300,22 +314,9 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 		predCounter++;
   } //predBundle in preds
 
-	p1->cd();
-	leg.Draw("same");
-	TLatex latex;
-	latex.SetTextSize(0.04);
-	latex.SetTextAlign(13);
-	latex.DrawLatexNDC(.15, .85, hc.c_str());
-	latex.DrawLatexNDC(.15, .8,  quantileString.c_str());
-	latex.Draw("same");
-//    ptEnuEvents.Draw("same");
-	Simulation();
-	NeutrinoLabel(ndfit::NeutrinoType::kNumu, beamType == "Antineutrino Beam");
-	ndfit::visuals::DetectorLabel(caf::kNEARDET);
 
-	// ratio visuals
-	p2->cd();
-	p2->SetGridy(1);
+
+
 
 
 	const std::string plotname = Form("plot_nd_allnumu_npi_%s_EHadVis_resvpvn_dishadro_errorbands", beam.c_str());
