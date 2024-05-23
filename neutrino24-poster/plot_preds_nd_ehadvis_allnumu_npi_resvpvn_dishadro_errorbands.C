@@ -163,7 +163,6 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 
 	// set scale factors here.
   const double scaleFactor = 1e-6;
-
 	double histMax = -5;
 
 	// Assumption: we know the predictions are the both from AllNumu (Q5) sample.
@@ -172,147 +171,134 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 	const std::string beamType = ndfit::visuals::GetHornCurrent(preds[0].name);
 	hc = beamType;
 
-	//TODO:  I think the histograms and error bands TH1s need to be outside the loop? so they continue to exist...
-
-	// first: Q5. second: Q5_chg_pi
-	int predCounter = 0;
-  std::cout << "Plotting the ratio and predictions" << std::endl;
-  for (const auto &predBundle : preds) {
-    std::cout << predBundle.name << "......." << std::endl;
-
-    /// create the error bands -- one vector for each prediction.
-    std::vector<TH1*> up1Shifts, dn1Shifts;
-
-    // use the systs to create error bands
-    // Use ONLY the systs that were used in the fitting...
-		std::cout << "Looping through systematics. Total number of systematics: " << systs.size() << std::endl;
-		for (const auto &syst : systs) {
-      std::cout << "Looping through syst....." << syst->ShortName() << std::endl;
-
-      SystShifts pm1SigmaShift;
-      pm1SigmaShift.SetShift(syst, +1.);
-      TH1 *hUp1 = predBundle.pred->PredictSyst(calc2020BF.get(), pm1SigmaShift).ToTH1(predBundle.pot,
-                                                                                      EExposureType::kPOT,
-                                                                                      kBinDensity);
-      up1Shifts.push_back(hUp1);
-
-      pm1SigmaShift.SetShift(syst, -1.);
-      TH1 *hDn1 = predBundle.pred->PredictSyst(calc2020BF.get(), pm1SigmaShift).ToTH1(predBundle.pot,
-                                                                                      EExposureType::kPOT,
-                                                                                      kBinDensity);
-      dn1Shifts.push_back(hDn1);
-    } // systs to create error bands
+	TLatex latex;
+	latex.SetTextSize(0.04);
+	latex.SetTextAlign(13);
+	latex.DrawLatexNDC(.15, .85, hc.c_str());
+	latex.DrawLatexNDC(.15, .8,  quantileString.c_str());
 
 
-		// do the plotting
-		c.cd();
+	assert (preds[1].name == "fhc_nd_pred_interp_Q5_chg_pi");
 
-		/// Plot comparison and ratio on save canvas
-		SplitCanvas(0.25, p1, p2);
-		// EHadVis
-		//create the histograms for the PlotWithSystErrorBand() function
-		std::cout << "Producing EHadVis plots for " << predBundle.name << "......" << std::endl;
-		TH1 * hCVPred = predBundle.pred->PredictSyst(calc2020BF.get(), SystShifts::Nominal()).ToTH1(predBundle.pot,
-																																																EExposureType::kPOT,
-																																																kBinDensity);
+	// =================================== Create Histograms =================================================
 
-		// Rescale
-		hCVPred->SetLineColor(kGray + 2);
-		hCVPred->SetLineWidth(3);
-		hCVPred->SetTitle(";;");
-		hCVPred->GetXaxis()->SetLabelSize(0);
-		hCVPred->Scale(scaleFactor);
-		for (TH1 * hist : up1Shifts)
+
+
+	//NOTE: the histograms and error bands TH1s are outside the loop.
+	std::vector<TH1*> up1Shifts_q5, dn1Shifts_q5;
+	std::vector<TH1*> up1Shifts_chg_pi, dn1Shifts_chg_pi;
+	for (const ana::ISyst* &syst : systs){
+		SystShifts pm1SigmaShift;
+
+		pm1SigmaShift.SetShift(syst, +1.);
+		TH1 * hUp1_q5     = preds[0].pred->PredictSyst(calc2020BF.get(), pm1SigmaShift).ToTH1(preds[0].pot);
+		TH1 * hUp1_chg_pi = preds[1].pred->PredictSyst(calc2020BF.get(), pm1SigmaShift).ToTH1(preds[1].pot);
+		up1Shifts_q5.push_back(hUp1_q5);
+		up1Shifts_chg_pi.push_back(hUp1_chg_pi);
+
+		pm1SigmaShift.SetShift(syst, -1.);
+		TH1 * hDn1_q5     = preds[0].pred->PredictSyst(calc2020BF.get(), pm1SigmaShift).ToTH1(preds[0].pot);
+		TH1 * hDn1_chg_pi = preds[1].pred->PredictSyst(calc2020BF.get(), pm1SigmaShift).ToTH1(preds[1].pot);
+		dn1Shifts_q5.push_back(hDn1_q5);
+		dn1Shifts_chg_pi.push_back(hDn1_chg_pi);
+	} // systs
+
+	// scale each of the vectors of TH1s.
+	for (const auto &vecHist : {up1Shifts_q5, up1Shifts_chg_pi, dn1Shifts_q5, dn1Shifts_chg_pi}){
+		for (TH1 *hist: vecHist)
 			hist->Scale(scaleFactor);
-		for (TH1 * hist : dn1Shifts)
+		for (TH1 *hist: vecHist)
 			hist->Scale(scaleFactor);
+	}
 
-		p1->Update();
-		p1->cd();
-
-		auto ErrorBand = PlotWithSystErrorBand(hCVPred, up1Shifts, dn1Shifts, kGray + 2, kGray);
-
-		// pred_interp_Q5
-		if (predCounter == 0) {
-			hCVPred->Draw("same hist e");
-			hCVPred->GetYaxis()->SetTitle("10^{6} Events / GeV");
-			hCVPred->GetYaxis()->SetTitleSize(0.036);
-			hCVPred->GetYaxis()->SetTitleOffset(1.1);
-			histMax = hCVPred->GetMaximum() * 2.0;
-			hCVPred->SetMaximum(histMax);
-			hCVPred->GetXaxis()->SetLabelSize(0.0);
-			hCVPred->GetXaxis()->SetTitleSize(0.0);
-			hCVPred->GetXaxis()->SetRangeUser(0., 0.8);
-			leg.AddEntry(hCVPred, "NOvA 2024 MC", "l");
-			leg.AddEntry(up1Shifts.at(0), "#pm1#sigma #pi^{#pm} unc.", "f");
-
-			p1->cd();
-			leg.Draw("same");
-			TLatex latex;
-			latex.SetTextSize(0.04);
-			latex.SetTextAlign(13);
-			latex.DrawLatexNDC(.15, .85, hc.c_str());
-			latex.DrawLatexNDC(.15, .8,  quantileString.c_str());
-			latex.Draw("same");
-//    ptEnuEvents.Draw("same");
-			Simulation();
-			NeutrinoLabel(ndfit::NeutrinoType::kNumu, beamType == "Antineutrino Beam");
-			ndfit::visuals::DetectorLabel(caf::kNEARDET);
-		}
-
-		// pred_interp_Q5 chg pi
-		else if (predCounter == 1) {
-			TH1D * hCVPredClone = (TH1D*) hCVPred->Clone("hCVPredClone");
-			hCVPredClone->SetLineColor(kGreen + 4); // slightly darker.
-			hCVPredClone->SetFillColor(kGreen + 2);
-			hCVPredClone->SetFillColorAlpha(kGreen + 2, 0.5);
-			hCVPredClone->Draw("same hist");
-			leg.AddEntry(hCVPredClone, "True N#pi^{#pm} > 0", "f");
-			hCVPredClone->SetTitle("; ; ");
-			hCVPredClone->GetXaxis()->SetLabelSize(0);
-		}
-		else {exit(0);}
-		up1Shifts.at(0)->SetFillColor(kGray);
-		up1Shifts.at(0)->SetLineColor(kGray);
-
-		/// EHadVis ratio
-		p2->cd();
-		p2->SetGridy(1);
-		TH1 *hUnity = (TH1F *) hCVPred->Clone("hEUnity");
-		hUnity->Divide(hCVPred);
-		hUnity->SetTitle(";;");
-		hUnity->GetXaxis()->SetTitleOffset(1.);
-		hUnity->GetXaxis()->SetTitleSize(0.045);
-		hUnity->SetXTitle(""); // set from the TAxis object
-		hUnity->GetYaxis()->CenterTitle();
-		hUnity->GetYaxis()->SetRangeUser(0.5, 1.5);
-		hUnity->GetYaxis()->SetTitleSize(0.02);
-		hUnity->GetYaxis()->SetLabelSize(0.02);
-		hUnity->GetYaxis()->SetTitleOffset(1.5);
-		hUnity->GetXaxis()->CenterTitle();
-		hUnity->GetYaxis()->CenterTitle();
+	TH1 * hPredQ5        = preds[0].pred->PredictSyst(calc2020BF.get(), SystShifts::Nominal()).ToTH1(preds[0].pot);
+	TH1 * hPredQ5_chg_pi = preds[1].pred->PredictSyst(calc2020BF.get(), SystShifts::Nominal()).ToTH1(preds[1].pot);
 
 
-		///create the ratios for the error bands
-		std::vector<TH1*> up1ShiftsRatio = up1Shifts;
-		std::vector<TH1*> dn1ShiftsRatio = dn1Shifts;
-		for (auto &hist: up1ShiftsRatio)
-			hist->Divide(hCVPred);
-		for (auto &hist: dn1ShiftsRatio)
-			hist->Divide(hCVPred);
+	TH1D * hPredQ5_chg_pi_Clone = (TH1D*) hPredQ5_chg_pi->Clone("hPredQ5_chg_pi_Clone");
+	hPredQ5_chg_pi_Clone->SetLineColor(kGreen + 4); // slightly darker line.
+	hPredQ5_chg_pi_Clone->SetFillColor(kGreen + 2);
+	hPredQ5_chg_pi_Clone->SetFillColorAlpha(kGreen + 2, 0.5);
 
+	// create the ratios -- ONLY for the Q5 prediction.
+	TH1 *hUnity = (TH1F *) hPredQ5->Clone("hEUnity");
+	hUnity->Divide(hPredQ5);
 
-		PlotWithSystErrorBand(hUnity, up1ShiftsRatio, dn1ShiftsRatio, kGray + 2, kGray);
+	/// only create the ratios for the error bands of the Q5 AllNumu pred.
+	std::vector<TH1*> up1ShiftsRatio = up1Shifts_q5;
+	std::vector<TH1*> dn1ShiftsRatio = dn1Shifts_q5;
+	for (auto &hist: up1ShiftsRatio)
+		hist->Divide(hPredQ5);
+	for (auto &hist: dn1ShiftsRatio)
+		hist->Divide(hPredQ5);
 
-		if (predCounter == 0) {
-			hUnity->SetYTitle("MC Ratio");
-			xAxisEHad->Draw("same");
-		}
+	
+	/// aesthetics for the Canvas
+	hPredQ5->SetLineColor(kGray + 2);
+	hPredQ5->SetLineWidth(3);
+	hPredQ5->SetTitle(";;");
+	hPredQ5->GetXaxis()->SetLabelSize(0);
+	hPredQ5->Scale(scaleFactor);
+
+	hPredQ5_chg_pi_Clone->SetTitle("; ; ");
+	hPredQ5_chg_pi_Clone->GetXaxis()->SetLabelSize(0);
+
+	leg.AddEntry(hPredQ5, "NOvA 2024 MC", "l");
+	leg.AddEntry(up1Shifts_q5.at(0), "#pm1#sigma #pi^{#pm} unc.", "f");
+	leg.AddEntry(hPredQ5_chg_pi_Clone, "True N#pi^{#pm} > 0", "f");
+
+	/// Draw !
+	c.cd();
+
+	/// Plot comparison and ratio on save canvas
+	SplitCanvas(0.25, p1, p2);
+	p1->cd();
+
+	hPredQ5->Draw("same hist e");
+	hPredQ5->GetYaxis()->SetTitle("10^{6} Events / GeV");
+	hPredQ5->GetYaxis()->SetTitleSize(0.036);
+	hPredQ5->GetYaxis()->SetTitleOffset(1.1);
+	histMax = hPredQ5->GetMaximum() * 2.0;
+	hPredQ5->SetMaximum(histMax);
+	hPredQ5->GetXaxis()->SetLabelSize(0.0);
+	hPredQ5->GetXaxis()->SetTitleSize(0.0);
+	hPredQ5->GetXaxis()->SetRangeUser(0., 0.8);
+
+	auto tgQ5 = PlotWithSystErrorBand(hPredQ5, up1Shifts_q5, dn1Shifts_q5, kGray + 2, kGray);
+	auto tg_chg_pi = PlotWithSystErrorBand(hPredQ5_chg_pi, up1Shifts_chg_pi, dn1Shifts_chg_pi, kGreen + 4, kGreen + 2);
 
 
 
-		predCounter++;
-  } //predBundle in preds
+	leg.Draw("same");
+	latex.Draw("same");
+
+	// post-hist drawing.
+	Simulation();
+	NeutrinoLabel(ndfit::NeutrinoType::kNumu, beamType == "Antineutrino Beam");
+	ndfit::visuals::DetectorLabel(caf::kNEARDET);
+
+
+	// Draw Ratio on p2.
+	p2->cd();
+	p2->SetGridy(1);
+	hUnity->Divide(hPredQ5);
+	hUnity->SetTitle(";;");
+	hUnity->GetXaxis()->SetTitleOffset(1.);
+	hUnity->GetXaxis()->SetTitleSize(0.045);
+	hUnity->SetXTitle(""); // set from the TAxis object
+	hUnity->GetYaxis()->CenterTitle();
+	hUnity->GetYaxis()->SetRangeUser(0.5, 1.5);
+	hUnity->GetYaxis()->SetTitleSize(0.02);
+	hUnity->GetYaxis()->SetLabelSize(0.02);
+	hUnity->GetYaxis()->SetTitleOffset(1.5);
+	hUnity->GetXaxis()->CenterTitle();
+	hUnity->GetYaxis()->CenterTitle();
+
+	// this is the Q5 error band.
+	PlotWithSystErrorBand(hUnity, up1ShiftsRatio, dn1ShiftsRatio, kGray + 2, kGray);
+
+	hUnity->SetYTitle("MC Ratio");
+	xAxisEHad->Draw("same");
 
 
 
