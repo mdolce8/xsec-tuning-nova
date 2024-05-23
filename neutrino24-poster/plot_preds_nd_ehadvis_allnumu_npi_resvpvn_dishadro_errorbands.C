@@ -175,8 +175,9 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 	latex.SetTextSize(0.04);
 	latex.SetTextAlign(13);
 
-
-	assert (preds[1].name == "fhc_nd_pred_interp_Q5_chg_pi");
+	std::cout << "First  prediction is: " << preds[0].name << std::endl;
+	std::cout << "Second prediction is: " << preds[1].name << std::endl;
+	assert (preds[1].name == Form("%s_nd_pred_interp_Q5_chg_pi", beam.c_str()));
 
 	// =================================== Create Histograms =================================================
 
