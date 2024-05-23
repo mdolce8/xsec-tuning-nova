@@ -288,6 +288,10 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 	p2->cd();
 	p2->SetGridy(1);
 	hUnity->Divide(hPredQ5);
+
+	// Draw Q5 error band.
+	PlotWithSystErrorBand(hUnity, up1ShiftsRatio, dn1ShiftsRatio, kGray + 2, kGray);
+
 	hUnity->SetTitle(";;");
 	hUnity->GetXaxis()->SetTitleOffset(1.);
 	hUnity->GetXaxis()->SetTitleSize(0.045);
@@ -299,9 +303,6 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 	hUnity->GetYaxis()->SetTitleOffset(1.5);
 	hUnity->GetXaxis()->CenterTitle();
 	hUnity->GetYaxis()->CenterTitle();
-
-	// Draw Q5 error band.
-	PlotWithSystErrorBand(hUnity, up1ShiftsRatio, dn1ShiftsRatio, kGray + 2, kGray);
 
 	hUnity->SetYTitle("MC Ratio");
 	xAxisEHad->Draw("same");
