@@ -165,8 +165,9 @@ void plot_fd_enu_theta_lowE_nue(const std::string& beam = "fhc")
 
 		c.SaveAs(Form("%s/plot_fd_%s_enu_theta_lowE_nue_summed_%s.png", outDir.c_str(), beam.c_str(), pairHist.first.c_str()));
 
-		pairHist.second->SetDirectory(&ofile);
-		pairHist.second->Write(pairHist.second->GetName());
+		auto h = (TH2D*) pairHist.second->Clone(pairHist.first.c_str());
+		h->SetDirectory(&ofile);
+		h->Write(h->GetName());
 	}
 
 	ofile.Write();
