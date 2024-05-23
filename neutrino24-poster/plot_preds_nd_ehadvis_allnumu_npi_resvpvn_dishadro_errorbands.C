@@ -201,13 +201,6 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 		dn1Shifts_chg_pi.push_back(hDn1_chg_pi);
 	} // systs
 
-	// scale each of the vectors of TH1s.
-	for (const auto &vecHist : {up1Shifts_q5, up1Shifts_chg_pi, dn1Shifts_q5, dn1Shifts_chg_pi}){
-		for (TH1 *hist: vecHist)
-			hist->Scale(scaleFactor);
-		for (TH1 *hist: vecHist)
-			hist->Scale(scaleFactor);
-	}
 
 	TH1 * hPredQ5        = preds[0].pred->PredictSyst(calc2020BF.get(), SystShifts::Nominal()).ToTH1(preds[0].pot);
 	TH1 * hPredQ5_chg_pi = preds[1].pred->PredictSyst(calc2020BF.get(), SystShifts::Nominal()).ToTH1(preds[1].pot);
@@ -221,6 +214,24 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 	// create the ratios -- ONLY for the Q5 prediction.
 	TH1 *hUnity = (TH1F *) hPredQ5->Clone("hEUnity");
 	hUnity->Divide(hPredQ5);
+
+	// do the necessary removal of info.
+	for (TH1* h : {(TH1*) hPredQ5, (TH1*) hPredQ5_chg_pi, (TH1*) hPredQ5_chg_pi_Clone, (TH1*) hUnity}) {
+		h->GetYaxis()->SetTitleSize(0.036);
+		h->GetYaxis()->SetTitleOffset(1.25);
+		h->GetXaxis()->SetLabelSize(0.0);
+		h->GetXaxis()->SetTitleSize(0.0);
+		h->SetTitle(";;");
+		h->GetXaxis()->SetRangeUser(0., 0.8);
+		h->Scale(scaleFactor);
+	}
+	// scale each of the vectors of TH1s.
+	for (const auto &vecHist : {up1Shifts_q5, up1Shifts_chg_pi, dn1Shifts_q5, dn1Shifts_chg_pi}){
+		for (TH1 *hist: vecHist)
+			hist->Scale(scaleFactor);
+		for (TH1 *hist: vecHist)
+			hist->Scale(scaleFactor);
+	}
 
 	/// only create the ratios for the error bands of the Q5 AllNumu pred.
 	std::vector<TH1*> up1ShiftsRatio = up1Shifts_q5;
@@ -257,15 +268,6 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 	hPredQ5->Draw("same hist e");
 	hPredQ5_chg_pi_Clone->Draw("same hist e");
 
-	for (TH1* h : {(TH1*) hPredQ5, (TH1*) hPredQ5_chg_pi, (TH1*) hPredQ5_chg_pi_Clone}) {
-		h->GetYaxis()->SetTitleSize(0.036);
-		h->GetYaxis()->SetTitleOffset(1.25);
-		h->GetXaxis()->SetLabelSize(0.0);
-		h->GetXaxis()->SetTitleSize(0.0);
-		h->SetTitle(";;");
-		h->GetXaxis()->SetRangeUser(0., 0.8);
-		h->Scale(scaleFactor);
-	}
 	hPredQ5->GetYaxis()->SetTitle("10^{6} Events / GeV");
 	hPredQ5->SetMaximum(hPredQ5->GetMaximum() * 1.8);
 
