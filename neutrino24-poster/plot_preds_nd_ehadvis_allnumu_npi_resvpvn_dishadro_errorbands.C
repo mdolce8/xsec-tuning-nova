@@ -172,6 +172,8 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 	const std::string beamType = ndfit::visuals::GetHornCurrent(preds[0].name);
 	hc = beamType;
 
+	//TODO:  I think the histograms and error bands TH1s need to be outside the loop? so they continue to exist...
+
 	// first: Q5. second: Q5_chg_pi
 	int predCounter = 0;
   std::cout << "Plotting the ratio and predictions" << std::endl;
@@ -228,6 +230,8 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 
 		p1->cd();
 
+		auto ErrorBand = PlotWithSystErrorBand(hCVPred, up1Shifts, dn1Shifts, kGray + 2, kGray);
+
 		// pred_interp_Q5
 		if (predCounter == 0) {
 			hCVPred->Draw("same hist e");
@@ -257,8 +261,6 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 		else {exit(0);}
 		up1Shifts.at(0)->SetFillColor(kGray);
 		up1Shifts.at(0)->SetLineColor(kGray);
-
-		auto ErrorBand = PlotWithSystErrorBand(hCVPred, up1Shifts, dn1Shifts, kGray + 2, kGray);
 
 		/// EHadVis ratio
 		p2->cd();
