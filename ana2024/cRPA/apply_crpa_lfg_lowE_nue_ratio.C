@@ -40,7 +40,7 @@
 using namespace ana;
 
 // =====================================================================================================
-void apply_crpa_lfglowE_nue_ratio(const std::string& beam = "fhc")
+void apply_crpa_lfg_lowE_nue_ratio(const std::string& beam = "fhc")
 // =====================================================================================================
 {
 
