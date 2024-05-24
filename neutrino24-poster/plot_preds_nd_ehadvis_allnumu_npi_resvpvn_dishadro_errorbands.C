@@ -215,7 +215,12 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 	// create the ratios -- ONLY for the Q5 prediction.
 	TH1 *hUnity = (TH1F *) hPredQ5->Clone("hEUnity");
 	// do the necessary removal of info.
-	for (TH1* h : {(TH1*) hPredQ5, (TH1*) hPredQ5_chg_pi, (TH1*) hPredQ5_chg_pi_Clone, (TH1*) hUnity}) {
+
+	// for aesthetics
+	TH1D hBlank("hBlank", "", 1, 0., 0.8);
+	hBlank.SetBinContent(1, 1.);
+
+	for (TH1* h : {(TH1*) hPredQ5, (TH1*) hPredQ5_chg_pi, (TH1*) hPredQ5_chg_pi_Clone, (TH1*) hUnity, (TH1*) &hBlank}) {
 		h->GetYaxis()->SetTitleSize(0.036);
 		h->GetYaxis()->SetTitleOffset(1.25);
 		h->GetXaxis()->SetLabelSize(0.0);
@@ -272,8 +277,6 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 	SplitCanvas(0.25, p1, p2);
 	p1->cd();
 
-	TH1D hBlank("hBlank", "", 1, 0., 0.8);
-	hBlank.SetBinContent(1, 1.);
 	hBlank.SetLineColor(0);
 	hBlank.Draw("same");
 	hBlank.SetMaximum(hPredQ5->GetMaximum() * 1.8);
