@@ -141,13 +141,13 @@ void apply_crpa_lfg_lowE_nue_ratio(const std::string& beam = "fhc")
 
 
 	// Request to make projection onto Y axis.
-	c.Clear();
-	c.cd();
+	TCanvas c2;
+	c2.cd();
 	auto hProjLowE_Rwgt = h2SumRwgt->ProjectionY();
 	auto hProjLowE_Signal = h2Signal->ProjectionY();
 	hProjLowE_Rwgt->SetLineWidth(3);
 	hProjLowE_Rwgt->SetLineColor(kBlue);
-	hProjLowE_Rwgt->Draw("same hist");
+	hProjLowE_Rwgt->Draw("same hist a");
 	hProjLowE_Signal->SetLineColor(kRed);
 	hProjLowE_Signal->SetLineWidth(3);
 	hProjLowE_Signal->Draw("same hist");
@@ -167,7 +167,7 @@ void apply_crpa_lfg_lowE_nue_ratio(const std::string& beam = "fhc")
 	Simulation();
 
 	for (const auto &ext : {"png", "pdf"})
-		c.SaveAs(Form("%s/plot_crpa_lfg_fd_%s_prod5.1_enu_theta_lowE_nue_projection.%s", outDir.c_str(),  beam.c_str(), ext));
+		c2.SaveAs(Form("%s/plot_crpa_lfg_fd_%s_prod5.1_enu_theta_lowE_nue_projection.%s", outDir.c_str(),  beam.c_str(), ext));
 
 
 }
