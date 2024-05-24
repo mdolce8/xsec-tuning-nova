@@ -277,8 +277,8 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 	hPredQ5->Draw("same hist e");
 	hPredQ5_chg_pi_Clone->Draw("same hist e");
 
-//	auto tg_chg_pi = PlotWithSystErrorBand(hPredQ5_chg_pi, up1Shifts_chg_pi, dn1Shifts_chg_pi, kGreen + 4, kGreen + 2, 1, true, 0.8, false);
-	auto tgQ5 = PlotWithSystErrorBand(hPredQ5, up1Shifts_q5, dn1Shifts_q5, kGray + 2, kGray, 1, true, 0.8, false);
+	auto tg_chg_pi = PlotWithSystErrorBand(hPredQ5_chg_pi, up1Shifts_chg_pi, dn1Shifts_chg_pi, kGreen + 4, kGreen + 2, 1, true, 0.8, false);
+//	auto tgQ5 = PlotWithSystErrorBand(hPredQ5, up1Shifts_q5, dn1Shifts_q5, kGray + 2, kGray, 1, true, 0.8, false);
 
 	hPredQ5->GetYaxis()->SetTitle("10^{6} Events / GeV");
 	hPredQ5->SetMaximum(hPredQ5->GetMaximum() * 1.8);
