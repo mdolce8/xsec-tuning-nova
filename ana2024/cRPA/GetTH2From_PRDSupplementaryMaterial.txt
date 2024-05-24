@@ -21,11 +21,12 @@ root [12] h2->Draw("colz")
 root [13] new TCanvas; h2->Draw("colz")
 root [14] h2->Integral()
 (double) 167.40563
+auto hClone = (TH2D*) h->Clone("RR_CRPA_C_LFG_O_e_ae")
 root [15] TFile f("RR_CRPA_C_LFG_O_e_ae.root" , "recreate")
 (TFile &) Name: RR_CRPA_C_LFG_O_e_ae.root Title:
-root [16] h2->SetName("RR_CRPA_C_LFG_O_e_ae")
-root [17] h2->SetTitle("RR_CRPA_C_LFG_O_e_ae")
-root [18] h2->Write(h2->GetName())
+root [16] hClone->SetName("RR_CRPA_C_LFG_O_e_ae")
+root [17] hClone->SetTitle("RR_CRPA_C_LFG_O_e_ae")
+root [18] hClone->Write(hClone->GetName())
 (int) 2814
 root [19] f.Close()
 root [20]
