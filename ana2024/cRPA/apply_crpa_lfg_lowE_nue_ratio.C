@@ -147,7 +147,7 @@ void apply_crpa_lfg_lowE_nue_ratio(const std::string& beam = "fhc")
 	auto hProjLowE_Signal = h2Signal->ProjectionY("ProjY_Signal", 0, -1, "o"); // "o" for keeping axis.
 	hProjLowE_Rwgt->SetLineWidth(3);
 	hProjLowE_Rwgt->SetLineColor(kBlue);
-	hProjLowE_Rwgt->Draw("same hist a");
+	hProjLowE_Rwgt->Draw("same hist");
 	hProjLowE_Signal->SetLineColor(kRed);
 	hProjLowE_Signal->SetLineWidth(3);
 	hProjLowE_Signal->Draw("same hist");
@@ -158,13 +158,15 @@ void apply_crpa_lfg_lowE_nue_ratio(const std::string& beam = "fhc")
 	ltx3.SetTextSize(0.85);
 //	ltx3.DrawLatexNDC(0.62, 0.7, "(#theta_e, E_#nu) Projection");
 
+	hProjLowE_Rwgt->SetTitle("FD LowE E_#nu Sample; E_#nu (GeV); Events");
+
 	TLegend leg(0.15, 0.6, 0.5, 0.85);
 	leg.SetFillColor(0);
 	leg.SetFillStyle(0);
 	leg.AddEntry(hProjLowE_Signal, "NOvA Signal", "l");
-	leg.AddEntry(hProjLowE_Rwgt, "~cRPA Effect", "l");
+	leg.AddEntry(hProjLowE_Rwgt, "Approx. cRPA Effect", "l");
 	leg.Draw("same");
-	Simulation();
+	SimulationSide();
 
 	for (const auto &ext : {"png", "pdf"})
 		c2.SaveAs(Form("%s/plot_crpa_lfg_fd_%s_prod5.1_enu_theta_lowE_nue_projection.%s", outDir.c_str(),  beam.c_str(), ext));
