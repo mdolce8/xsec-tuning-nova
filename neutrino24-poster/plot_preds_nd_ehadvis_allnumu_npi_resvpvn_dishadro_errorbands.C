@@ -294,6 +294,7 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 
 
 	hBlank.GetYaxis()->SetTitle("10^{5} Events / GeV");
+	hBlank.GetYaxis()->CenterTitle();
 	hPredQ5->SetMaximum(hPredQ5->GetMaximum() * 1.8);
 
 	latex.DrawLatexNDC(.15, .85, hc.c_str());
