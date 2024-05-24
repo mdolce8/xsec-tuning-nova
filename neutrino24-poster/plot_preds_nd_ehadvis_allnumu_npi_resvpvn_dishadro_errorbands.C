@@ -258,7 +258,7 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 	
 	/// aesthetics for the Canvas
 	hPredQ5->SetLineColor(kGray + 2);
-	hPredQ5->SetLineWidth(2);
+	hPredQ5->SetLineWidth(3);
 	hPredQ5->SetTitle(";;");
 	hPredQ5->GetXaxis()->SetLabelSize(0);
 
@@ -266,8 +266,10 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 	hPredQ5_chg_pi_Clone->GetXaxis()->SetLabelSize(0);
 
 	up1Shifts_q5.at(0)->SetFillColor(kGray);
+	up1Shifts_chg_pi.at(0)->SetFillColor(kGreen + 4);
 	leg.AddEntry(hPredQ5, "NOvA 2024 MC", "l");
-	leg.AddEntry(up1Shifts_q5.at(0), "#pm1#sigma #pi^{#pm} unc.", "f");
+//	leg.AddEntry(up1Shifts_q5.at(0), "#pm1#sigma #pi^{#pm} unc.", "f");
+	leg.AddEntry(up1Shifts_chg_pi.at(0), "#pm1#sigma #pi^{#pm} unc.", "f");
 	leg.AddEntry(hPredQ5_chg_pi_Clone, "True N#pi^{#pm} > 0", "f");
 
 
@@ -285,7 +287,7 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 	// draw the error bands and CV of the two preds.
 
 	auto tg_chg_pi = PlotWithSystErrorBand(hPredQ5_chg_pi, up1Shifts_chg_pi, dn1Shifts_chg_pi, kGreen + 4, kGreen + 3, 1, false, 0.8, false);
-	auto tgQ5 = PlotWithSystErrorBand(hPredQ5, up1Shifts_q5, dn1Shifts_q5, kGray + 2, kGray, 1, false, 0.8, false);
+//	auto tgQ5 = PlotWithSystErrorBand(hPredQ5, up1Shifts_q5, dn1Shifts_q5, kGray + 2, kGray, 1, false, 0.8, false);
 
 	hPredQ5->Draw("same hist e");
 	hPredQ5_chg_pi_Clone->Draw("same hist e");
