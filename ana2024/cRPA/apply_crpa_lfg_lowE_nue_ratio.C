@@ -125,7 +125,7 @@ void apply_crpa_lfg_lowE_nue_ratio(const std::string& beam = "fhc")
 	h2SumRwgt->Draw("same hist colz");
 //	h2SumRwgt->GetZaxis()->SetRangeUser(0.5, 1.5); // this works. but leave out for now. Want this for a new TH2, the ratio of the ratio...?
 	TLatex ltx;
-	ltx.DrawLatexNDC(0.1, 0.9, "Approx. cRPA");
+	ltx.DrawLatexNDC(0.1, 0.95, "Approx. cRPA Effect");
 	ltx.SetTextSize(0.85);
 	TLatex latex;
 	latex.SetTextColor(kGray);
