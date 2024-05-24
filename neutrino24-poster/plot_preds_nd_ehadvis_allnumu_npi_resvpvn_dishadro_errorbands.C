@@ -209,8 +209,8 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 
 	TH1D * hPredQ5_chg_pi_Clone = (TH1D*) hPredQ5_chg_pi->Clone("hPredQ5_chg_pi_Clone");
 	hPredQ5_chg_pi_Clone->SetLineColor(kGreen + 4); // slightly darker line.
-	hPredQ5_chg_pi_Clone->SetFillColor(kGreen + 2);
-	hPredQ5_chg_pi_Clone->SetFillColorAlpha(kGreen + 2, 0.5);
+	hPredQ5_chg_pi_Clone->SetFillColor(kGreen + 1);
+	hPredQ5_chg_pi_Clone->SetFillColorAlpha(kGreen + 1, 0.5);
 
 	// create the ratios -- ONLY for the Q5 prediction.
 	TH1 *hUnity = (TH1F *) hPredQ5->Clone("hEUnity");
@@ -282,7 +282,7 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 	hBlank.SetMaximum(hPredQ5->GetMaximum() * 1.8);
 	// draw the error bands and CV of the two preds.
 
-	auto tg_chg_pi = PlotWithSystErrorBand(hPredQ5_chg_pi, up1Shifts_chg_pi, dn1Shifts_chg_pi, kGreen + 4, kGreen + 2, 1, false, 0.8, false);
+	auto tg_chg_pi = PlotWithSystErrorBand(hPredQ5_chg_pi, up1Shifts_chg_pi, dn1Shifts_chg_pi, kGreen + 4, kGreen + 3, 1, false, 0.8, false);
 	auto tgQ5 = PlotWithSystErrorBand(hPredQ5, up1Shifts_q5, dn1Shifts_q5, kGray + 2, kGray, 1, false, 0.8, false);
 
 	hPredQ5->Draw("same hist e");
