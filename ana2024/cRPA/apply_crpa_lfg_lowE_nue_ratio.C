@@ -78,8 +78,9 @@ void apply_crpa_lfg_lowE_nue_ratio(const std::string& beam = "fhc")
 		for (unsigned int binIdxX = 1; binIdxX <= h2Signal->GetNbinsX(); binIdxX++){
 
 			// standard case, apply ratio as normal.
+			// We want to skip the first 5 ROWS (Y bins) of the distribution. Bc LowE starts at E = 0.5 GeV
 			if (binIdxX <= h2RPARatio->GetNbinsX() && binIdxY <= h2RPARatio->GetNbinsY()) {
-				const double contentRatio = h2RPARatio->GetBinContent(binIdxX + 5, binIdxY + 5); // from the cRPA ratio paper.
+				const double contentRatio = h2RPARatio->GetBinContent(binIdxX, binIdxY + 5); // from the cRPA ratio paper.
 				const double contentSumNue = h2Signal->GetBinContent(binIdxX, binIdxY);  // NOvA's FD LowE sample
 
 				const double contentRwgt = contentRatio * contentSumNue; // this is the value after re-weighting to cRPA.
