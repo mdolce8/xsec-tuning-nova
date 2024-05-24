@@ -143,8 +143,8 @@ void apply_crpa_lfg_lowE_nue_ratio(const std::string& beam = "fhc")
 	// Request to make projection onto Y axis.
 	TCanvas c2;
 	c2.cd();
-	auto hProjLowE_Rwgt = h2SumRwgt->ProjectionY();
-	auto hProjLowE_Signal = h2Signal->ProjectionY();
+	auto hProjLowE_Rwgt = h2SumRwgt->ProjectionY("ProjY_Rwgt", 0, -1, "o");
+	auto hProjLowE_Signal = h2Signal->ProjectionY("ProjY_Signal", 0, -1, "o"); // "o" for keeping axis.
 	hProjLowE_Rwgt->SetLineWidth(3);
 	hProjLowE_Rwgt->SetLineColor(kBlue);
 	hProjLowE_Rwgt->Draw("same hist a");
