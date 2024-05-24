@@ -282,8 +282,8 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 	hBlank.SetMaximum(hPredQ5->GetMaximum() * 1.8);
 	// draw the error bands and CV of the two preds.
 
-	auto tg_chg_pi = PlotWithSystErrorBand(hPredQ5_chg_pi, up1Shifts_chg_pi, dn1Shifts_chg_pi, kGreen + 4, kGreen + 3, 1, false, 0.8, false);
-	auto tgQ5 = PlotWithSystErrorBand(hPredQ5, up1Shifts_q5, dn1Shifts_q5, kGray + 2, kGray, 1, false, 0.8, false);
+	auto tg_chg_pi = PlotWithSystErrorBand(hPredQ5_chg_pi, up1Shifts_chg_pi, dn1Shifts_chg_pi, kGreen + 4, kGreen + 3, 1, false, 0.5, false);
+	auto tgQ5 = PlotWithSystErrorBand(hPredQ5, up1Shifts_q5, dn1Shifts_q5, kGray + 2, kGray, 1, false, 0.5, false);
 
 	hPredQ5->Draw("same hist e");
 	hPredQ5_chg_pi_Clone->Draw("same hist e");
