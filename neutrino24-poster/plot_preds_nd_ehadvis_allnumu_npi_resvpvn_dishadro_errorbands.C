@@ -162,7 +162,7 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 	leg.SetFillStyle(0);
 
 	// set scale factors here.
-  const double scaleFactor = 1e-6;
+  const double scaleFactor = 1e-5;
 	double histMax = -5;
 
 	// Assumption: we know the predictions are the both from AllNumu (Q5) sample.
@@ -229,15 +229,15 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 		h->GetXaxis()->SetTitleSize(0.0);
 		h->SetTitle(";;");
 		h->GetXaxis()->SetRangeUser(0., 0.8);
-//		h->Scale(scaleFactor); // scale first, then divide.
+		h->Scale(scaleFactor); // scale first, then divide.
 	}
 	hUnity->Divide(hPredQ5); // scale first, then divide.
 
 	// scale the vectors of TH1s.
-//	for (const auto &vecHist : {up1Shifts_q5, up1Shifts_chg_pi, dn1Shifts_q5, dn1Shifts_chg_pi}){
-//		for (TH1 *histShift: vecHist)
-//			histShift->Scale(scaleFactor);
-//	}
+	for (const auto &vecHist : {up1Shifts_q5, up1Shifts_chg_pi, dn1Shifts_q5, dn1Shifts_chg_pi}){
+		for (TH1 *histShift: vecHist)
+			histShift->Scale(scaleFactor);
+	}
 //	for (TH1* hShift : up1Shifts_q5) {
 //		hShift->Scale(scaleFactor);
 //	}
@@ -293,7 +293,7 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 	hPredQ5_chg_pi_Clone->Draw("same hist e");
 
 
-	hPredQ5->GetYaxis()->SetTitle("10^{6} Events / GeV");
+	hBlank.GetYaxis()->SetTitle("10^{5} Events / GeV");
 	hPredQ5->SetMaximum(hPredQ5->GetMaximum() * 1.8);
 
 	latex.DrawLatexNDC(.15, .85, hc.c_str());
