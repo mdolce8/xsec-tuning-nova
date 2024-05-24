@@ -121,9 +121,12 @@ void apply_crpa_lfg_lowE_nue_ratio(const std::string& beam = "fhc")
 	// Draw the Re-weighted histogram now. No need to scale, already scaled to 2024 POT.
 	TCanvas c;
 
-	h2SumRwgt->SetTitle("Approx. cRPA");
+	h2SumRwgt->SetTitle("; True #theta (deg); True E_{#nu} (GeV)");
 	h2SumRwgt->Draw("same hist colz");
 //	h2SumRwgt->GetZaxis()->SetRangeUser(0.5, 1.5); // this works. but leave out for now. Want this for a new TH2, the ratio of the ratio...?
+	TLatex ltx;
+	ltx.SetTextSize(0.85);
+	ltx.DrawLatexNDC(0.1, 0.9, "Approx. cRPA");
 	TLatex latex;
 	latex.SetTextColor(kGray);
 	latex.DrawLatexNDC(0.62, 0.6, Form(beam == "fhc" ? "Neutrino Beam" : "Antineutrino Beam"));
@@ -158,7 +161,11 @@ void apply_crpa_lfg_lowE_nue_ratio(const std::string& beam = "fhc")
 	ltx3.SetTextSize(0.85);
 //	ltx3.DrawLatexNDC(0.62, 0.7, "(#theta_e, E_#nu) Projection");
 
-	hProjLowE_Rwgt->SetTitle("FD LowE #nu_{e} Sample; E_{#nu} (GeV); Events");
+	hProjLowE_Rwgt->SetTitle("FD LowE #nu_{e} Sample; True E_{#nu} (GeV); Events");
+	hProjLowE_Rwgt->GetYaxis()->CenterTitle();
+	hProjLowE_Rwgt->GetXaxis()->CenterTitle();
+	hProjLowE_Rwgt->GetXaxis()->SetTitleOffset(0.9);
+
 
 	TLegend leg(0.15, 0.6, 0.5, 0.85);
 	leg.SetFillColor(0);
