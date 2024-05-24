@@ -275,7 +275,7 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 	TH1D hBlank("hBlank", "", 1, 0., 0.8);
 	hBlank.SetBinContent(1, 1.);
 	hBlank.SetLineColor(0);
-	hBlank.Draw();
+	hBlank.Draw("same");
 	hBlank.SetMaximum(hPredQ5->GetMaximum() * 1.8);
 	// draw the error bands and CV of the two preds.
 
