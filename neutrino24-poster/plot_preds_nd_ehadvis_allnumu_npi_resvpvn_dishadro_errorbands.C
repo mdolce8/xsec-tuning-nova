@@ -181,7 +181,8 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 
 	// =================================== Create Histograms =================================================
 
-
+	TH1 * hPredQ5        = preds[0].pred->PredictSyst(calc2020BF.get(), SystShifts::Nominal()).ToTH1(preds[0].pot);
+	TH1 * hPredQ5_chg_pi = preds[1].pred->PredictSyst(calc2020BF.get(), SystShifts::Nominal()).ToTH1(preds[1].pot);
 
 	//NOTE: the histograms and error bands TH1s are outside the loop.
 	std::vector<TH1*> up1Shifts_q5, dn1Shifts_q5;
@@ -195,6 +196,8 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 		up1Shifts_q5.push_back(hUp1_q5);
 		up1Shifts_chg_pi.push_back(hUp1_chg_pi);
 
+		std::cout << "compare Up1 vs PredQ5: " << hUp1_q5->Integral() << ", " << hPredQ5->Integral() << std::endl;
+
 		pm1SigmaShift.SetShift(syst, -1., true);
 		TH1 * hDn1_q5     = preds[0].pred->PredictSyst(calc2020BF.get(), pm1SigmaShift).ToTH1(preds[0].pot);
 		TH1 * hDn1_chg_pi = preds[1].pred->PredictSyst(calc2020BF.get(), pm1SigmaShift).ToTH1(preds[1].pot);
@@ -202,9 +205,6 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 		dn1Shifts_chg_pi.push_back(hDn1_chg_pi);
 	} // systs
 
-
-	TH1 * hPredQ5        = preds[0].pred->PredictSyst(calc2020BF.get(), SystShifts::Nominal()).ToTH1(preds[0].pot);
-	TH1 * hPredQ5_chg_pi = preds[1].pred->PredictSyst(calc2020BF.get(), SystShifts::Nominal()).ToTH1(preds[1].pot);
 
 
 	TH1D * hPredQ5_chg_pi_Clone = (TH1D*) hPredQ5_chg_pi->Clone("hPredQ5_chg_pi_Clone");
