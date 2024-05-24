@@ -136,11 +136,13 @@ void apply_crpa_lfg_lowE_nue_ratio(const std::string& beam = "fhc")
 
 	std::cout << " events integral: " << h2SumRwgt->Integral() << std::endl;
 
-	c.SaveAs(Form("%s/plot_crpa_lfg_fd_%s_prod5.1_enu_theta_lowE_nue.png", outDir.c_str(),  beam.c_str()));
+	for (const auto &ext : {"png", "pdf"})
+		c.SaveAs(Form("%s/plot_crpa_lfg_fd_%s_prod5.1_enu_theta_lowE_nue.%s", outDir.c_str(),  beam.c_str(), ext));
 
 
 	// Request to make projection onto Y axis.
 	c.Clear();
+	c.cd();
 	auto hProjLowE_Rwgt = h2SumRwgt->ProjectionY();
 	auto hProjLowE_Signal = h2Signal->ProjectionY();
 	hProjLowE_Rwgt->SetLineWidth(3);
@@ -149,12 +151,12 @@ void apply_crpa_lfg_lowE_nue_ratio(const std::string& beam = "fhc")
 	hProjLowE_Signal->SetLineColor(kRed);
 	hProjLowE_Signal->SetLineWidth(3);
 	hProjLowE_Signal->Draw("same hist");
-	latex.DrawLatexNDC(0.62, 0.6, Form(beam == "fhc" ? "Neutrino Beam" : "Antineutrino Beam"));
-	ltx2.DrawLatexNDC(0.62, 0.5, "Asimov A");
+//	latex.DrawLatexNDC(0.62, 0.6, Form(beam == "fhc" ? "Neutrino Beam" : "Antineutrino Beam"));
+//	ltx2.DrawLatexNDC(0.62, 0.5, "Asimov A");
 	TLatex ltx3;
 	ltx3.SetTextColor(kGray);
 	ltx3.SetTextSize(0.85);
-	ltx3.DrawLatexNDC(0.62, 0.7, "(#theta_e, E_#nu) Projection");
+//	ltx3.DrawLatexNDC(0.62, 0.7, "(#theta_e, E_#nu) Projection");
 
 	TLegend leg(0.15, 0.6, 0.5, 0.85);
 	leg.SetFillColor(0);
@@ -162,8 +164,10 @@ void apply_crpa_lfg_lowE_nue_ratio(const std::string& beam = "fhc")
 	leg.AddEntry(hProjLowE_Signal, "NOvA Signal", "l");
 	leg.AddEntry(hProjLowE_Rwgt, "~cRPA Effect", "l");
 	leg.Draw("same");
+	Simulation();
 
-	c.SaveAs(Form("%s/plot_crpa_lfg_fd_%s_prod5.1_enu_theta_lowE_nue_projection.png", outDir.c_str(),  beam.c_str()));
+	for (const auto &ext : {"png", "pdf"})
+		c.SaveAs(Form("%s/plot_crpa_lfg_fd_%s_prod5.1_enu_theta_lowE_nue_projection.%s", outDir.c_str(),  beam.c_str(), ext));
 
 
 }
