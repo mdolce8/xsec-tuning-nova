@@ -273,6 +273,8 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 	p1->cd();
 
 	TH1D hBlank("hBlank", "", 1, 0., 0.8);
+	hBlank.SetBinContent(1, 1);
+	hBlank.SetLineColor(0);
 	hBlank.Draw();
 	hBlank.SetMaximum(600e3);
 	// draw the error bands and CV of the two preds.
