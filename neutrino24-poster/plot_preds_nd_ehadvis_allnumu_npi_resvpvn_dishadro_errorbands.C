@@ -222,7 +222,7 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 		h->GetXaxis()->SetTitleSize(0.0);
 		h->SetTitle(";;");
 		h->GetXaxis()->SetRangeUser(0., 0.8);
-		h->Scale(scaleFactor); // scale first, then divide.
+//		h->Scale(scaleFactor); // scale first, then divide.
 	}
 	hUnity->Divide(hPredQ5); // scale first, then divide.
 
@@ -232,10 +232,10 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 //			histShift->Scale(scaleFactor);
 //	}
 	for (TH1* hShift : up1Shifts_q5) {
-		hShift->Scale(scaleFactor);
+//		hShift->Scale(scaleFactor);
 	}
 	for (TH1* hShift : dn1Shifts_q5) {
-		hShift->Scale(scaleFactor);
+//		hShift->Scale(scaleFactor);
 	}
 
 
