@@ -189,13 +189,13 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 	for (const ana::ISyst* &syst : systs){
 		SystShifts pm1SigmaShift;
 
-		pm1SigmaShift.SetShift(syst, +1.);
+		pm1SigmaShift.SetShift(syst, +1., true);
 		TH1 * hUp1_q5     = preds[0].pred->PredictSyst(calc2020BF.get(), pm1SigmaShift).ToTH1(preds[0].pot);
 		TH1 * hUp1_chg_pi = preds[1].pred->PredictSyst(calc2020BF.get(), pm1SigmaShift).ToTH1(preds[1].pot);
 		up1Shifts_q5.push_back(hUp1_q5);
 		up1Shifts_chg_pi.push_back(hUp1_chg_pi);
 
-		pm1SigmaShift.SetShift(syst, -1.);
+		pm1SigmaShift.SetShift(syst, -1., true);
 		TH1 * hDn1_q5     = preds[0].pred->PredictSyst(calc2020BF.get(), pm1SigmaShift).ToTH1(preds[0].pot);
 		TH1 * hDn1_chg_pi = preds[1].pred->PredictSyst(calc2020BF.get(), pm1SigmaShift).ToTH1(preds[1].pot);
 		dn1Shifts_q5.push_back(hDn1_q5);
@@ -236,12 +236,12 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 //		for (TH1 *histShift: vecHist)
 //			histShift->Scale(scaleFactor);
 //	}
-	for (TH1* hShift : up1Shifts_q5) {
+//	for (TH1* hShift : up1Shifts_q5) {
 //		hShift->Scale(scaleFactor);
-	}
-	for (TH1* hShift : dn1Shifts_q5) {
+//	}
+//	for (TH1* hShift : dn1Shifts_q5) {
 //		hShift->Scale(scaleFactor);
-	}
+//	}
 
 
 
