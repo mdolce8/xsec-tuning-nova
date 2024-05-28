@@ -162,7 +162,7 @@ void plot_preds_nd_ehadvis_mupix_npi_resvpvn_dishadro_errorbands(const std::stri
 	leg.SetFillStyle(0);
 
 	// set scale factors here.
-  const double scaleFactor = 1e-5;
+  const double scaleFactor = 1e-4;
 	double histMax = -5;
 
 	// Assumption: we know the predictions are the both from Mupix sample.
@@ -293,7 +293,7 @@ void plot_preds_nd_ehadvis_mupix_npi_resvpvn_dishadro_errorbands(const std::stri
 	hPred_MuPiX_chg_pi_Clone->Draw("same hist e");
 
 
-	hBlank.GetYaxis()->SetTitle("10^{5} Events / GeV");
+	hBlank.GetYaxis()->SetTitle("10^{4} Events / GeV");
 	hBlank.GetYaxis()->CenterTitle();
 	hPred_MuPiX->SetMaximum(hPred_MuPiX->GetMaximum() * 1.8);
 
