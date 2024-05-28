@@ -166,8 +166,8 @@ void plot_preds_nd_ehadvis_mupix_npi_resvpvn_dishadro_errorbands(const std::stri
 	double histMax = -5;
 
 	// Assumption: we know the predictions are the both from Mupix sample.
-	const ndfit::Quantiles q = ndfit::visuals::GetQuantileEnum(preds[0].name);
-	const std::string quantileString = ndfit::visuals::GetQuantileString(q);
+	const ndfit::TopologyType t = ndfit::visuals::GetTopologyName("fhc_nd_pred_interp_MuPiEtc", "p5p1");
+	const std::string topoLtx = ndfit::visuals::GetTopologyLatexName(t);
 	const std::string beamType = ndfit::visuals::GetHornCurrent(preds[0].name);
 	hc = beamType;
 
