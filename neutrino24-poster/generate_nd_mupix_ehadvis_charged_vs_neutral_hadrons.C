@@ -49,9 +49,9 @@ void generate_nd_mupix_ehadvis_charged_vs_neutral_hadrons(const std::string& bea
 
   std::string outDir;
   if (test)
-    outDir = "/exp/nova/data/users/mdolce/preds+spectra/ana2024/neutrino24-poster/generate_nd_allnumu_ehadvis_charged_vs_neutral_hadrons/test/";
+    outDir = "/exp/nova/data/users/mdolce/preds+spectra/ana2024/neutrino24-poster/generate_nd_mupix_ehadvis_charged_vs_neutral_hadrons/test/";
   else {
-    outDir = "/exp/nova/data/users/mdolce/preds+spectra/ana2024/neutrino24-poster/generate_nd_allnumu_ehadvis_charged_vs_neutral_hadrons";
+    outDir = "/exp/nova/data/users/mdolce/preds+spectra/ana2024/neutrino24-poster/generate_nd_mupix_ehadvis_charged_vs_neutral_hadrons";
   }
   std::cout << "Predictions will be made and placed into..." << outDir << std::endl;
 
@@ -76,7 +76,7 @@ void generate_nd_mupix_ehadvis_charged_vs_neutral_hadrons(const std::string& bea
 
 
   std::cout << "Ana2024 Box Opening........" << std::endl;
-  std::cout << "Plotting Prod5.1 ND Numu AllNumu MC with 2024 cuts in EHadVis..... with true Npi^{+-} > 0........" << std::endl;
+  std::cout << "Plotting Prod5.1 ND Numu MuPiX MC with 2024 cuts in EHadVis..... with true Npi^{+-} > 0........" << std::endl;
 
 
 // 		Definitions:
@@ -113,11 +113,11 @@ void generate_nd_mupix_ehadvis_charged_vs_neutral_hadrons(const std::string& bea
   std::map<std::string, const PredictionInterp*> predInterps;
 
   // Q5 is Inclusive sample.
-  predGens.try_emplace("pred_interp_Q5",
-                       NoOscPredictionGenerator(loader.GetLoader(caf::kNEARDET, Loaders::kMC), histAxisEHadVis, kNumu2024ND, kPPFXFluxCVWgt * kXSecCVWgt2024));
+  predGens.try_emplace("pred_interp_mupix",
+                       NoOscPredictionGenerator(loader.GetLoader(caf::kNEARDET, Loaders::kMC), histAxisEHadVis, kNumu2024ND && kMu1PiOpt(0.5,0.7), kPPFXFluxCVWgt * kXSecCVWgt2024));
 
-	predGens.try_emplace("pred_interp_Q5_chg_pi",
-											 NoOscPredictionGenerator(loader.GetLoader(caf::kNEARDET, Loaders::kMC), histAxisEHadVis, kNumu2024ND && kChargedPions, kPPFXFluxCVWgt * kXSecCVWgt2024));
+	predGens.try_emplace("pred_interp_mupix_chg_pi",
+											 NoOscPredictionGenerator(loader.GetLoader(caf::kNEARDET, Loaders::kMC), histAxisEHadVis, kNumu2024ND && kMu1PiOpt(0.5,0.7) && kChargedPions, kPPFXFluxCVWgt * kXSecCVWgt2024));
 
   for (const auto &predGen : predGens) {
     predInterps.try_emplace(predGen.first,
@@ -138,7 +138,7 @@ void generate_nd_mupix_ehadvis_charged_vs_neutral_hadrons(const std::string& bea
   for (const std::pair<std::string, const PredictionInterp*> predPair : predInterps){
 
     // create ROOT file.
-    std::string fileName = Form("%s_nd_allnumu_%s_resvpvn_dishadro_ehadvis.root", predPair.first.c_str(), beam.c_str());
+    std::string fileName = Form("%s_nd_mupix_%s_resvpvn_dishadro_ehadvis.root", predPair.first.c_str(), beam.c_str());
     const std::string& finalOutDir = out_dir + "/" + fileName;
     TFile ofile(Form("%s", finalOutDir.c_str()), "recreate");
 
