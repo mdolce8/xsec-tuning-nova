@@ -1,0 +1,230 @@
+Welcome to the ROOT of all evils 
+Loading SAM dataset from file cache...
+Filling 1 spectra from 400 files matching 'prod_sumdecaf_development_nd_genie_N1810j0211a_nonswap_rhc_nova_v08_full_v1_numu2020prod5.1'...
+
+Warning: field 'rec.mc.nu.nprim' does not exist in file. Falling back to 'rec.mc.nu.@prim.size()' which is less efficient. Consider updating StandardRecord to include 'rec.mc.nu.nprim'.
+
+
+Warning: field 'rec.mc.nu.nprefsi' does not exist in file. Falling back to 'rec.mc.nu.@prefsi.size()' which is less efficient. Consider updating StandardRecord to include 'rec.mc.nu.nprefsi'.
+
+ev.nupdg = 14;
+ev.isCC = true;
+ev.reaction = novarwgt::kScDeepInelastic;
+ev.struckNucl = 2112;
+ev.A = 35;
+ev.Z = 17;
+ev.Enu = 4.52205;
+ev.q = {-0.0650782, -0.37083, 3.18907, 3.13289};
+ev.y = 0.692804;
+ev.W = 2.50355;
+ev.preFSIPartMult.size() = 2
+ev.fsPartMult.size() (totalHadrons_POSTFSI) = 4
+---------------−
+ev.npiplus = 2;
+ev.npizero = 0;
+ev.npiminus = 1;
+ev.nproton = 1;
+ev.nneutron = 1;
+
+Warning: field 'rec.mc.nu.ngenVersion' does not exist in file. Falling back to 'rec.mc.nu.@genVersion.size()' which is less efficient. Consider updating StandardRecord to include 'rec.mc.nu.ngenVersion'.
+
+
+Warning: field 'rec.mc.nu.rwgt.ngenie' does not exist in file. Falling back to 'rec.mc.nu.rwgt.@genie.size()' which is less efficient. Consider updating StandardRecord to include 'rec.mc.nu.rwgt.ngenie'.
+
+CV kXSecCVWgt2020GSFProd51 wgt = 0.933054
+FSI khNCVWgt2020 wgt = 0.91026
+Pre-FSI information to follow: 
+{n_KE, 1.2092};
+{n_mult, 1};
+{p_KE, -1};
+{p_mult, 0};
+{pi+_KE, 1.77107};
+{pi+_mult, 1};
+{pi-_KE, -1};
+{pi-_mult, 0};
+{pi0_KE, -1};
+{pi0_mult, 0};
+Expected syst weights:
+{
+starting loop over....DISNuHadronQ1Syst
+starting loop over....DISNuBarHadronQ0Syst
+}
+
+
+
+
+
+
+
+
+
+ev.nupdg = -14;
+ev.isCC = true;
+ev.reaction = novarwgt::kScDeepInelastic;
+ev.struckNucl = 2212;
+ev.A = 12;
+ev.Z = 6;
+ev.Enu = 1.9141;
+ev.q = {0.255853, -0.301796, 1.02575, 0.935901};
+ev.y = 0.48895;
+ev.W = 1.51863;
+ev.preFSIPartMult.size() = 2
+ev.fsPartMult.size() (totalHadrons_POSTFSI) = 2
+---------------−
+ev.npiplus = 0;
+ev.npizero = 0;
+ev.npiminus = 1;
+ev.nproton = 1;
+ev.nneutron = 0;
+CV kXSecCVWgt2020GSFProd51 wgt = 1.12054
+FSI khNCVWgt2020 wgt = 0.895569
+Pre-FSI information to follow: 
+{n_KE, -1};
+{n_mult, 0};
+{p_KE, 0.379911};
+{p_mult, 1};
+{pi+_KE, -1};
+{pi+_mult, 0};
+{pi-_KE, 0.399582};
+{pi-_mult, 1};
+{pi0_KE, -1};
+{pi0_mult, 0};
+Expected syst weights:
+{
+starting loop over....DISNuHadronQ1Syst
+starting loop over....DISNuBarHadronQ0Syst
+  {novarwgt::GetSystKnobByName("DISNuBarHadronQ0Syst"), {-3, 0}},
+  {novarwgt::GetSystKnobByName("DISNuBarHadronQ0Syst"), {-2, 0}},
+  {novarwgt::GetSystKnobByName("DISNuBarHadronQ0Syst"), {-1, 0.5}},
+  {novarwgt::GetSystKnobByName("DISNuBarHadronQ0Syst"), {-0.5, 0.75}},
+  {novarwgt::GetSystKnobByName("DISNuBarHadronQ0Syst"), {0.5, 1.25}},
+  {novarwgt::GetSystKnobByName("DISNuBarHadronQ0Syst"), {1, 1.5}},
+  {novarwgt::GetSystKnobByName("DISNuBarHadronQ0Syst"), {2, 1.5}},
+  {novarwgt::GetSystKnobByName("DISNuBarHadronQ0Syst"), {3, 1.5}},
+}
+
+
+
+
+
+ev.nupdg = -14;
+ev.isCC = true;
+ev.reaction = novarwgt::kScDeepInelastic;
+ev.struckNucl = 2212;
+ev.A = 12;
+ev.Z = 6;
+ev.Enu = 3.02598;
+ev.q = {0.362413, 0.12482, 2.59581, 2.4402};
+ev.y = 0.806417;
+ev.W = 2.12916;
+ev.preFSIPartMult.size() = 2
+ev.fsPartMult.size() (totalHadrons_POSTFSI) = 2
+---------------−
+ev.npiplus = 0;
+ev.npizero = 0;
+ev.npiminus = 1;
+ev.nproton = 1;
+ev.nneutron = 0;
+CV kXSecCVWgt2020GSFProd51 wgt = 1.1432
+FSI khNCVWgt2020 wgt = 0.943179
+Pre-FSI information to follow: 
+{n_KE, -1};
+{n_mult, 0};
+{p_KE, 0.696964};
+{p_mult, 1};
+{pi+_KE, -1};
+{pi+_mult, 0};
+{pi-_KE, 1.5858};
+{pi-_mult, 1};
+{pi0_KE, -1};
+{pi0_mult, 0};
+Expected syst weights:
+{
+starting loop over....DISNuHadronQ1Syst
+starting loop over....DISNuBarHadronQ0Syst
+  {novarwgt::GetSystKnobByName("DISNuBarHadronQ0Syst"), {-3, 0}},
+  {novarwgt::GetSystKnobByName("DISNuBarHadronQ0Syst"), {-2, 0}},
+  {novarwgt::GetSystKnobByName("DISNuBarHadronQ0Syst"), {-1, 0.5}},
+  {novarwgt::GetSystKnobByName("DISNuBarHadronQ0Syst"), {-0.5, 0.75}},
+  {novarwgt::GetSystKnobByName("DISNuBarHadronQ0Syst"), {0.5, 1.25}},
+  {novarwgt::GetSystKnobByName("DISNuBarHadronQ0Syst"), {1, 1.5}},
+  {novarwgt::GetSystKnobByName("DISNuBarHadronQ0Syst"), {2, 1.5}},
+  {novarwgt::GetSystKnobByName("DISNuBarHadronQ0Syst"), {3, 1.5}},
+}
+
+
+
+
+
+
+ev.nupdg = -14;
+ev.isCC = true;
+ev.reaction = novarwgt::kScDeepInelastic;
+ev.struckNucl = 2212;
+ev.A = 12;
+ev.Z = 6;
+ev.Enu = 2.14413;
+ev.q = {-0.0388367, -0.307174, 1.76538, 1.64365};
+ev.y = 0.76658;
+ev.W = 1.85936;
+ev.preFSIPartMult.size() = 2
+ev.fsPartMult.size() (totalHadrons_POSTFSI) = 4
+---------------−
+ev.npiplus = 0;
+ev.npizero = 0;
+ev.npiminus = 3;
+ev.nproton = 2;
+ev.nneutron = 1;
+CV kXSecCVWgt2020GSFProd51 wgt = 1.54591
+FSI khNCVWgt2020 wgt = 1.06591
+Pre-FSI information to follow: 
+{n_KE, -1};
+{n_mult, 0};
+{p_KE, 1.21839};
+{p_mult, 1};
+{pi+_KE, -1};
+{pi+_mult, 0};
+{pi-_KE, 0.269292};
+{pi-_mult, 1};
+{pi0_KE, -1};
+{pi0_mult, 0};
+Expected syst weights:
+{
+starting loop over....DISNuHadronQ1Syst
+starting loop over....DISNuBarHadronQ0Syst
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+that's plenty of events. exiting....
+** NOvA Common Analysis Format Executor **
+Compiling macro...
+Linking macro...
+Executing macro...
