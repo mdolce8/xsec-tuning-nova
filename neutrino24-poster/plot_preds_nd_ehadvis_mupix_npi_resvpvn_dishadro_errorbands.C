@@ -181,11 +181,11 @@ void plot_preds_nd_ehadvis_mupix_npi_resvpvn_dishadro_errorbands(const std::stri
 
 	// =================================== Create Histograms =================================================
 
-	TH1 * hPredQ5        = preds[0].pred->PredictSyst(calc2020BF.get(), SystShifts::Nominal()).ToTH1(preds[0].pot);
-	TH1 * hPredQ5_chg_pi = preds[1].pred->PredictSyst(calc2020BF.get(), SystShifts::Nominal()).ToTH1(preds[1].pot);
+	TH1 * hPred_MuPiX        = preds[0].pred->PredictSyst(calc2020BF.get(), SystShifts::Nominal()).ToTH1(preds[0].pot);
+	TH1 * hPred_MuPiX_chgpi = preds[1].pred->PredictSyst(calc2020BF.get(), SystShifts::Nominal()).ToTH1(preds[1].pot);
 
 	//NOTE: the histograms and error bands TH1s are outside the loop.
-	std::vector<TH1*> up1Shifts_q5, dn1Shifts_q5;
+	std::vector<TH1*> up1Shifts_MuPiX, dn1Shifts_MuPiX;
 	std::vector<TH1*> up1Shifts_chg_pi, dn1Shifts_chg_pi;
 	for (const ana::ISyst* &syst : systs){
 		SystShifts pm1SigmaShift;
@@ -193,36 +193,36 @@ void plot_preds_nd_ehadvis_mupix_npi_resvpvn_dishadro_errorbands(const std::stri
 		pm1SigmaShift.SetShift(syst, +1., true);
 		TH1D * hUp1_q5     = preds[0].pred->PredictSyst(calc2020BF.get(), pm1SigmaShift).ToTH1(preds[0].pot);
 		TH1D * hUp1_chg_pi = preds[1].pred->PredictSyst(calc2020BF.get(), pm1SigmaShift).ToTH1(preds[1].pot);
-		up1Shifts_q5.push_back(hUp1_q5);
+		up1Shifts_MuPiX.push_back(hUp1_q5);
 		up1Shifts_chg_pi.push_back(hUp1_chg_pi);
 
 		pm1SigmaShift.SetShift(syst, -1., true);
 		TH1D * hDn1_q5     = preds[0].pred->PredictSyst(calc2020BF.get(), pm1SigmaShift).ToTH1(preds[0].pot);
 		TH1D * hDn1_chg_pi = preds[1].pred->PredictSyst(calc2020BF.get(), pm1SigmaShift).ToTH1(preds[1].pot);
-		dn1Shifts_q5.push_back(hDn1_q5);
+		dn1Shifts_MuPiX.push_back(hDn1_q5);
 		dn1Shifts_chg_pi.push_back(hDn1_chg_pi);
 
 		std::cout << "syst: " << syst->ShortName() << std::endl;
-		std::cout << "compare Up1 vs PredQ5: " << hUp1_q5->Integral() << ", " << hPredQ5->Integral() << std::endl;
-		std::cout << "compare Dn1 vs PredQ5: " << hDn1_q5->Integral() << ", " << hPredQ5->Integral() << std::endl;
+		std::cout << "compare Up1 vs PredMuPiX: " << hUp1_q5->Integral() << ", " << hPred_MuPiX->Integral() << std::endl;
+		std::cout << "compare Dn1 vs PredMuPiX: " << hDn1_q5->Integral() << ", " << hPred_MuPiX->Integral() << std::endl;
 	} // systs
 
 
 
-	TH1D * hPredQ5_chg_pi_Clone = (TH1D*) hPredQ5_chg_pi->Clone("hPredQ5_chg_pi_Clone");
-	hPredQ5_chg_pi_Clone->SetLineColor(kGreen + 4); // slightly darker line.
-	hPredQ5_chg_pi_Clone->SetFillColor(kGreen + 1);
-	hPredQ5_chg_pi_Clone->SetFillColorAlpha(kGreen + 1, 0.5);
+	TH1D * hPred_MuPiX_chg_pi_Clone = (TH1D*) hPred_MuPiX_chgpi->Clone("hPred_MuPiX_chgpi_Clone");
+	hPred_MuPiX_chg_pi_Clone->SetLineColor(kGreen + 4); // slightly darker line.
+	hPred_MuPiX_chg_pi_Clone->SetFillColor(kGreen + 1);
+	hPred_MuPiX_chg_pi_Clone->SetFillColorAlpha(kGreen + 1, 0.5);
 
-	// create the ratios -- ONLY for the Q5 prediction.
-	TH1 *hUnity = (TH1F *) hPredQ5->Clone("hEUnity");
+	// create the ratios -- ONLY for the MuPiX prediction.
+	TH1 *hUnity = (TH1F *) hPred_MuPiX->Clone("hEUnity");
 	// do the necessary removal of info.
 
 	// for aesthetics
 	TH1D hBlank("hBlank", "", 1, 0., 0.8);
 	hBlank.SetBinContent(1, 1.);
 
-	for (TH1* h : {(TH1*) hPredQ5, (TH1*) hPredQ5_chg_pi, (TH1*) hPredQ5_chg_pi_Clone, (TH1*) hUnity, (TH1*) &hBlank}) {
+	for (TH1* h : {(TH1*) hPred_MuPiX, (TH1*) hPred_MuPiX_chgpi, (TH1*) hPred_MuPiX_chg_pi_Clone, (TH1*) hUnity, (TH1*) &hBlank}) {
 		h->GetYaxis()->SetTitleSize(0.036);
 		h->GetYaxis()->SetTitleOffset(1.25);
 		h->GetXaxis()->SetLabelSize(0.0);
@@ -231,10 +231,10 @@ void plot_preds_nd_ehadvis_mupix_npi_resvpvn_dishadro_errorbands(const std::stri
 		h->GetXaxis()->SetRangeUser(0., 0.8);
 		h->Scale(scaleFactor); // scale first, then divide.
 	}
-	hUnity->Divide(hPredQ5); // scale first, then divide.
+	hUnity->Divide(hPred_MuPiX); // scale first, then divide.
 
 	// scale the vectors of TH1s.
-	for (const auto &vecHist : {up1Shifts_q5, up1Shifts_chg_pi, dn1Shifts_q5, dn1Shifts_chg_pi}){
+	for (const auto &vecHist : {up1Shifts_MuPiX, up1Shifts_chg_pi, dn1Shifts_MuPiX, dn1Shifts_chg_pi}){
 		for (TH1 *histShift: vecHist)
 			histShift->Scale(scaleFactor);
 	}
@@ -248,29 +248,29 @@ void plot_preds_nd_ehadvis_mupix_npi_resvpvn_dishadro_errorbands(const std::stri
 
 
 	/// only create the ratios for the error bands of the Q5 Mupix pred.
-	std::vector<TH1*> up1ShiftsRatio = up1Shifts_q5;
-	std::vector<TH1*> dn1ShiftsRatio = dn1Shifts_q5;
+	std::vector<TH1*> up1ShiftsRatio = up1Shifts_MuPiX;
+	std::vector<TH1*> dn1ShiftsRatio = dn1Shifts_MuPiX;
 	for (auto &hist: up1ShiftsRatio)
-		hist->Divide(hPredQ5);
+		hist->Divide(hPred_MuPiX);
 	for (auto &hist: dn1ShiftsRatio)
-		hist->Divide(hPredQ5);
+		hist->Divide(hPred_MuPiX);
 
 	
 	/// aesthetics for the Canvas
-	hPredQ5->SetLineColor(kGray + 2);
-	hPredQ5->SetLineWidth(3);
-	hPredQ5->SetTitle(";;");
-	hPredQ5->GetXaxis()->SetLabelSize(0);
+	hPred_MuPiX->SetLineColor(kGray + 2);
+	hPred_MuPiX->SetLineWidth(3);
+	hPred_MuPiX->SetTitle(";;");
+	hPred_MuPiX->GetXaxis()->SetLabelSize(0);
 
-	hPredQ5_chg_pi_Clone->SetTitle("; ; ");
-	hPredQ5_chg_pi_Clone->GetXaxis()->SetLabelSize(0);
+	hPred_MuPiX_chg_pi_Clone->SetTitle("; ; ");
+	hPred_MuPiX_chg_pi_Clone->GetXaxis()->SetLabelSize(0);
 
-	up1Shifts_q5.at(0)->SetFillColor(kGray);
+	up1Shifts_MuPiX.at(0)->SetFillColor(kGray);
 	up1Shifts_chg_pi.at(0)->SetFillColor(kGreen + 4);
-	leg.AddEntry(hPredQ5, "NOvA 2024 MC", "l");
+	leg.AddEntry(hPred_MuPiX, "NOvA 2024 MC", "l");
 //	leg.AddEntry(up1Shifts_q5.at(0), "#pm1#sigma #pi^{#pm} unc.", "f");
 	leg.AddEntry(up1Shifts_chg_pi.at(0), "#pm1#sigma #pi^{#pm} unc.", "f");
-	leg.AddEntry(hPredQ5_chg_pi_Clone, "True N#pi^{#pm} > 0", "f");
+	leg.AddEntry(hPred_MuPiX_chg_pi_Clone, "True N#pi^{#pm} > 0", "f");
 
 
 
@@ -283,19 +283,19 @@ void plot_preds_nd_ehadvis_mupix_npi_resvpvn_dishadro_errorbands(const std::stri
 
 	hBlank.SetLineColor(0);
 	hBlank.Draw("same");
-	hBlank.SetMaximum(hPredQ5->GetMaximum() * 1.8);
+	hBlank.SetMaximum(hPred_MuPiX->GetMaximum() * 1.8);
 	// draw the error bands and CV of the two preds.
 
-	auto tg_chg_pi = PlotWithSystErrorBand(hPredQ5_chg_pi, up1Shifts_chg_pi, dn1Shifts_chg_pi, kGreen + 4, kGreen + 3, 1, false, 0.8, false);
+	auto tg_chg_pi = PlotWithSystErrorBand(hPred_MuPiX_chgpi, up1Shifts_chg_pi, dn1Shifts_chg_pi, kGreen + 4, kGreen + 3, 1, false, 0.8, false);
 //	auto tgQ5 = PlotWithSystErrorBand(hPredQ5, up1Shifts_q5, dn1Shifts_q5, kGray + 2, kGray, 1, false, 0.8, false);
 
-	hPredQ5->Draw("same hist e");
-	hPredQ5_chg_pi_Clone->Draw("same hist e");
+	hPred_MuPiX->Draw("same hist e");
+	hPred_MuPiX_chg_pi_Clone->Draw("same hist e");
 
 
 	hBlank.GetYaxis()->SetTitle("10^{5} Events / GeV");
 	hBlank.GetYaxis()->CenterTitle();
-	hPredQ5->SetMaximum(hPredQ5->GetMaximum() * 1.8);
+	hPred_MuPiX->SetMaximum(hPred_MuPiX->GetMaximum() * 1.8);
 
 	latex.DrawLatexNDC(.15, .85, hc.c_str());
 	latex.DrawLatexNDC(.15, .8,  quantileString.c_str());
@@ -320,7 +320,7 @@ void plot_preds_nd_ehadvis_mupix_npi_resvpvn_dishadro_errorbands(const std::stri
 	hUnity->GetXaxis()->SetTitleSize(0.045);
 	hUnity->SetXTitle(""); // set from the TAxis object
 	hUnity->GetYaxis()->CenterTitle();
-	hUnity->GetYaxis()->SetRangeUser(0.5, 1.5);
+	hUnity->GetYaxis()->SetRangeUser(0.7, 1.3);
 	hUnity->GetXaxis()->SetRangeUser(0., 0.8);
 	hUnity->GetYaxis()->SetTitleSize(0.02);
 	hUnity->GetYaxis()->SetLabelSize(0.02);
@@ -345,7 +345,7 @@ void plot_preds_nd_ehadvis_mupix_npi_resvpvn_dishadro_errorbands(const std::stri
 		std::ofstream ofile;
 		ofile.open(ndfit::FullFilename(outDirPlot, plotname + ".txt").c_str());
 		ofile << "Near Detector " << hc << " Prod5.1 Ana2024 Monte Carlo prediction in hadronic visible energy. "
-						 " The prediction is broken down by the total ND selected sample (grey) and the component that contains"
+						 " The prediction is broken down by the charge-pion and prong topological sample (grey) and the component that contains"
 						 " at least one true charged pion, pre-FSI (green). "
 						 " The light grey band is the 1 sigma error from NOvA's RESvp/vn Nu and Nubar systematics and "
 						 "DIS Nu and Nubar hadronization systematics, implemented for the first time in the Ana2024 analysis."
