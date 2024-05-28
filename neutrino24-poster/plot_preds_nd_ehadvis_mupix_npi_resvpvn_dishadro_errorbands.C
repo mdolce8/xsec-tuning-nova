@@ -298,7 +298,7 @@ void plot_preds_nd_ehadvis_mupix_npi_resvpvn_dishadro_errorbands(const std::stri
 	hPred_MuPiX->SetMaximum(hPred_MuPiX->GetMaximum() * 1.8);
 
 	latex.DrawLatexNDC(.15, .85, hc.c_str());
-	latex.DrawLatexNDC(.15, .8,  quantileString.c_str());
+	latex.DrawLatexNDC(.15, .8,  topoLtx.c_str());
 	leg.Draw("same");
 	latex.Draw("same");
 
