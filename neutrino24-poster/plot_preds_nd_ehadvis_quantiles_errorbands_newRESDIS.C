@@ -140,6 +140,8 @@ void plot_preds_nd_ehadvis_quantiles_errorbands_newRESDIS(const bool saveCaption
 	DummyAnaSyst khNFSI_FateFracEV2_2020GSF = DummyAnaSyst("hNFSI_FateFracEV2_2020GSF", "hNFSI_FateFracEV2_2020GSF");
 	DummyAnaSyst khNFSI_FateFracEV3_2020GSF = DummyAnaSyst("hNFSI_FateFracEV3_2020GSF", "hNFSI_FateFracEV3_2020GSF");
 
+	DummyAnaSyst kMECShape2020GSFNu = DummyAnaSyst("MECShape2020GSFNu", "MECShape2020GSFNu");
+
 	std::vector<const ISyst*> systsRESDIS;
 	systsRESDIS.push_back(&kDummyDIS0Syst);
 	systsRESDIS.push_back(&kDummyDIS1Syst);
