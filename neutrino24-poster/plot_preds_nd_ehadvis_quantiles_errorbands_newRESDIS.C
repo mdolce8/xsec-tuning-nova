@@ -135,6 +135,11 @@ void plot_preds_nd_ehadvis_quantiles_errorbands_newRESDIS(const bool saveCaption
 	DummyAnaSyst kDummyRESvpvnNuSyst = DummyAnaSyst("RES_vpvn_Nu_ratio_xsec_syst", "RES #frac{#nu+p}{#nu+n} Ratio XSec Syst");
 	DummyAnaSyst kDummyRESvpvnNuBarSyst = DummyAnaSyst("RES_vpvn_NuBar_ratio_xsec_syst", "RES #frac{#bar{#nu}+p}{#bar{#nu}+n} Ratio XSec Syst");
 
+	DummyAnaSyst khNFSI_MFP_2020GSF = DummyAnaSyst("hNFSI_MFP_2020GSF", "hNFSI_MFP_2020GSF");
+	DummyAnaSyst khNFSI_FateFracEV1_2020GSF = DummyAnaSyst("hNFSI_FateFracEV1_2020GSF", "hNFSI_FateFracEV1_2020GSF");
+	DummyAnaSyst khNFSI_FateFracEV2_2020GSF = DummyAnaSyst("hNFSI_FateFracEV2_2020GSF", "hNFSI_FateFracEV2_2020GSF");
+	DummyAnaSyst khNFSI_FateFracEV3_2020GSF = DummyAnaSyst("hNFSI_FateFracEV3_2020GSF", "hNFSI_FateFracEV3_2020GSF");
+
 	std::vector<const ISyst*> systsRESDIS;
 	systsRESDIS.push_back(&kDummyDIS0Syst);
 	systsRESDIS.push_back(&kDummyDIS1Syst);
