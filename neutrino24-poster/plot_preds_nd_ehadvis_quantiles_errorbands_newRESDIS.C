@@ -407,8 +407,8 @@ void plot_preds_nd_ehadvis_quantiles_errorbands_newRESDIS(const bool saveCaption
       ofile.open(ndfit::FullFilename(outDirPlot, "plot_" + predBundle.name + "_EHadVis_xsec24_errorbands_newRESDIS.txt").c_str());
       ofile << "Near Detector " << beamType << " Prod5.1 Ana2024 Monte Carlo prediction in the hadronic energy fraction:  " << quantileString
                 << ". The variable in this plot is reconstructed hadronic visible energy (in dark grey)."
-                   " The light grey band is the 1 sigma error from all NOvA cross-section uncertainties for the Ana2024 analysis."
-                   " This includes the new RES and DIS uncertainties from the ND fitting work."
+                   " The light grey band is the 1 sigma error from all existing NOvA cross-section uncertainties."
+									 " The green band is the 1 sigma error from the same uncertainties plus the new RES and DIS uncertainties for the Ana2024 analysis."
                    " The top distribution is the number of events, and the bottom is the ratio from the MC." << std::endl;
       ofile.close();
     }
