@@ -141,7 +141,7 @@ void plot_preds_nd_ehadvis_mupix_npi_resvpvn_dishadro_errorbands(const std::stri
   TCanvas c("c","c", 600,600); // 900, 600
   TPad * p1, * p2; //p1 upper, p2 lower
 
-	auto * xAxisEHad = new TGaxis(0.001, 0.5, 0.8, 0.501, 0., 0.8, 10, "");
+	auto * xAxisEHad = new TGaxis(0.001, 0.9, 0.8, 0.901, 0., 0.8, 10, "");
 	xAxisEHad->SetLabelOffset(-0.015); // default is 0.005
 	xAxisEHad->SetLabelFont(42);
 	xAxisEHad->SetTitle("Hadronic Visible Energy (GeV)");
@@ -320,7 +320,7 @@ void plot_preds_nd_ehadvis_mupix_npi_resvpvn_dishadro_errorbands(const std::stri
 	hUnity->GetXaxis()->SetTitleSize(0.045);
 	hUnity->SetXTitle(""); // set from the TAxis object
 	hUnity->GetYaxis()->CenterTitle();
-	hUnity->GetYaxis()->SetRangeUser(0.7, 1.3);
+	hUnity->GetYaxis()->SetRangeUser(0.9, 1.1);
 	hUnity->GetXaxis()->SetRangeUser(0., 0.8);
 	hUnity->GetYaxis()->SetTitleSize(0.02);
 	hUnity->GetYaxis()->SetLabelSize(0.02);
