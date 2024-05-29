@@ -149,7 +149,7 @@ void plot_preds_nd_ehadvis_quantiles_errorbands_newRESDIS(const bool saveCaption
 	systsRESDIS.push_back(&kDummyDIS0Syst);
 	systsRESDIS.push_back(&kDummyDIS1Syst);
 	systsRESDIS.push_back(&kDummyRESvpvnNuSyst);
-	systsRESDIS.push_back(&kDummyRESvpvnNuSyst);
+	systsRESDIS.push_back(&kDummyRESvpvnNuBarSyst);
 	systsRESDIS.push_back(&kRESDeltaScaleSyst);
 	systsRESDIS.push_back(&kRESOtherScaleSyst);
 
