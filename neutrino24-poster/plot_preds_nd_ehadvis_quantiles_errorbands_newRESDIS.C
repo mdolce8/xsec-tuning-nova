@@ -354,7 +354,7 @@ void plot_preds_nd_ehadvis_quantiles_errorbands_newRESDIS(const bool saveCaption
 			up1Shifts_total.at(0)->SetFillColor(kGreen + 2);
 			up1Shifts_total.at(0)->SetLineColor(kGreen + 2);
       leg.AddEntry(up1Shifts.at(0), Form("%s", errorBands.c_str()), "f");
-			leg.AddEntry(up1Shifts_total.at(0), "#1pm#sigma #pi^{#pm} unc.", "f");
+			leg.AddEntry(up1Shifts_total.at(0), "#pm1#sigma #pi^{#pm} unc.", "f");
       leg.Draw("same");
       TLatex latex;
       latex.SetTextSize(0.04);
