@@ -209,6 +209,10 @@ void plot_preds_nd_ehadvis_quantiles_errorbands_newRESDIS(const bool saveCaption
   TCanvas c("c","c", 600,600); // 900, 600
   TPad * p1, * p2; //p1 upper, p2 lower
 
+	// for aesthetics
+	TH1D hBlank("hBlank", "", 1, 0., 0.8);
+	hBlank.SetBinContent(1, 1.);
+	hBlank.SetLineColor(0);
 
   // set scale factors here.
   const double scaleFactor = 1e-6;
@@ -315,7 +319,11 @@ void plot_preds_nd_ehadvis_quantiles_errorbands_newRESDIS(const bool saveCaption
                                                                                                   EExposureType::kPOT,
                                                                                                   kBinDensity);
 
-      // Rescale
+		hBlank.Draw("same");
+		hBlank.SetMaximum(hCVPred->GetMaximum() * 1.8);
+
+
+		// Rescale
       hCVPred->SetLineColor(kGray + 2);
       hCVPred->SetLineWidth(3);
       hCVPred->Scale(scaleFactor);
