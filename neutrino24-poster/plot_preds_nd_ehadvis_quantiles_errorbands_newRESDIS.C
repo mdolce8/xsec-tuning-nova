@@ -136,10 +136,10 @@ void plot_preds_nd_ehadvis_quantiles_errorbands_newRESDIS(const bool saveCaption
 	DummyAnaSyst kDummyRESvpvnNuBarSyst = DummyAnaSyst("RES_vpvn_NuBar_ratio_xsec_syst", "RES #frac{#bar{#nu}+p}{#bar{#nu}+n} Ratio XSec Syst");
 
 	std::vector<const ISyst*> systsRESDIS;
-	systsRESDIS.push_back(kDummyDIS0Syst);
-	systsRESDIS.push_back(kDummyDIS1Syst);
-	systsRESDIS.push_back(kDummyRESvpvnNuSyst);
-	systsRESDIS.push_back(kDummyRESvpvnNuSyst);
+	systsRESDIS.push_back(&kDummyDIS0Syst);
+	systsRESDIS.push_back(&kDummyDIS1Syst);
+	systsRESDIS.push_back(&kDummyRESvpvnNuSyst);
+	systsRESDIS.push_back(&kDummyRESvpvnNuSyst);
 	systsRESDIS.push_back(&kRESDeltaScaleSyst);
 	systsRESDIS.push_back(&kRESOtherScaleSyst);
 
