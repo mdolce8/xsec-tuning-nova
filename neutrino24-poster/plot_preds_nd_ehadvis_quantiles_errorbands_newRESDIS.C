@@ -331,10 +331,9 @@ void plot_preds_nd_ehadvis_quantiles_errorbands_newRESDIS(const bool saveCaption
 
       p1->cd();
 			// draw the larger error band first.
-		auto ErrorBandRESDIS = PlotWithSystErrorBand(hCVPred, up1Shifts_total, dn1Shifts_total, kGray + 2, kGreen + 2, 1.3, false, 0.5,
-																								 false);
+		hCVPred->Draw("same hist e");
+		auto ErrorBandRESDIS = PlotWithSystErrorBand(hCVPred, up1Shifts_total, dn1Shifts_total, kGray + 2, kGreen + 2, 1.3, false, 0.5, false);
 		auto ErrorBand = PlotWithSystErrorBand(hCVPred, up1Shifts, dn1Shifts, kGray + 2, kGray, 1.3, false, 0.8, false); // w/o RES DIS
-      hCVPred->Draw("same hist e");
       hCVPred->GetYaxis()->SetTitle("10^{6} Events / GeV");
       hCVPred->GetYaxis()->SetTitleSize(0.036);
       hCVPred->GetYaxis()->SetTitleOffset(1.1);
