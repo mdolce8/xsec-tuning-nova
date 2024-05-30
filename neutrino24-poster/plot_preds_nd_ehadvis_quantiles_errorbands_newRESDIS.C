@@ -451,6 +451,7 @@ void plot_preds_nd_ehadvis_quantiles_errorbands_newRESDIS(const bool saveCaption
       p2->SetGridy(1);
       TH1 *hUnity = (TH1F *) hCVPred->Clone("hEUnity");
       hUnity->Divide(hCVPred);
+      hUnity->Draw("same hist");
 
 
       ///create the ratios for the error bands
@@ -484,7 +485,7 @@ void plot_preds_nd_ehadvis_quantiles_errorbands_newRESDIS(const bool saveCaption
       hUnity->GetYaxis()->SetTitleOffset(1.5);
       hUnity->SetYTitle("NOvA MC Ratio");
       hUnity->GetYaxis()->CenterTitle();
-//      xAxisEHad->Draw("same");
+      xAxisEHad->Draw("same");
 
 
       ndfit::visuals::DetectorLabel(predBundle.det);
