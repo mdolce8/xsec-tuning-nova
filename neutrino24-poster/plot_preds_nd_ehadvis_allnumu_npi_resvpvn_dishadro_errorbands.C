@@ -320,7 +320,7 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 	hUnity->GetXaxis()->SetTitleSize(0.045);
 	hUnity->SetXTitle(""); // set from the TAxis object
 	hUnity->GetYaxis()->CenterTitle();
-	hUnity->GetYaxis()->SetRangeUser(0.8, 1.2);
+	hUnity->GetYaxis()->SetRangeUser(0.95, 1.05);
 	hUnity->GetXaxis()->SetRangeUser(0., 0.8);
 	hUnity->GetYaxis()->SetTitleSize(0.02);
 	hUnity->GetYaxis()->SetLabelSize(0.02);
