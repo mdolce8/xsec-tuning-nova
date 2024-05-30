@@ -442,7 +442,7 @@ void plot_preds_nd_ehadvis_quantiles_errorbands_newRESDIS(const bool saveCaption
       TH1 *hUnity = (TH1F *) hCVPred->Clone("hEUnity");
       hUnity->Divide(hCVPred);
       hUnity->Draw("same hist");
-
+      std::cout << "hCVPred Int: " << hCVPred->Integral() << std::endl;
 
       ///create the ratios for the error bands
       std::vector<TH1*> up1ShiftsRatio = up1Shifts;
@@ -455,9 +455,10 @@ void plot_preds_nd_ehadvis_quantiles_errorbands_newRESDIS(const bool saveCaption
         hist->Divide(hCVPred);
 			for (auto &hist: up1ShiftsRatio_total)
         hist->Divide(hCVPred);
-      for (auto &hist: dn1ShiftsRatio_total)
+      for (auto &hist: dn1ShiftsRatio_total) {
         hist->Divide(hCVPred);
-
+        std::cout << "dn1 total Int: " << hist->Integral() << std::endl;
+      }
 
 
 			// draw the largest error first.
