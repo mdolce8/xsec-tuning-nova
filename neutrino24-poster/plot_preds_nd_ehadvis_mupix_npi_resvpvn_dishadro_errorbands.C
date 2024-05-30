@@ -313,7 +313,7 @@ void plot_preds_nd_ehadvis_mupix_npi_resvpvn_dishadro_errorbands(const std::stri
 	p2->SetGridy(1);
 
 	// Draw Q5 error band.
-	PlotWithSystErrorBand(hUnity, up1ShiftsRatio, dn1ShiftsRatio, kGray + 2, kGreen + 3);
+	PlotWithSystErrorBand(hUnity, up1ShiftsRatio, dn1ShiftsRatio, kGreen + 4, kGreen + 3);
 
 	hUnity->SetTitle(";;");
 	hUnity->GetXaxis()->SetTitleOffset(1.);
@@ -324,7 +324,7 @@ void plot_preds_nd_ehadvis_mupix_npi_resvpvn_dishadro_errorbands(const std::stri
 	hUnity->GetXaxis()->SetRangeUser(0., 0.8);
 	hUnity->GetYaxis()->SetTitleSize(0.02);
 	hUnity->GetYaxis()->SetLabelSize(0.02);
-	hUnity->GetYaxis()->SetTitleOffset(1.6);
+	hUnity->GetYaxis()->SetTitleOffset(1.8);
 	hUnity->GetXaxis()->CenterTitle();
 	hUnity->GetYaxis()->CenterTitle();
 
