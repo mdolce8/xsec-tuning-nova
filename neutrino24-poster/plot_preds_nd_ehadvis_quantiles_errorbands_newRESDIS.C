@@ -389,7 +389,7 @@ void plot_preds_nd_ehadvis_quantiles_errorbands_newRESDIS(const bool saveCaption
                                                                                                   EExposureType::kPOT,
                                                                                                   kBinDensity);
 
-//		hBlank.Draw("same");
+		hBlank.Draw("same");
 		hBlank.SetMaximum(hCVPred->GetMaximum() * 1.8);
 
 
