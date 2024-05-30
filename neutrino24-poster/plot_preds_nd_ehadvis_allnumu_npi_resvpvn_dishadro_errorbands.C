@@ -313,7 +313,7 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 	p2->SetGridy(1);
 
 	// Draw Q5 error band.
-	PlotWithSystErrorBand(hUnity, up1ShiftsRatio, dn1ShiftsRatio, kGray + 2, kGray);
+	PlotWithSystErrorBand(hUnity, up1ShiftsRatio, dn1ShiftsRatio, kGreen + 4, kGreen + 3);
 
 	hUnity->SetTitle(";;");
 	hUnity->GetXaxis()->SetTitleOffset(1.);
