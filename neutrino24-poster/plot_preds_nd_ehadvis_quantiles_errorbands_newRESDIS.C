@@ -299,7 +299,7 @@ void plot_preds_nd_ehadvis_quantiles_errorbands_newRESDIS(const bool saveCaption
       c.Clear();
 
 
-
+// TODO: try undoing the scaling first, then plot again. and then do one error band at a time...
 
       auto * xAxisEHad = new TGaxis(0.001, 0.5, 0.8, 0.501, 0., 0.8, 10, "");
       xAxisEHad->SetLabelOffset(-0.015); // default is 0.005
@@ -326,15 +326,15 @@ void plot_preds_nd_ehadvis_quantiles_errorbands_newRESDIS(const bool saveCaption
 		// Rescale
       hCVPred->SetLineColor(kGray + 2);
       hCVPred->SetLineWidth(3);
-      hCVPred->Scale(scaleFactor);
-      for (TH1 * hist : up1Shifts)
-        hist->Scale(scaleFactor);
-      for (TH1 * hist : dn1Shifts)
-        hist->Scale(scaleFactor);
-			for (TH1 * hist : up1Shifts_total)
-				hist->Scale(scaleFactor);
-		for (TH1 * hist : dn1Shifts_total)
-				hist->Scale(scaleFactor);
+//      hCVPred->Scale(scaleFactor);
+//      for (TH1 * hist : up1Shifts)
+//        hist->Scale(scaleFactor);
+//      for (TH1 * hist : dn1Shifts)
+//        hist->Scale(scaleFactor);
+//			for (TH1 * hist : up1Shifts_total)
+//				hist->Scale(scaleFactor);
+//		for (TH1 * hist : dn1Shifts_total)
+//				hist->Scale(scaleFactor);
 
 
       p1->cd();
