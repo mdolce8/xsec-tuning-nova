@@ -254,6 +254,12 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 		hist->Divide(hPredQ5);
 	for (auto &hist: dn1ShiftsRatio)
 		hist->Divide(hPredQ5);
+  std::vector<TH1*> up1ShiftsRatio_chgpi = up1Shifts_chg_pi;
+	std::vector<TH1*> dn1ShiftsRatio_chgpi = dn1Shifts_chg_pi;
+	for (auto &hist: up1ShiftsRatio_chgpi)
+		hist->Divide(hPredQ5);
+	for (auto &hist: dn1ShiftsRatio_chgpi)
+		hist->Divide(hPredQ5);
 
 	
 	/// aesthetics for the Canvas
@@ -313,7 +319,7 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 	p2->SetGridy(1);
 
 	// Draw Q5 error band.
-	PlotWithSystErrorBand(hUnity, up1ShiftsRatio, dn1ShiftsRatio, kGray + 2, kGray);
+	PlotWithSystErrorBand(hUnity, up1ShiftsRatio_chgpi, dn1ShiftsRatio_chgpi, kGreen + 4, kGreen + 3);
 
 	hUnity->SetTitle(";;");
 	hUnity->GetXaxis()->SetTitleOffset(1.);
@@ -324,7 +330,7 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 	hUnity->GetXaxis()->SetRangeUser(0., 0.8);
 	hUnity->GetYaxis()->SetTitleSize(0.02);
 	hUnity->GetYaxis()->SetLabelSize(0.02);
-	hUnity->GetYaxis()->SetTitleOffset(1.5);
+	hUnity->GetYaxis()->SetTitleOffset(1.8);
 	hUnity->GetXaxis()->CenterTitle();
 	hUnity->GetYaxis()->CenterTitle();
 
