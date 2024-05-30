@@ -456,8 +456,9 @@ void plot_preds_nd_ehadvis_quantiles_errorbands_newRESDIS(const bool saveCaption
 			for (auto &hist: up1ShiftsRatio_total)
         hist->Divide(hCVPred);
       for (auto &hist: dn1ShiftsRatio_total) {
-        hist->Divide(hCVPred);
         std::cout << "dn1 total Int: " << hist->Integral() << std::endl;
+        hist->Divide(hCVPred);
+        std::cout << "dn1/hCVPred total Int: " << hist->Integral() << std::endl;
       }
 
 
