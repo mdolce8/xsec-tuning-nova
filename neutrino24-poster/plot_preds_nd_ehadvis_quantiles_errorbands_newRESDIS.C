@@ -371,7 +371,7 @@ void plot_preds_nd_ehadvis_quantiles_errorbands_newRESDIS(const bool saveCaption
 
 
 
-      auto * xAxisEHad = new TGaxis(0.001, 0.5, 0.8, 0.501, 0., 0.8, 10, "");
+      auto * xAxisEHad = new TGaxis(0.001, 0.6, 0.8, 0.601, 0., 0.8, 10, "");
       xAxisEHad->SetLabelOffset(-0.015); // default is 0.005
       xAxisEHad->SetLabelFont(42);
       xAxisEHad->SetTitle("E_{had}^{vis} (GeV)");
@@ -411,7 +411,7 @@ void plot_preds_nd_ehadvis_quantiles_errorbands_newRESDIS(const bool saveCaption
 			// draw the larger error band first.
 		hCVPred->Draw("same hist e");
 //		auto ErrorBandRESDIS = visuals::PlotWithSystErrorBand(hCVPred, up1Shifts_total, dn1Shifts_total, kGray + 2, kGreen + 2, 1.3, false, 0.5, false);
-//		auto ErrorBand = visuals::PlotWithSystErrorBand(hCVPred, up1Shifts, dn1Shifts, kGray + 2, kGray, 1.3, false, 0.8, false); // w/o RES DIS
+		auto ErrorBand = visuals::PlotWithSystErrorBand(hCVPred, up1Shifts, dn1Shifts, kGray + 2, kGray, 1.3, false, 0.8, false); // w/o RES DIS
       hCVPred->GetYaxis()->SetTitle("10^{6} Events / GeV");
       hCVPred->GetYaxis()->SetTitleSize(0.036);
       hCVPred->GetYaxis()->SetTitleOffset(1.1);
@@ -483,7 +483,7 @@ void plot_preds_nd_ehadvis_quantiles_errorbands_newRESDIS(const bool saveCaption
       hUnity->GetYaxis()->SetTitleSize(0.02);
       hUnity->GetYaxis()->SetLabelSize(0.02);
       hUnity->GetYaxis()->SetTitleOffset(1.5);
-      hUnity->SetYTitle("NOvA MC Ratio");
+      hUnity->SetYTitle("MC Ratio");
       hUnity->GetYaxis()->CenterTitle();
       xAxisEHad->Draw("same");
 
