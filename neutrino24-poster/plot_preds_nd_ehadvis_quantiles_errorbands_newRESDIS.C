@@ -389,7 +389,7 @@ void plot_preds_nd_ehadvis_quantiles_errorbands_newRESDIS(const bool saveCaption
                                                                                                   EExposureType::kPOT,
                                                                                                   kBinDensity);
 
-		hBlank.Draw("same");
+//		hBlank.Draw("same");
 		hBlank.SetMaximum(hCVPred->GetMaximum() * 1.8);
 
 
@@ -409,7 +409,7 @@ void plot_preds_nd_ehadvis_quantiles_errorbands_newRESDIS(const bool saveCaption
 
       p1->cd();
 			// draw the larger error band first.
-		hCVPred->Draw("same hist e");
+//		hCVPred->Draw("same hist e");
 		auto ErrorBandRESDIS = visuals::PlotWithSystErrorBand(hCVPred, up1Shifts_total, dn1Shifts_total, kGray + 2, kGreen + 2, 1.3, false, 0.5, false);
 		auto ErrorBand = visuals::PlotWithSystErrorBand(hCVPred, up1Shifts, dn1Shifts, kGray + 2, kGray, 1.3, false, 0.8, false); // w/o RES DIS
       hCVPred->GetYaxis()->SetTitle("10^{6} Events / GeV");
@@ -428,10 +428,10 @@ void plot_preds_nd_ehadvis_quantiles_errorbands_newRESDIS(const bool saveCaption
       leg.AddEntry(hCVPred, cvPred.c_str(), "l");
       up1Shifts.at(0)->SetFillColor(kGray);
       up1Shifts.at(0)->SetLineColor(kGray);
-      auto up1Shifts_copy = up1Shifts.at(0);
+      hBlank.SetFillColor(kGray); hBlank.SetLineColor(kGray);
 			up1Shifts_total.at(0)->SetFillColor(kGreen + 2);
 			up1Shifts_total.at(0)->SetLineColor(kGreen + 2);
-      leg.AddEntry(up1Shifts_copy, "#pm1#sigma xsec20", "f");
+      leg.AddEntry(&hBlank, "#pm1#sigma xsec20", "f");
 			leg.AddEntry(up1Shifts_total.at(0), "#pm1#sigma xsec24", "f");
       leg.Draw("same");
       TLatex latex;
@@ -443,6 +443,8 @@ void plot_preds_nd_ehadvis_quantiles_errorbands_newRESDIS(const bool saveCaption
       Simulation();
       NeutrinoLabel(ndfit::NeutrinoType::kNumu, beamType == "Antineutrino Beam");
       ndfit::visuals::DetectorLabel(caf::kNEARDET);
+
+
 
       /// EHadVis ratio
       p2->cd();
@@ -468,8 +470,8 @@ void plot_preds_nd_ehadvis_quantiles_errorbands_newRESDIS(const bool saveCaption
 
 
 			// draw the largest error first.
-		PlotWithSystErrorBand(hUnity, up1ShiftsRatio_total, dn1ShiftsRatio_total, kGray + 2, kGreen + 2, 1.3, false, 0.8, false);
-		PlotWithSystErrorBand(hUnity, up1ShiftsRatio, dn1ShiftsRatio, kGray + 2, kGray, 1.3, false, 0.5, false);
+//		PlotWithSystErrorBand(hUnity, up1ShiftsRatio_total, dn1ShiftsRatio_total, kGray + 2, kGreen + 2, 1.3, false, 0.8, false);
+//		PlotWithSystErrorBand(hUnity, up1ShiftsRatio, dn1ShiftsRatio, kGray + 2, kGray, 1.3, false, 0.5, false);
 
       hUnity->GetXaxis()->CenterTitle();
       hUnity->GetXaxis()->SetTitleOffset(1.);
@@ -482,7 +484,7 @@ void plot_preds_nd_ehadvis_quantiles_errorbands_newRESDIS(const bool saveCaption
       hUnity->GetYaxis()->SetTitleOffset(1.5);
       hUnity->SetYTitle("NOvA MC Ratio");
       hUnity->GetYaxis()->CenterTitle();
-      xAxisEHad->Draw("same");
+//      xAxisEHad->Draw("same");
 
 
       ndfit::visuals::DetectorLabel(predBundle.det);
