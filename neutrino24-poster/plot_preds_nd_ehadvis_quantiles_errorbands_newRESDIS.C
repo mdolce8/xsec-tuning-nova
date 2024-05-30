@@ -319,17 +319,12 @@ void plot_preds_nd_ehadvis_quantiles_errorbands_newRESDIS(const bool saveCaption
 			std::cout << "Found systematic: " << newSyst->ShortName() << std::endl;
 			SystShifts pm1SigmaShift;
 			pm1SigmaShift.SetShift(newSyst, +1.);
-
-			TH1 *hUp1 = predBundle.pred->PredictSyst(calc2020BF.get(), pm1SigmaShift).ToTH1(POT,
-																																												EExposureType::kPOT,
-																																												kBinDensity);
+			TH1 *hUp1 = predBundle.pred->PredictSyst(calc2020BF.get(), pm1SigmaShift).ToTH1(POT);
 	//      std::cout << "Up integral: " << hUp1->Integral() << std::endl;
 				up1Shifts_RESDIS.push_back(hUp1);
 
-				pm1SigmaShift.SetShift(newSyst, -1.);
-				TH1 *hDn1 = predBundle.pred->PredictSyst(calc2020BF.get(), pm1SigmaShift).ToTH1(POT,
-																																												EExposureType::kPOT,
-																																												kBinDensity);
+				pm1SigmaShift.SetShift(newSyst, -1., true);
+				TH1 *hDn1 = predBundle.pred->PredictSyst(calc2020BF.get(), pm1SigmaShift).ToTH1(POT);
 	//      std::cout << "Down integral: " << hDn1->Integral() << std::endl;
 				dn1Shifts_RESDIS.push_back(hDn1);
 		} // RES DIS systs
@@ -341,16 +336,12 @@ void plot_preds_nd_ehadvis_quantiles_errorbands_newRESDIS(const bool saveCaption
 
       SystShifts pm1SigmaShift;
       pm1SigmaShift.SetShift(syst, +1.);
-      TH1 *hUp1 = predBundle.pred->PredictSyst(calc2020BF.get(), pm1SigmaShift).ToTH1(POT,
-                                                                                      EExposureType::kPOT,
-                                                                                      kBinDensity);
+      TH1 *hUp1 = predBundle.pred->PredictSyst(calc2020BF.get(), pm1SigmaShift).ToTH1(POT);
 //      std::cout << "Up integral: " << hUp1->Integral() << std::endl;
       up1Shifts.push_back(hUp1);
 
-      pm1SigmaShift.SetShift(syst, -1.);
-      TH1 *hDn1 = predBundle.pred->PredictSyst(calc2020BF.get(), pm1SigmaShift).ToTH1(POT,
-                                                                                      EExposureType::kPOT,
-                                                                                      kBinDensity);
+      pm1SigmaShift.SetShift(syst, -1., true);
+      TH1 *hDn1 = predBundle.pred->PredictSyst(calc2020BF.get(), pm1SigmaShift).ToTH1(POT);
 //      std::cout << "Down integral: " << hDn1->Integral() << std::endl;
       dn1Shifts.push_back(hDn1);
     } // systs to create error bands
@@ -385,9 +376,7 @@ void plot_preds_nd_ehadvis_quantiles_errorbands_newRESDIS(const bool saveCaption
       // EHadVis
       //create the histograms for the PlotWithSystErrorBand() function
       std::cout << "Producing EHadVis plots for " << predBundle.name << "......" << std::endl;
-      TH1 * hCVPred = predBundle.pred->PredictSyst(calc2020BF.get(), SystShifts::Nominal()).ToTH1(POT,
-                                                                                                  EExposureType::kPOT,
-                                                                                                  kBinDensity);
+      TH1 * hCVPred = predBundle.pred->PredictSyst(calc2020BF.get(), SystShifts::Nominal()).ToTH1(POT);
 
 		hBlank.Draw("same");
 		hBlank.SetMaximum(hCVPred->GetMaximum() * 1.8);
