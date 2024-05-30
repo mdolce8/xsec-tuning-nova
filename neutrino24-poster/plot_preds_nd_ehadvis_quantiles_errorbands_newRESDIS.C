@@ -50,6 +50,77 @@
 #include "boost/algorithm/string.hpp"
 
 
+#include "CAFAna/Analysis/Style.h"
+#include "TGraphAsymmErrors.h"
+
+namespace visuals
+{
+    TGraphAsymmErrors* PlotWithSystErrorBand(TH1*& nom,
+                                             std::vector<TH1*>& ups,
+                                             std::vector<TH1*>& dns,
+                                             int col, int errCol,
+                                             float headroom, bool newaxis,
+                                             double alpha, bool forceZero)
+    {
+      if(col == -1){
+        col = ana::kTotalMCColor;
+        errCol = ana::kTotalMCErrorBandColor;
+      }
+      else if(errCol == -1) errCol = col-7; // hopefully a lighter version
+
+      nom->SetLineColor(col);
+      nom->GetXaxis()->CenterTitle();
+      nom->GetYaxis()->CenterTitle();
+      if(newaxis) nom->Draw("hist ]["); // Set the axes up
+
+      double yMax = nom->GetBinContent(nom->GetMaximumBin());
+
+      TGraphAsymmErrors* g = new TGraphAsymmErrors;
+
+      for(int binIdx = 0; binIdx < nom->GetNbinsX()+2; ++binIdx){
+        const double y = nom->GetBinContent(binIdx);
+        g->SetPoint(binIdx, nom->GetXaxis()->GetBinCenter(binIdx), y);
+
+        const double w = nom->GetXaxis()->GetBinWidth(binIdx);
+
+        double errUp = 0;
+        double errDn = 0;
+
+        for(unsigned int systIdx = 0; systIdx < ups.size(); ++systIdx){
+          double hi = ups[systIdx]->GetBinContent(binIdx)-y;
+          double lo = dns[systIdx]->GetBinContent(binIdx)-y;
+
+          // If both shifts are in the same direction use the larger
+          double min = std::min(hi,lo);
+          double max = std::max(hi,lo);
+          if(max < 0) max=0;
+          if(min > 0) min=0;
+
+          errUp += max*max;
+          errDn += min*min;
+        } // end for systIdx
+
+        g->SetPointError(binIdx, w/2, w/2, sqrt(errDn), sqrt(errUp));
+      } // end for i
+
+      g->SetFillColorAlpha(errCol, alpha);
+      g->Draw("e2 same");
+
+      g->SetMaximum(headroom*yMax);
+      g->SetMaximum(headroom*yMax);
+      if(forceZero){
+        // Set minimum to very small value, essentially equivalent to setting
+        // axis range to zero, while still working with log scales
+        g->SetMinimum(0.00001);
+        nom->SetMinimum(0.00001);
+      }
+      nom->Draw("hist same");
+
+//      gPad->RedrawAxis();
+
+      return g;
+    }
+}
 
 
 namespace files
@@ -299,7 +370,6 @@ void plot_preds_nd_ehadvis_quantiles_errorbands_newRESDIS(const bool saveCaption
       c.Clear();
 
 
-// TODO: try undoing the scaling first, then plot again. and then do one error band at a time...
 
       auto * xAxisEHad = new TGaxis(0.001, 0.5, 0.8, 0.501, 0., 0.8, 10, "");
       xAxisEHad->SetLabelOffset(-0.015); // default is 0.005
@@ -340,8 +410,8 @@ void plot_preds_nd_ehadvis_quantiles_errorbands_newRESDIS(const bool saveCaption
       p1->cd();
 			// draw the larger error band first.
 		hCVPred->Draw("same hist e");
-		auto ErrorBandRESDIS = PlotWithSystErrorBand(hCVPred, up1Shifts_total, dn1Shifts_total, kGray + 2, kGreen + 2, 1.3, true, 0.5, false);
-		auto ErrorBand = PlotWithSystErrorBand(hCVPred, up1Shifts, dn1Shifts, kGray + 2, kGray, 1.3, false, 0.8, false); // w/o RES DIS
+		auto ErrorBandRESDIS = visuals::PlotWithSystErrorBand(hCVPred, up1Shifts_total, dn1Shifts_total, kGray + 2, kGreen + 2, 1.3, true, 0.5, false);
+		auto ErrorBand = visuals::PlotWithSystErrorBand(hCVPred, up1Shifts, dn1Shifts, kGray + 2, kGray, 1.3, false, 0.8, false); // w/o RES DIS
       hCVPred->GetYaxis()->SetTitle("10^{6} Events / GeV");
       hCVPred->GetYaxis()->SetTitleSize(0.036);
       hCVPred->GetYaxis()->SetTitleOffset(1.1);
