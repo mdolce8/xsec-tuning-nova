@@ -469,7 +469,7 @@ void plot_preds_nd_ehadvis_quantiles_errorbands_newRESDIS(const bool saveCaption
       hUnity->GetXaxis()->SetTitleSize(0.045);
       hUnity->SetXTitle(""); // set from the TAxis object
       hUnity->GetYaxis()->CenterTitle();
-      hUnity->GetYaxis()->SetRangeUser(-100, 1.4);
+      hUnity->GetYaxis()->SetRangeUser(-10, 1.4);
       hUnity->GetYaxis()->SetTitleSize(0.02);
       hUnity->GetYaxis()->SetLabelSize(0.02);
       hUnity->GetYaxis()->SetTitleOffset(1.5);
