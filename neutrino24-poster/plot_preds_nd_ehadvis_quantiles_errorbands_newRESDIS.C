@@ -472,7 +472,7 @@ void plot_preds_nd_ehadvis_quantiles_errorbands_newRESDIS(const bool saveCaption
 
 			// draw the largest error first.
 //		PlotWithSystErrorBand(hUnity, up1ShiftsRatio_total, dn1ShiftsRatio_total, kGray + 2, kGreen + 2, 1.3, false, 0.8, false);
-//		PlotWithSystErrorBand(hUnity, up1ShiftsRatio, dn1ShiftsRatio, kGray + 2, kGray, 1.3, false, 0.5, false);
+		PlotWithSystErrorBand(hUnity, up1ShiftsRatio, dn1ShiftsRatio, kGray + 2, kGray, 1.3, false, 0.5, false);
 
       hUnity->GetXaxis()->CenterTitle();
       hUnity->GetXaxis()->SetTitleOffset(1.);
