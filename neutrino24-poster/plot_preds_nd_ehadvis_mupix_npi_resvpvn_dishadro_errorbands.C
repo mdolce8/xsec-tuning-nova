@@ -267,7 +267,7 @@ void plot_preds_nd_ehadvis_mupix_npi_resvpvn_dishadro_errorbands(const std::stri
 
 	up1Shifts_MuPiX.at(0)->SetFillColor(kGray);
 	up1Shifts_chg_pi.at(0)->SetFillColor(kGreen + 4);
-	leg.AddEntry(hPred_MuPiX, "NOvA 2024 MC", "l");
+	leg.AddEntry(hPred_MuPiX, "NOvA 2024 simulation", "l");
 //	leg.AddEntry(up1Shifts_q5.at(0), "#pm1#sigma #pi^{#pm} unc.", "f");
 	leg.AddEntry(up1Shifts_chg_pi.at(0), "#pm1#sigma #pi^{#pm} unc.", "f");
 	leg.AddEntry(hPred_MuPiX_chg_pi_Clone, "True N#pi^{#pm} > 0", "f");
@@ -289,8 +289,8 @@ void plot_preds_nd_ehadvis_mupix_npi_resvpvn_dishadro_errorbands(const std::stri
 	auto tg_chg_pi = PlotWithSystErrorBand(hPred_MuPiX_chgpi, up1Shifts_chg_pi, dn1Shifts_chg_pi, kGreen + 4, kGreen + 3, 1, false, 0.8, false);
 //	auto tgQ5 = PlotWithSystErrorBand(hPredQ5, up1Shifts_q5, dn1Shifts_q5, kGray + 2, kGray, 1, false, 0.8, false);
 
-	hPred_MuPiX->Draw("same hist e");
-	hPred_MuPiX_chg_pi_Clone->Draw("same hist e");
+	hPred_MuPiX->Draw("same hist");
+	hPred_MuPiX_chg_pi_Clone->Draw("same hist");
 
 
 	hBlank.GetYaxis()->SetTitle("10^{4} Events / GeV");
@@ -328,7 +328,7 @@ void plot_preds_nd_ehadvis_mupix_npi_resvpvn_dishadro_errorbands(const std::stri
 	hUnity->GetXaxis()->CenterTitle();
 	hUnity->GetYaxis()->CenterTitle();
 
-	hUnity->SetYTitle("MC Ratio");
+	hUnity->SetYTitle("Shifted / Nominal");
 	xAxisEHad->Draw("same");
 
 
