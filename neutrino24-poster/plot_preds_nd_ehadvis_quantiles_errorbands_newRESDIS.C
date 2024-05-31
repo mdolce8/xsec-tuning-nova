@@ -412,23 +412,20 @@ void plot_preds_nd_ehadvis_quantiles_errorbands_newRESDIS(const bool saveCaption
       TLegend leg(0.45, 0.65, 0.9, 0.9);
       leg.SetFillColor(0);
       leg.SetFillStyle(0);
-      const std::string errorBands = "#pm1#sigma xsec24";
-      const std::string cvPred = "NOvA 2024 MC";
-      std::string legCVText;
-      leg.AddEntry(hCVPred, cvPred.c_str(), "l");
+      leg.AddEntry(hCVPred, "NOvA 2024 simulation", "l");
       up1Shifts.at(0)->SetFillColor(kGray);
       up1Shifts.at(0)->SetLineColor(kGray);
       hBlank.SetFillColor(kGray); hBlank.SetLineColor(kGray);
 			up1Shifts_total.at(0)->SetFillColor(kGreen + 2);
 			up1Shifts_total.at(0)->SetLineColor(kGreen + 2);
-      leg.AddEntry(&hBlank, "#pm1#sigma xsec20", "f");
-			leg.AddEntry(up1Shifts_total.at(0), "#pm1#sigma xsec24", "f");
+      leg.AddEntry(&hBlank, "PRD 106, 032004", "f");
+			leg.AddEntry(up1Shifts_total.at(0), "2024 cross section uncertainty", "f");
       leg.Draw("same");
       TLatex latex;
       latex.SetTextSize(0.04);
       latex.SetTextAlign(13);
       latex.DrawLatexNDC(.15, .85, (Form("%s", beamType.c_str())));
-      latex.DrawLatexNDC(.15, .8, Form("%s", quantileString.c_str()));
+      latex.DrawLatexNDC(.15, .8, Form("%s", (quantileString == "All Quantiles" ?  "#nu + #bar{#nu} Selection" : quantileString).c_str()));
       latex.Draw("same");
       Simulation();
       NeutrinoLabel(ndfit::NeutrinoType::kNumu, beamType == "Antineutrino Beam");
@@ -474,8 +471,8 @@ void plot_preds_nd_ehadvis_quantiles_errorbands_newRESDIS(const bool saveCaption
       hUnity->GetYaxis()->SetRangeUser(-10, 1.4);
       hUnity->GetYaxis()->SetTitleSize(0.02);
       hUnity->GetYaxis()->SetLabelSize(0.02);
-      hUnity->GetYaxis()->SetTitleOffset(1.5);
-      hUnity->SetYTitle("MC Ratio");
+      hUnity->GetYaxis()->SetTitleOffset(1.8);
+      hUnity->SetYTitle("Shifted / Nominal");
       hUnity->GetYaxis()->CenterTitle();
       xAxisEHad->Draw("same");
 
