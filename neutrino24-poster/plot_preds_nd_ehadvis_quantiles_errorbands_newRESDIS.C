@@ -442,12 +442,14 @@ void plot_preds_nd_ehadvis_quantiles_errorbands_newRESDIS(const bool saveCaption
       hUnity->Divide(hCVPred);
       hUnity->Draw("same hist");
       std::cout << "hCVPred Int: " << hCVPred->Integral() << std::endl;
+      std::cout << "dn1Shifts_total.at(0)->Integral()" << dn1Shifts_total.at(0)->Integral() << std::endl;
 
       ///create the ratios for the error bands
-      std::vector<TH1*> up1ShiftsRatio = up1Shifts;
+      std::vector<TH1*> up1ShiftsRatio = up1Shifts; // 2020
       std::vector<TH1*> dn1ShiftsRatio = dn1Shifts;
-			std::vector<TH1*> up1ShiftsRatio_total = up1Shifts_total;
+			std::vector<TH1*> up1ShiftsRatio_total = up1Shifts_total; // 2024 (+ RES/DIS)
       std::vector<TH1*> dn1ShiftsRatio_total = dn1Shifts_total;
+    std::cout << "dn1ShiftsRatio_total.at(0)->Integral()" << dn1ShiftsRatio_total.at(0)->Integral() << std::endl;
       for (auto &hist: up1ShiftsRatio)
         hist->Divide(hCVPred);
       for (auto &hist: dn1ShiftsRatio)
@@ -462,8 +464,8 @@ void plot_preds_nd_ehadvis_quantiles_errorbands_newRESDIS(const bool saveCaption
 
 
 			// draw the largest error first.
-//		PlotWithSystErrorBand(hUnity, up1ShiftsRatio_total, dn1ShiftsRatio_total, kGray + 2, kGreen + 2, 1.3, true, 0.8, false);
-		PlotWithSystErrorBand(hUnity, up1ShiftsRatio, dn1ShiftsRatio, kGray + 2, kGray, 1.3, false, 0.5, false);
+		PlotWithSystErrorBand(hUnity, up1ShiftsRatio_total, dn1ShiftsRatio_total, kGray + 2, kGreen + 2, 1.3, true, 0.8, false);
+//		PlotWithSystErrorBand(hUnity, up1ShiftsRatio, dn1ShiftsRatio, kGray + 2, kGray, 1.3, false, 0.5, false);
 
       hUnity->GetXaxis()->CenterTitle();
       hUnity->GetXaxis()->SetTitleOffset(1.);
