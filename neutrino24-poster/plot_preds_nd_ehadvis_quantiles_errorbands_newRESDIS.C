@@ -412,11 +412,11 @@ void plot_preds_nd_ehadvis_quantiles_errorbands_newRESDIS(const bool saveCaption
       leg.SetFillColor(0);
       leg.SetFillStyle(0);
       leg.AddEntry(hCVPred, "NOvA 2024 simulation", "l");
-      up1Shifts.at(0)->SetFillColor(kRed - 7);
+      hBlank.SetFillColor(kRed - 7);
 //      up1Shifts.at(0)->SetLineColor(kGray);
 			up1Shifts_total.at(0)->SetFillColor(kGreen + 2);
 //			up1Shifts_total.at(0)->SetLineColor(kGreen + 2);
-      leg.AddEntry(up1Shifts.at(0), "PRD 106, 032004", "f");
+      leg.AddEntry(&hBlank, "PRD 106, 032004", "f");
 			leg.AddEntry(up1Shifts_total.at(0), "2024 cross section uncertainty", "f");
       leg.Draw("same");
       TLatex latex;
