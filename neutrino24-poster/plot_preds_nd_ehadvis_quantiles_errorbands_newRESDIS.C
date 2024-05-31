@@ -450,11 +450,9 @@ void plot_preds_nd_ehadvis_quantiles_errorbands_newRESDIS(const bool saveCaption
 			std::vector<TH1*> up1ShiftsRatio_total = up1Shifts_total; // 2024 (+ RES/DIS)
       std::vector<TH1*> dn1ShiftsRatio_total = dn1Shifts_total;
     std::cout << "dn1ShiftsRatio_total.at(0)->Integral() = " << dn1ShiftsRatio_total.at(0)->Integral() << std::endl;
-      for (auto &hist: up1ShiftsRatio)
-        hist->Divide(hCVPred);
-      for (auto &hist: dn1ShiftsRatio)
-        hist->Divide(hCVPred);
-			for (auto &hist: up1ShiftsRatio_total)
+		// NOTE: I have made a copy of the POINTERS, so only need to divide the histograms once.
+    // And it will apply to all vectors of TH1s.
+    for (auto &hist: up1ShiftsRatio_total)
         hist->Divide(hCVPred);
       for (auto &hist: dn1ShiftsRatio_total) {
         std::cout << "(dn1 total Int: " << hist->Integral() << " / hCVPred total Int: " << hCVPred->Integral()  << " = " << hist->Integral() / hCVPred->Integral() << std::endl;
