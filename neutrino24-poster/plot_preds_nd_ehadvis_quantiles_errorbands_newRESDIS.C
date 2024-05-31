@@ -387,15 +387,13 @@ void plot_preds_nd_ehadvis_quantiles_errorbands_newRESDIS(const bool saveCaption
 		// Rescale
       hCVPred->SetLineColor(kGray + 2);
       hCVPred->SetLineWidth(3);
-//      hCVPred->Scale(scaleFactor);
-//      for (TH1 * hist : up1Shifts)
-//        hist->Scale(scaleFactor);
-//      for (TH1 * hist : dn1Shifts)
-//        hist->Scale(scaleFactor);
-//			for (TH1 * hist : up1Shifts_total)
-//				hist->Scale(scaleFactor);
-//		for (TH1 * hist : dn1Shifts_total)
-//				hist->Scale(scaleFactor);
+    // NOTE: I have made a copy of the POINTERS, so only need to divide the histograms once.
+    // And it will apply to all vectors of TH1s.
+      hCVPred->Scale(scaleFactor);
+			for (TH1 * hist : up1Shifts_total)
+				hist->Scale(scaleFactor);
+		for (TH1 * hist : dn1Shifts_total)
+				hist->Scale(scaleFactor);
 
 
       p1->cd();
