@@ -347,6 +347,8 @@ void plot_preds_nd_ehadvis_quantiles_errorbands_newRESDIS(const bool saveCaption
     } // systs to create error bands
 
 
+    // TODO: fine up to this point. Integrals are ~7e6...
+
 		// organize the systs TH1s properly now.
 		auto up1Shifts_total = up1Shifts;
 		auto dn1Shifts_total = dn1Shifts;
@@ -460,7 +462,7 @@ void plot_preds_nd_ehadvis_quantiles_errorbands_newRESDIS(const bool saveCaption
 
 
 			// draw the largest error first.
-		PlotWithSystErrorBand(hUnity, up1ShiftsRatio_total, dn1ShiftsRatio_total, kGray + 2, kGreen + 2, 1.3, true, 0.8, false);
+//		PlotWithSystErrorBand(hUnity, up1ShiftsRatio_total, dn1ShiftsRatio_total, kGray + 2, kGreen + 2, 1.3, true, 0.8, false);
 		PlotWithSystErrorBand(hUnity, up1ShiftsRatio, dn1ShiftsRatio, kGray + 2, kGray, 1.3, false, 0.5, false);
 
       hUnity->GetXaxis()->CenterTitle();
