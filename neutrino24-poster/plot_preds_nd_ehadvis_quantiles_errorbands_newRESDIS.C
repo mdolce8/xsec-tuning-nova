@@ -286,7 +286,7 @@ void plot_preds_nd_ehadvis_quantiles_errorbands_newRESDIS(const bool saveCaption
 	hBlank.SetLineColor(0);
 
   // set scale factors here.
-  const double scaleFactor = 1e-6;
+  const double scaleFactor = 1e-5;
 
   int sampleType = 0;
 
@@ -399,9 +399,9 @@ void plot_preds_nd_ehadvis_quantiles_errorbands_newRESDIS(const bool saveCaption
       p1->cd();
 			// draw the larger error band first.
 		hCVPred->Draw("same hist e");
-		auto ErrorBandRESDIS = visuals::PlotWithSystErrorBand(hCVPred, up1Shifts_total, dn1Shifts_total, kGray + 2, kGreen + 2, 1.3, false, 0.5, false);
-		auto ErrorBand = visuals::PlotWithSystErrorBand(hCVPred, up1Shifts, dn1Shifts, kGray + 2, kGray, 1.3, false, 0.8, false); // w/o RES DIS
-      hCVPred->GetYaxis()->SetTitle("10^{6} Events / GeV");
+		auto ErrorBandRESDIS = visuals::PlotWithSystErrorBand(hCVPred, up1Shifts_total, dn1Shifts_total, kGray, kGreen + 2, 1.3, false, 0.5, false);
+		auto ErrorBand = visuals::PlotWithSystErrorBand(hCVPred, up1Shifts, dn1Shifts, kGray, kGray + 2, 1.3, false, 0.8, false); // w/o RES DIS
+      hCVPred->GetYaxis()->SetTitle("10^{5} Events / GeV");
       hCVPred->GetYaxis()->SetTitleSize(0.036);
       hCVPred->GetYaxis()->SetTitleOffset(1.1);
       hCVPred->SetMaximum(hCVPred->GetMaximum() * 2.0);
@@ -453,8 +453,8 @@ void plot_preds_nd_ehadvis_quantiles_errorbands_newRESDIS(const bool saveCaption
 
 
 			// draw the largest error first.
-		PlotWithSystErrorBand(hUnity, up1ShiftsRatio_total, dn1ShiftsRatio_total, kGray + 2, kGreen + 2, 1.3, true, 0.8, false);
-		PlotWithSystErrorBand(hUnity, up1ShiftsRatio, dn1ShiftsRatio, kGray + 2, kGray, 1.3, false, 0.5, false);
+		PlotWithSystErrorBand(hUnity, up1ShiftsRatio_total, dn1ShiftsRatio_total, kGray, kGreen + 2, 1.3, true, 0.8, false);
+		PlotWithSystErrorBand(hUnity, up1ShiftsRatio, dn1ShiftsRatio, kGray, kGray + 2, 1.3, false, 0.5, false);
 
       hUnity->GetXaxis()->CenterTitle();
       hUnity->GetXaxis()->SetTitleOffset(1.);
