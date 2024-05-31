@@ -320,12 +320,12 @@ void plot_preds_nd_ehadvis_quantiles_errorbands_newRESDIS(const bool saveCaption
 			SystShifts pm1SigmaShift;
 			pm1SigmaShift.SetShift(newSyst, +1.);
 			TH1 *hUp1 = predBundle.pred->PredictSyst(calc2020BF.get(), pm1SigmaShift).ToTH1(POT);
-	//      std::cout << "Up integral: " << hUp1->Integral() << std::endl;
+	      std::cout << "Up integral: " << hUp1->Integral() << std::endl;
 				up1Shifts_RESDIS.push_back(hUp1);
 
 				pm1SigmaShift.SetShift(newSyst, -1., true);
 				TH1 *hDn1 = predBundle.pred->PredictSyst(calc2020BF.get(), pm1SigmaShift).ToTH1(POT);
-	//      std::cout << "Down integral: " << hDn1->Integral() << std::endl;
+	      std::cout << "Down integral: " << hDn1->Integral() << std::endl;
 				dn1Shifts_RESDIS.push_back(hDn1);
 		} // RES DIS systs
 
@@ -337,12 +337,12 @@ void plot_preds_nd_ehadvis_quantiles_errorbands_newRESDIS(const bool saveCaption
       SystShifts pm1SigmaShift;
       pm1SigmaShift.SetShift(syst, +1.);
       TH1 *hUp1 = predBundle.pred->PredictSyst(calc2020BF.get(), pm1SigmaShift).ToTH1(POT);
-//      std::cout << "Up integral: " << hUp1->Integral() << std::endl;
+      std::cout << "Up integral: " << hUp1->Integral() << std::endl;
       up1Shifts.push_back(hUp1);
 
       pm1SigmaShift.SetShift(syst, -1., true);
       TH1 *hDn1 = predBundle.pred->PredictSyst(calc2020BF.get(), pm1SigmaShift).ToTH1(POT);
-//      std::cout << "Down integral: " << hDn1->Integral() << std::endl;
+      std::cout << "Down integral: " << hDn1->Integral() << std::endl;
       dn1Shifts.push_back(hDn1);
     } // systs to create error bands
 
@@ -425,7 +425,7 @@ void plot_preds_nd_ehadvis_quantiles_errorbands_newRESDIS(const bool saveCaption
       latex.SetTextSize(0.04);
       latex.SetTextAlign(13);
       latex.DrawLatexNDC(.15, .85, (Form("%s", beamType.c_str())));
-      latex.DrawLatexNDC(.15, .8, Form("%s", (quantileString == "All Quantiles" ?  "#nu + #bar{#nu} Selection" : quantileString).c_str()));
+      latex.DrawLatexNDC(.15, .8, Form("%s", (quantileString == "All Quantiles" ?  "#nu + #bar{#nu} selection" : quantileString).c_str()));
       latex.Draw("same");
       Simulation();
       NeutrinoLabel(ndfit::NeutrinoType::kNumu, beamType == "Antineutrino Beam");
