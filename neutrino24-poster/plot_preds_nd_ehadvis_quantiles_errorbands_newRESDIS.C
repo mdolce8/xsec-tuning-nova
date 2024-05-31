@@ -412,12 +412,11 @@ void plot_preds_nd_ehadvis_quantiles_errorbands_newRESDIS(const bool saveCaption
       leg.SetFillColor(0);
       leg.SetFillStyle(0);
       leg.AddEntry(hCVPred, "NOvA 2024 simulation", "l");
-      up1Shifts.at(0)->SetFillColor(kGray);
-      up1Shifts.at(0)->SetLineColor(kGray);
-      hBlank.SetFillColor(kGray); hBlank.SetLineColor(kGray);
+      up1Shifts.at(0)->SetFillColor(kRed - 7);
+//      up1Shifts.at(0)->SetLineColor(kGray);
 			up1Shifts_total.at(0)->SetFillColor(kGreen + 2);
-			up1Shifts_total.at(0)->SetLineColor(kGreen + 2);
-      leg.AddEntry(&hBlank, "PRD 106, 032004", "f");
+//			up1Shifts_total.at(0)->SetLineColor(kGreen + 2);
+      leg.AddEntry(up1Shifts.at(0), "PRD 106, 032004", "f");
 			leg.AddEntry(up1Shifts_total.at(0), "2024 cross section uncertainty", "f");
       leg.Draw("same");
       TLatex latex;
@@ -453,8 +452,8 @@ void plot_preds_nd_ehadvis_quantiles_errorbands_newRESDIS(const bool saveCaption
 
 
 			// draw the largest error first.
-		PlotWithSystErrorBand(hUnity, up1ShiftsRatio_total, dn1ShiftsRatio_total, kGray + 2, kGreen + 2, 1.3, true, 0.8, false);
-		PlotWithSystErrorBand(hUnity, up1ShiftsRatio, dn1ShiftsRatio, kGray + 2, kRed - 7, 1.3, false, 0.5, false);
+		PlotWithSystErrorBand(hUnity, up1ShiftsRatio_total, dn1ShiftsRatio_total, kGray + 2, kGreen + 2, 1.3, true, 0.5, false);
+		PlotWithSystErrorBand(hUnity, up1ShiftsRatio, dn1ShiftsRatio, kGray + 2, kRed - 7, 1.3, false, 0.8, false);
 
       hUnity->GetXaxis()->CenterTitle();
       hUnity->GetXaxis()->SetTitleOffset(1.);
