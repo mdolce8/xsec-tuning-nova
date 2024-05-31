@@ -283,7 +283,6 @@ void plot_preds_nd_ehadvis_quantiles_errorbands_newRESDIS(const bool saveCaption
 	// for aesthetics
 	TH1D hBlank("hBlank", "", 1, 0., 0.8);
 	hBlank.SetBinContent(1, 0.);
-	hBlank.SetLineColor(0);
 
   // set scale factors here.
   const double scaleFactor = 1e-5;
