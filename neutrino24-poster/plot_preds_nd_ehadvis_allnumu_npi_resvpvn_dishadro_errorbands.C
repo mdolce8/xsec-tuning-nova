@@ -141,7 +141,7 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
   TCanvas c("c","c", 600,600); // 900, 600
   TPad * p1, * p2; //p1 upper, p2 lower
 
-	auto * xAxisEHad = new TGaxis(0.001, 0.8, 0.8, 0.801, 0., 0.8, 10, "");
+	auto * xAxisEHad = new TGaxis(0.001, 0.95, 0.8, 0.951, 0., 0.8, 10, "");
 	xAxisEHad->SetLabelOffset(-0.015); // default is 0.005
 	xAxisEHad->SetLabelFont(42);
 	xAxisEHad->SetTitle("Hadronic Visible Energy (GeV)");
@@ -289,8 +289,8 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 	auto tg_chg_pi = PlotWithSystErrorBand(hPredQ5_chg_pi, up1Shifts_chg_pi, dn1Shifts_chg_pi, kGreen + 4, kGreen + 3, 1, false, 0.8, false);
 //	auto tgQ5 = PlotWithSystErrorBand(hPredQ5, up1Shifts_q5, dn1Shifts_q5, kGray + 2, kGray, 1, false, 0.8, false);
 
-	hPredQ5->Draw("same hist e");
-	hPredQ5_chg_pi_Clone->Draw("same hist e");
+	hPredQ5->Draw("same hist");
+	hPredQ5_chg_pi_Clone->Draw("same hist");
 
 
 	hBlank.GetYaxis()->SetTitle("10^{5} Events / GeV");
@@ -298,7 +298,7 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 	hPredQ5->SetMaximum(hPredQ5->GetMaximum() * 1.8);
 
 	latex.DrawLatexNDC(.15, .85, hc.c_str());
-	latex.DrawLatexNDC(.15, .8,  quantileString.c_str());
+	latex.DrawLatexNDC(.15, .8, "#nu + #bar{#nu} selection");  // quantileString.c_str());
 	leg.Draw("same");
 	latex.Draw("same");
 
@@ -324,11 +324,11 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 	hUnity->GetXaxis()->SetRangeUser(0., 0.8);
 	hUnity->GetYaxis()->SetTitleSize(0.02);
 	hUnity->GetYaxis()->SetLabelSize(0.02);
-	hUnity->GetYaxis()->SetTitleOffset(1.5);
+	hUnity->GetYaxis()->SetTitleOffset(1.8);
 	hUnity->GetXaxis()->CenterTitle();
 	hUnity->GetYaxis()->CenterTitle();
 
-	hUnity->SetYTitle("MC Ratio");
+	hUnity->SetYTitle("Shifted / Nominal");
 	xAxisEHad->Draw("same");
 
 
