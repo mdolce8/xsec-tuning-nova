@@ -442,14 +442,14 @@ void plot_preds_nd_ehadvis_quantiles_errorbands_newRESDIS(const bool saveCaption
       hUnity->Divide(hCVPred);
       hUnity->Draw("same hist");
       std::cout << "hCVPred Int: " << hCVPred->Integral() << std::endl;
-      std::cout << "dn1Shifts_total.at(0)->Integral()" << dn1Shifts_total.at(0)->Integral() << std::endl;
+      std::cout << "dn1Shifts_total.at(0)->Integral() = " << dn1Shifts_total.at(0)->Integral() << std::endl;
 
       ///create the ratios for the error bands
       std::vector<TH1*> up1ShiftsRatio = up1Shifts; // 2020
       std::vector<TH1*> dn1ShiftsRatio = dn1Shifts;
 			std::vector<TH1*> up1ShiftsRatio_total = up1Shifts_total; // 2024 (+ RES/DIS)
       std::vector<TH1*> dn1ShiftsRatio_total = dn1Shifts_total;
-    std::cout << "dn1ShiftsRatio_total.at(0)->Integral()" << dn1ShiftsRatio_total.at(0)->Integral() << std::endl;
+    std::cout << "dn1ShiftsRatio_total.at(0)->Integral() = " << dn1ShiftsRatio_total.at(0)->Integral() << std::endl;
       for (auto &hist: up1ShiftsRatio)
         hist->Divide(hCVPred);
       for (auto &hist: dn1ShiftsRatio)
@@ -457,7 +457,8 @@ void plot_preds_nd_ehadvis_quantiles_errorbands_newRESDIS(const bool saveCaption
 			for (auto &hist: up1ShiftsRatio_total)
         hist->Divide(hCVPred);
       for (auto &hist: dn1ShiftsRatio_total) {
-        std::cout << "dn1 total Int: " << hist->Integral() << std::endl;
+        std::cout << "(dn1 total Int: " << hist->Integral() << " / hCVPred total Int: " << hCVPred->Integral()  << " = " << hist->Integral() / hCVPred->Integral() << std::endl;
+
         hist->Divide(hCVPred);
         std::cout << "dn1/hCVPred total Int: " << hist->Integral() << std::endl;
       }
