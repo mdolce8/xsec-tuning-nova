@@ -157,7 +157,7 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 	ptEnuEvents.SetTextSize(0.032);
 	ptEnuEvents.SetTextFont(102);
 
-	TLegend leg(0.45, 0.6, 0.9, 0.85);
+	TLegend leg(0.45, 0.73, 0.9, 0.9);
 	leg.SetFillColor(0);
 	leg.SetFillStyle(0);
   TLegend legUnc(0.45, 0.57, 0.87, 0.72);
