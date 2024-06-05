@@ -160,7 +160,7 @@ void plot_preds_nd_ehadvis_mupix_npi_resvpvn_dishadro_errorbands(const std::stri
 	TLegend leg(0.45, 0.73, 0.9, 0.9);
 	leg.SetFillColor(0);
   leg.SetFillStyle(0);
-  TLegend legUnc(0.45, 0.57, 0.9, 0.72);
+  TLegend legUnc(0.45, 0.57, 0.87, 0.72);
   legUnc.SetFillColor(0);
   legUnc.SetFillStyle(0);
 
