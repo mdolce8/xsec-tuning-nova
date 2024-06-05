@@ -358,119 +358,120 @@ void plot_preds_nd_ehadvis_quantiles_errorbands_newRESDIS(const bool saveCaption
 			dn1Shifts_total.push_back(h);
 
 
-      c.cd();
-      c.Clear();
+    c.cd();
+    c.Clear();
 
 
 
-      auto * xAxisEHad = new TGaxis(0.001, 0.6, 0.8, 0.601, 0., 0.8, 10, "");
-      xAxisEHad->SetLabelOffset(-0.015); // default is 0.005
-      xAxisEHad->SetLabelFont(42);
-      xAxisEHad->SetTitle("Hadronic Visible Energy (GeV)");
-      xAxisEHad->SetTitleOffset(1.2);
-      xAxisEHad->CenterTitle();
-      xAxisEHad->SetTitleFont(42);
+    auto * xAxisEHad = new TGaxis(0.001, 0.6, 0.8, 0.601, 0., 0.8, 10, "");
+    xAxisEHad->SetLabelOffset(-0.015); // default is 0.005
+    xAxisEHad->SetLabelFont(42);
+    xAxisEHad->SetTitle("Hadronic Visible Energy (GeV)");
+    xAxisEHad->SetTitleOffset(1.2);
+    xAxisEHad->CenterTitle();
+    xAxisEHad->SetTitleFont(42);
 
 
-      /// Plot comparison and ratio on save canvas
-      SplitCanvas(0.25, p1, p2);
-      // EHadVis
-      //create the histograms for the PlotWithSystErrorBand() function
-      std::cout << "Producing EHadVis plots for " << predBundle.name << "......" << std::endl;
-      TH1 * hCVPred = predBundle.pred->PredictSyst(calc2020BF.get(), SystShifts::Nominal()).ToTH1(POT);
+    /// Plot comparison and ratio on save canvas
+    SplitCanvas(0.25, p1, p2);
+    // EHadVis
+    //create the histograms for the PlotWithSystErrorBand() function
+    std::cout << "Producing EHadVis plots for " << predBundle.name << "......" << std::endl;
+    TH1 * hCVPred = predBundle.pred->PredictSyst(calc2020BF.get(), SystShifts::Nominal()).ToTH1(POT);
 
 		hBlank.Draw("same");
 		hBlank.SetMaximum(hCVPred->GetMaximum() * 1.8);
 
 
 		// Rescale
-      hCVPred->SetLineColor(kGray + 2);
-      hCVPred->SetLineWidth(3);
+    hCVPred->SetLineColor(kGray + 2);
+    hCVPred->SetLineWidth(3);
     // NOTE: I have made a copy of the POINTERS, so only need to divide the histograms once.
     // And it will apply to all vectors of TH1s.
-      hCVPred->Scale(scaleFactor);
-			for (TH1 * hist : up1Shifts_total)
-				hist->Scale(scaleFactor);
+    hCVPred->Scale(scaleFactor);
+    for (TH1 * hist : up1Shifts_total)
+      hist->Scale(scaleFactor);
 		for (TH1 * hist : dn1Shifts_total)
-				hist->Scale(scaleFactor);
+      hist->Scale(scaleFactor);
 
 
-      p1->cd();
-			// draw the larger error band first.
+    p1->cd();
+    // draw the larger error band first.
 		hCVPred->Draw("same hist e");
 		auto ErrorBandRESDIS = visuals::PlotWithSystErrorBand(hCVPred, up1Shifts_total, dn1Shifts_total, kGray + 2, kGreen + 2, 1.3, false, 0.5, false);
 		auto ErrorBand = visuals::PlotWithSystErrorBand(hCVPred, up1Shifts, dn1Shifts, kGray + 2, kAzure - 6, 1.3, false, 0.8, false); // w/o RES DIS
-      hCVPred->GetYaxis()->SetTitle("10^{5} Events / GeV");
-      hCVPred->GetYaxis()->SetTitleSize(0.036);
-      hCVPred->GetYaxis()->SetTitleOffset(1.1);
-      hCVPred->SetMaximum(hCVPred->GetMaximum() * 2.0);
-      hCVPred->GetXaxis()->SetLabelSize(0.0);
-      hCVPred->GetXaxis()->SetTitleSize(0.0);
+    hCVPred->GetYaxis()->SetTitle("10^{5} Events / GeV");
+    hCVPred->GetYaxis()->SetTitleSize(0.036);
+    hCVPred->GetYaxis()->SetTitleOffset(1.1);
+    hCVPred->SetMaximum(hCVPred->GetMaximum() * 2.0);
+    hCVPred->GetXaxis()->SetLabelSize(0.0);
+    hCVPred->GetXaxis()->SetTitleSize(0.0);
 
       TLegend leg(0.45, 0.65, 0.9, 0.9);
       leg.SetFillColor(0);
-      leg.SetFillStyle(0);
-      leg.AddEntry(hCVPred, "NOvA 2024 simulation", "l");
-      hBlank.SetFillColor(kAzure - 6);
+    leg.SetFillStyle(0);
+    leg.AddEntry(hCVPred, "2024 sim.", "l");
+    hBlank.SetFillColor(kAzure - 6);
+    TLegend legUnc(0.45, 0.65, 0.9, 0.9);
 //      up1Shifts.at(0)->SetLineColor(kGray);
-			up1Shifts_total.at(0)->SetFillColor(kGreen + 2);
+    up1Shifts_total.at(0)->SetFillColor(kGreen + 2);
 //			up1Shifts_total.at(0)->SetLineColor(kGreen + 2);
-      leg.AddEntry(&hBlank, "PRD 106, 032004", "f");
-			leg.AddEntry(up1Shifts_total.at(0), "2024 cross section uncertainty", "f");
-      leg.Draw("same");
-      TLatex latex;
-      latex.SetTextSize(0.04);
-      latex.SetTextAlign(13);
-      latex.DrawLatexNDC(.15, .85, (Form("%s", beamType.c_str())));
-      latex.DrawLatexNDC(.15, .8, Form("%s", (quantileString == "All Quantiles" ?  "#nu + #bar{#nu} selection" : quantileString).c_str()));
-      latex.Draw("same");
-      Simulation();
-      NeutrinoLabel(ndfit::NeutrinoType::kNumu, beamType == "Antineutrino Beam");
-      ndfit::visuals::DetectorLabel(caf::kNEARDET);
+    leg.AddEntry(&hBlank, "PRD 106, 032004", "f");
+    leg.AddEntry(up1Shifts_total.at(0), "2024 cross section uncertainty", "f");
+    leg.Draw("same");
+    TLatex latex;
+    latex.SetTextSize(0.04);
+    latex.SetTextAlign(13);
+    latex.DrawLatexNDC(.15, .85, (Form("%s", beamType.c_str())));
+    latex.DrawLatexNDC(.15, .8, Form("%s", (quantileString == "All Quantiles" ?  "#nu + #bar{#nu} selection" : quantileString).c_str()));
+    latex.Draw("same");
+    Simulation();
+    NeutrinoLabel(ndfit::NeutrinoType::kNumu, beamType == "Antineutrino Beam");
+    ndfit::visuals::DetectorLabel(caf::kNEARDET);
 
 
 
-      /// EHadVis ratio
-      p2->cd();
-      p2->SetGridy(1);
-      TH1 *hUnity = (TH1F *) hCVPred->Clone("hEUnity");
-      hUnity->Divide(hCVPred);
-      hUnity->Draw("same hist");
+    /// EHadVis ratio
+    p2->cd();
+    p2->SetGridy(1);
+    TH1 *hUnity = (TH1F *) hCVPred->Clone("hEUnity");
+    hUnity->Divide(hCVPred);
+    hUnity->Draw("same hist");
 
-      ///create the ratios for the error bands
-      std::vector<TH1*> up1ShiftsRatio = up1Shifts; // 2020
-      std::vector<TH1*> dn1ShiftsRatio = dn1Shifts;
-			std::vector<TH1*> up1ShiftsRatio_total = up1Shifts_total; // 2024 (+ RES/DIS)
-      std::vector<TH1*> dn1ShiftsRatio_total = dn1Shifts_total;
-		// NOTE: I have made a copy of the POINTERS, so only need to divide the histograms once.
-    // And it will apply to all vectors of TH1s.
+    ///create the ratios for the error bands
+    std::vector<TH1*> up1ShiftsRatio = up1Shifts; // 2020
+    std::vector<TH1*> dn1ShiftsRatio = dn1Shifts;
+    std::vector<TH1*> up1ShiftsRatio_total = up1Shifts_total; // 2024 (+ RES/DIS)
+    std::vector<TH1*> dn1ShiftsRatio_total = dn1Shifts_total;
+  // NOTE: I have made a copy of the POINTERS, so only need to divide the histograms once.
+  // And it will apply to all vectors of TH1s.
     for (auto &hist: up1ShiftsRatio_total)
-        hist->Divide(hCVPred);
-      for (auto &hist: dn1ShiftsRatio_total)
-        hist->Divide(hCVPred);
+      hist->Divide(hCVPred);
+    for (auto &hist: dn1ShiftsRatio_total)
+      hist->Divide(hCVPred);
 
 
 			// draw the largest error first.
 		PlotWithSystErrorBand(hUnity, up1ShiftsRatio_total, dn1ShiftsRatio_total, kGray + 2, kGreen + 2, 1.3, true, 0.5, false);
 		PlotWithSystErrorBand(hUnity, up1ShiftsRatio, dn1ShiftsRatio, kGray + 2, kAzure - 6, 1.3, false, 0.8, false);
 
-      hUnity->GetXaxis()->CenterTitle();
-      hUnity->GetXaxis()->SetTitleOffset(1.);
-      hUnity->GetXaxis()->SetTitleSize(0.045);
-      hUnity->SetXTitle(""); // set from the TAxis object
-      hUnity->GetYaxis()->CenterTitle();
-      hUnity->GetYaxis()->SetRangeUser(0.6, 1.4);
-      hUnity->GetYaxis()->SetTitleSize(0.02);
-      hUnity->GetYaxis()->SetLabelSize(0.02);
-      hUnity->GetYaxis()->SetTitleOffset(1.8);
-      hUnity->SetYTitle("Shifted / Nominal");
-      hUnity->GetYaxis()->CenterTitle();
-      xAxisEHad->Draw("same");
+    hUnity->GetXaxis()->CenterTitle();
+    hUnity->GetXaxis()->SetTitleOffset(1.);
+    hUnity->GetXaxis()->SetTitleSize(0.045);
+    hUnity->SetXTitle(""); // set from the TAxis object
+    hUnity->GetYaxis()->CenterTitle();
+    hUnity->GetYaxis()->SetRangeUser(0.6, 1.4);
+    hUnity->GetYaxis()->SetTitleSize(0.02);
+    hUnity->GetYaxis()->SetLabelSize(0.02);
+    hUnity->GetYaxis()->SetTitleOffset(1.8);
+    hUnity->SetYTitle("Shifted / Nominal");
+    hUnity->GetYaxis()->CenterTitle();
+    xAxisEHad->Draw("same");
 
 
-      ndfit::visuals::DetectorLabel(predBundle.det);
-      for (const auto &ext: {".png", ".pdf"}) // ".root"
-        c.SaveAs(ndfit::FullFilename(outDirPlot, "plot_" + predBundle.name + "_EHadVis_xsec24_errorbands_newRESDIS" + ext).c_str());
+    ndfit::visuals::DetectorLabel(predBundle.det);
+    for (const auto &ext: {".png", ".pdf"}) // ".root"
+      c.SaveAs(ndfit::FullFilename(outDirPlot, "plot_" + predBundle.name + "_EHadVis_xsec24_errorbands_newRESDIS" + ext).c_str());
 
     // write captions here...
     if (saveCaptions) {
