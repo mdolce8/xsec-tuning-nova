@@ -160,6 +160,9 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 	TLegend leg(0.45, 0.6, 0.9, 0.85);
 	leg.SetFillColor(0);
 	leg.SetFillStyle(0);
+  TLegend legUnc(0.45, 0.57, 0.87, 0.72);
+  legUnc.SetFillColor(0);
+  legUnc.SetFillStyle(0);
 
 	// set scale factors here.
   const double scaleFactor = 1e-5;
@@ -267,10 +270,11 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 
 	up1Shifts_q5.at(0)->SetFillColor(kGray);
 	up1Shifts_chg_pi.at(0)->SetFillColor(kGreen + 4);
-	leg.AddEntry(hPredQ5, "NOvA 2024 MC", "l");
+	leg.AddEntry(hPredQ5, "2024 sim.", "l");
 //	leg.AddEntry(up1Shifts_q5.at(0), "#pm1#sigma #pi^{#pm} unc.", "f");
-	leg.AddEntry(up1Shifts_chg_pi.at(0), "#pm1#sigma #pi^{#pm} unc.", "f");
-	leg.AddEntry(hPredQ5_chg_pi_Clone, "True N#pi^{#pm} > 0", "f");
+  leg.AddEntry(hPredQ5_chg_pi_Clone, "True N#pi^{#pm} > 0", "f");
+  legUnc.SetHeader("Cross section unc.", "c");
+  legUnc.AddEntry(up1Shifts_chg_pi.at(0), "#frac{#sigma_{RES}(#nup)}{#sigma_{RES}(#nun)} + DIS Hadro.", "f");
 
 
 
@@ -300,6 +304,7 @@ void plot_preds_nd_ehadvis_allnumu_npi_resvpvn_dishadro_errorbands(const std::st
 	latex.DrawLatexNDC(.15, .85, hc.c_str());
 	latex.DrawLatexNDC(.15, .8, "#nu + #bar{#nu} selection");  // quantileString.c_str());
 	leg.Draw("same");
+  legUnc.Draw("same");
 	latex.Draw("same");
 
 	// post-hist drawing.
