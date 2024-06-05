@@ -384,7 +384,7 @@ void plot_preds_nd_ehadvis_quantiles_errorbands_newRESDIS(const bool saveCaption
 
 
 		// Rescale
-    hCVPred->SetLineColor(kGray + 2);
+    hCVPred->SetLineColor(kGray + 1);
     hCVPred->SetLineWidth(3);
     // NOTE: I have made a copy of the POINTERS, so only need to divide the histograms once.
     // And it will apply to all vectors of TH1s.
@@ -398,8 +398,8 @@ void plot_preds_nd_ehadvis_quantiles_errorbands_newRESDIS(const bool saveCaption
     p1->cd();
     // draw the larger error band first.
 		hCVPred->Draw("same hist e");
-		auto ErrorBandRESDIS = visuals::PlotWithSystErrorBand(hCVPred, up1Shifts_total, dn1Shifts_total, kGray + 2, kGreen + 2, 1.3, false, 0.5, false);
-		auto ErrorBand = visuals::PlotWithSystErrorBand(hCVPred, up1Shifts, dn1Shifts, kGray + 2, kAzure - 6, 1.3, false, 0.8, false); // w/o RES DIS
+		auto ErrorBandRESDIS = visuals::PlotWithSystErrorBand(hCVPred, up1Shifts_total, dn1Shifts_total, kGray + 1, kGreen + 2, 1.3, false, 0.5, false);
+		auto ErrorBand = visuals::PlotWithSystErrorBand(hCVPred, up1Shifts, dn1Shifts, kGray + 1, kAzure - 6, 1.3, false, 0.8, false); // w/o RES DIS
     hCVPred->GetYaxis()->SetTitle("10^{5} Events / GeV");
     hCVPred->GetYaxis()->SetTitleSize(0.036);
     hCVPred->GetYaxis()->SetTitleOffset(1.1);
@@ -407,12 +407,12 @@ void plot_preds_nd_ehadvis_quantiles_errorbands_newRESDIS(const bool saveCaption
     hCVPred->GetXaxis()->SetLabelSize(0.0);
     hCVPred->GetXaxis()->SetTitleSize(0.0);
 
-    TLegend leg(0.45, 0.75, 0.9, 0.9);
+    TLegend leg(0.45, 0.8, 0.9, 0.9);
     leg.SetFillColor(0);
     leg.SetFillStyle(0);
     leg.AddEntry(hCVPred, "2024 sim.", "l");
     hBlank.SetFillColor(kAzure - 6);
-    TLegend legUnc(0.45, 0.45, 0.9, 0.73);
+    TLegend legUnc(0.45, 0.6, 0.9, 0.78);
     legUnc.SetFillColor(0);
     legUnc.SetFillStyle(0);
 //      up1Shifts.at(0)->SetLineColor(kGray);
@@ -420,7 +420,7 @@ void plot_preds_nd_ehadvis_quantiles_errorbands_newRESDIS(const bool saveCaption
 //			up1Shifts_total.at(0)->SetLineColor(kGreen + 2);
     legUnc.SetHeader("Cross section unc.", "c");
     legUnc.AddEntry(&hBlank, "Prev. (PRD 106, 032004)", "f");
-    legUnc.AddEntry(up1Shifts_total.at(0), "2024", "f");
+    legUnc.AddEntry(up1Shifts_total.at(0), "2024 analysis", "f");
     // draw both
     leg.Draw("same");
     legUnc.Draw("same");
@@ -457,8 +457,8 @@ void plot_preds_nd_ehadvis_quantiles_errorbands_newRESDIS(const bool saveCaption
 
 
 			// draw the largest error first.
-		PlotWithSystErrorBand(hUnity, up1ShiftsRatio_total, dn1ShiftsRatio_total, kGray + 2, kGreen + 2, 1.3, true, 0.5, false);
-		PlotWithSystErrorBand(hUnity, up1ShiftsRatio, dn1ShiftsRatio, kGray + 2, kAzure - 6, 1.3, false, 0.8, false);
+		PlotWithSystErrorBand(hUnity, up1ShiftsRatio_total, dn1ShiftsRatio_total, kGray + 1, kGreen + 2, 1.3, true, 0.5, false);
+		PlotWithSystErrorBand(hUnity, up1ShiftsRatio, dn1ShiftsRatio, kGray + 1, kAzure - 6, 1.3, false, 0.8, false);
 
     hUnity->GetXaxis()->CenterTitle();
     hUnity->GetXaxis()->SetTitleOffset(1.);
