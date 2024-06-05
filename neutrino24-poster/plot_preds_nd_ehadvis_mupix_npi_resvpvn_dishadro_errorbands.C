@@ -157,9 +157,12 @@ void plot_preds_nd_ehadvis_mupix_npi_resvpvn_dishadro_errorbands(const std::stri
 	ptEnuEvents.SetTextSize(0.032);
 	ptEnuEvents.SetTextFont(102);
 
-	TLegend leg(0.45, 0.6, 0.9, 0.85);
+	TLegend leg(0.45, 0.7, 0.9, 0.88);
 	leg.SetFillColor(0);
-	leg.SetFillStyle(0);
+  leg.SetFillStyle(0);
+  TLegend legUnc(0.45, 0.65, 0.9, 0.68);
+  legUnc.SetFillColor(0);
+  legUnc.SetFillStyle(0);
 
 	// set scale factors here.
   const double scaleFactor = 1e-4;
@@ -270,7 +273,8 @@ void plot_preds_nd_ehadvis_mupix_npi_resvpvn_dishadro_errorbands(const std::stri
 	leg.AddEntry(hPred_MuPiX, "2024 sim.", "l");
 //	leg.AddEntry(up1Shifts_q5.at(0), "#pm1#sigma #pi^{#pm} unc.", "f");
 	leg.AddEntry(hPred_MuPiX_chg_pi_Clone, "True N#pi^{#pm} > 0", "f");
-  leg.AddEntry(up1Shifts_chg_pi.at(0), "#frac{#sigma_{RES}(#nup)}{#sigma_{RES}(#nun)} + DIS Hadro. unc.", "f");
+  legUnc.SetHeader("Cross section unc.", "c");
+  legUnc.AddEntry(up1Shifts_chg_pi.at(0), "#frac{#sigma_{RES}(#nup)}{#sigma_{RES}(#nun)} + DIS Hadro.", "f");
 
 
 
@@ -300,6 +304,7 @@ void plot_preds_nd_ehadvis_mupix_npi_resvpvn_dishadro_errorbands(const std::stri
 	latex.DrawLatexNDC(.15, .85, hc.c_str());
 	latex.DrawLatexNDC(.15, .8,  topoLtx.c_str());
 	leg.Draw("same");
+  legUnc.Draw("same");
 	latex.Draw("same");
 
 	// post-hist drawing.
