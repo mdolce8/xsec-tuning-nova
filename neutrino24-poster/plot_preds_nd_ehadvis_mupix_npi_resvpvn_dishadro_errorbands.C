@@ -267,9 +267,9 @@ void plot_preds_nd_ehadvis_mupix_npi_resvpvn_dishadro_errorbands(const std::stri
 
 	up1Shifts_MuPiX.at(0)->SetFillColor(kGray);
 	up1Shifts_chg_pi.at(0)->SetFillColor(kGreen + 4);
-	leg.AddEntry(hPred_MuPiX, "NOvA 2024 simulation", "l");
+	leg.AddEntry(hPred_MuPiX, "2024 sim.", "l");
 //	leg.AddEntry(up1Shifts_q5.at(0), "#pm1#sigma #pi^{#pm} unc.", "f");
-	leg.AddEntry(up1Shifts_chg_pi.at(0), "#pm1#sigma #pi^{#pm} unc.", "f");
+	leg.AddEntry(up1Shifts_chg_pi.at(0), "#pm1#sigma RES #frac{#sigma(#nu p)}{#sigma(#nu n)} + DIS Hadro. unc.", "f");
 	leg.AddEntry(hPred_MuPiX_chg_pi_Clone, "True N#pi^{#pm} > 0", "f");
 
 
