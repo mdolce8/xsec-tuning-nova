@@ -407,7 +407,7 @@ void plot_preds_nd_ehadvis_quantiles_errorbands_newRESDIS(const bool saveCaption
     hCVPred->GetXaxis()->SetLabelSize(0.0);
     hCVPred->GetXaxis()->SetTitleSize(0.0);
 
-    TLegend leg(0.45, 0.8, 0.9, 0.9);
+    TLegend leg(0.45, 0.8, 0.9, 0.86);
     leg.SetFillColor(0);
     leg.SetFillStyle(0);
     leg.AddEntry(hCVPred, "2024 sim.", "l");
