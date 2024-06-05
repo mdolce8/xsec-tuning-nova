@@ -407,18 +407,23 @@ void plot_preds_nd_ehadvis_quantiles_errorbands_newRESDIS(const bool saveCaption
     hCVPred->GetXaxis()->SetLabelSize(0.0);
     hCVPred->GetXaxis()->SetTitleSize(0.0);
 
-      TLegend leg(0.45, 0.65, 0.9, 0.9);
-      leg.SetFillColor(0);
+    TLegend leg(0.45, 0.75, 0.9, 0.9);
+    leg.SetFillColor(0);
     leg.SetFillStyle(0);
     leg.AddEntry(hCVPred, "2024 sim.", "l");
     hBlank.SetFillColor(kAzure - 6);
-    TLegend legUnc(0.45, 0.65, 0.9, 0.9);
+    TLegend legUnc(0.45, 0.45, 0.9, 0.73);
+    legUnc.SetFillColor(0);
+    legUnc.SetFillStyle(0);
 //      up1Shifts.at(0)->SetLineColor(kGray);
     up1Shifts_total.at(0)->SetFillColor(kGreen + 2);
 //			up1Shifts_total.at(0)->SetLineColor(kGreen + 2);
-    leg.AddEntry(&hBlank, "PRD 106, 032004", "f");
-    leg.AddEntry(up1Shifts_total.at(0), "2024 cross section uncertainty", "f");
+    legUnc.SetHeader("Cross section unc.", "c");
+    legUnc.AddEntry(&hBlank, "Prev. (PRD 106, 032004)", "f");
+    legUnc.AddEntry(up1Shifts_total.at(0), "2024", "f");
+    // draw both
     leg.Draw("same");
+    legUnc.Draw("same");
     TLatex latex;
     latex.SetTextSize(0.04);
     latex.SetTextAlign(13);
