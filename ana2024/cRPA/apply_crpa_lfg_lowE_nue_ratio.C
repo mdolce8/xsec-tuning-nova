@@ -161,7 +161,7 @@ void apply_crpa_lfg_lowE_nue_ratio(const std::string& beam = "fhc")
 	ltx3.SetTextSize(0.85);
 //	ltx3.DrawLatexNDC(0.62, 0.7, "(#theta_e, E_#nu) Projection");
 
-	hProjLowE_Rwgt->SetTitle("FD LowE #nu_{e} Sample; True E_{#nu} (GeV); Events");
+	hProjLowE_Rwgt->SetTitle("FD #nu_{e} candidates; True E_{#nu} (GeV); Events");
 	hProjLowE_Rwgt->GetYaxis()->CenterTitle();
 	hProjLowE_Rwgt->GetXaxis()->CenterTitle();
 	hProjLowE_Rwgt->GetXaxis()->SetTitleOffset(0.8);
